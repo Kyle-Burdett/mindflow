@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  provider: ^6.1.5+1
+  get_it: ^8.2.0
+  go_router: ^16.2.4
 
   cupertino_icons: ^1.0.8
 
@@ -21,3 +24,15 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
+
+  assets:
+    - assets/icons/
+
+  fonts:
+   - family: merriweather
+     fonts: 
+      - asset: assets/fonts/merriweather-variable.ttf
+   - family: quicksand
+     fonts: 
+      - asset: assets/fonts/quicksand-variable.ttf
+
