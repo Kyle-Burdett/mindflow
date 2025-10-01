@@ -29,10 +29,10 @@ flutter:
     - assets/icons/
 
   fonts:
-   - family: merriweather
-     fonts: 
-      - asset: assets/fonts/merriweather-variable.ttf
-   - family: quicksand
-     fonts: 
-      - asset: assets/fonts/quicksand-variable.ttf
+    - family: merriweather
+      fonts:
+        - asset: assets/fonts/merriweather-variable.ttf
+    - family: quicksand
+      fonts:
+        - asset: assets/fonts/quicksand-variable.ttf
 
