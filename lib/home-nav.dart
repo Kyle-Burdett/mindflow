@@ -15,24 +15,24 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   // Bottom navigation bar icons/items. Defines the icons they use in selected/unselected states.
   final List<BottomNavigationBarItem> bottomNavItems = [
     BottomNavigationBarItem(
-      icon: Icon(Icons.heart_broken_rounded, color: Colors.black),
-      activeIcon: Icon(Icons.heart_broken_rounded, color: Color(0xFFEF9C53)),
+      icon: Image.asset('assets/icons/home.png', height: 28),
+      activeIcon: Image.asset('assets/icons/home-selected.png', height: 28),
       label: "Home",
     ),
     BottomNavigationBarItem(
       backgroundColor: Colors.white,
-      icon: Icon(Icons.auto_graph, color: Colors.black),
-      activeIcon: Icon(Icons.auto_graph, color: Color(0xFFEF9C53)),
+      icon: Image.asset('assets/icons/track.png', height: 28),
+      activeIcon: Image.asset('assets/icons/track-selected.png', height: 28),
       label: "Track",
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.lightbulb, color: Colors.black),
-      activeIcon: Icon(Icons.lightbulb, color: Color(0xFFEF9C53)),
+      icon: Image.asset('assets/icons/insights.png', height: 28),
+      activeIcon: Image.asset('assets/icons/insights-selected.png', height: 28),
       label: "Insights",
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.book, color: Colors.black),
-      activeIcon: Icon(Icons.book, color: Color(0xFFEF9C53)),
+      icon: Image.asset('assets/icons/resources.png', height: 28),
+      activeIcon: Image.asset('assets/icons/resources-selected.png', height: 28),
       label: "Resources",
     ),
   ];
@@ -92,15 +92,26 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: bottomNavItems,
         currentIndex: _currentIndex,
-        showUnselectedLabels: true,
-        selectedItemColor: Color(0xFFEF9C53),
-        unselectedItemColor: Colors.black,
-        type: BottomNavigationBarType.fixed,
         onTap: (value) {
           setState(() {
             _currentIndex = value;
           });
         },
+        // Styling
+        showUnselectedLabels: true,
+        selectedItemColor: Color(0xFFEF9C53),
+        unselectedItemColor: Colors.black,
+        unselectedLabelStyle: TextStyle(
+          fontFamily: "merriweather",
+          fontWeight: FontWeight.w700,
+          fontSize: 12,
+        ),
+        selectedLabelStyle: TextStyle(
+          fontFamily: "merriweather",
+          fontWeight: FontWeight.w700,
+          fontSize: 12,
+        ),
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }
