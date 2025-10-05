@@ -25,7 +25,7 @@ class Activity {
   });
 }
 
-// --- Working Hours Page Widget ---
+
 
 class WorkingHoursPage extends StatefulWidget {
 
@@ -125,50 +125,46 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
 
 
   void _saveAndExit() {
-    // 1. Converts the Activity/TimeSlot model into the simple
-    //    List<Map<String, String>> format expected by DailyCheckIn.
+  
     final List<Map<String, String>> resultTasks = activities.expand((activity) {
       return activity.timeSlots.map((slot) {
-        // Filter out any activities that have been edited to have zero duration (e.g. start == end)
+        
         if (slot.start.hour == slot.end.hour && slot.start.minute == slot.end.minute) {
-          return null; // Skip zero-duration slots
+          return null; 
         }
         return {
           'name': activity.name,
-          // Use formatTimeOfDay for consistent display in the check-in page
+       
           'startTime': slot.start.format(context),
           'endTime': slot.end.format(context),
         };
-      }).whereType<Map<String, String>>().toList(); // Filter out nulls
+      }).whereType<Map<String, String>>().toList(); 
     }).toList();
 
-    // 2. Use Navigator.pop to close the page and return the list of tasks.
-    // The resultTasks list will be received by the `await Navigator.push` call
-    // in daily_check_in.dart.
+    
     Navigator.of(context).pop(resultTasks);
   }
 
 
-  // New method to calculate the required TimelineView height
+  
   double _getTimelineHeight() {
     const double hourHeight = 60.0;
     final startHour = const TimeOfDay(hour: 9, minute: 0);
     final endHour = const TimeOfDay(hour: 18, minute: 0);
     final totalHoursToDisplay = (endHour.hour - startHour.hour);
-    // Height is (number of hours + 1 for the end-of-day divider) * height per hour, plus some vertical padding inside TimelineView
-    return (totalHoursToDisplay + 1) * hourHeight + 32; // 32 is 16 top + 16 bottom padding from TimelineView
+    
+    return (totalHoursToDisplay + 1) * hourHeight + 32; 
   }
 
-  // The main build method where the UI is constructed.
   @override
   Widget build(BuildContext context) {
-    // --- MODIFIED LINE: Set the desired background color FFDBBB (100% opacity) ---
+  
     const Color pageBackgroundColor = Color(0xFFFFDBBB);
 
     return Scaffold(
-      backgroundColor: pageBackgroundColor, // Set the desired background color
+      backgroundColor: pageBackgroundColor, 
       appBar: AppBar(
-        backgroundColor: pageBackgroundColor, // Set the AppBar background color
+        backgroundColor: pageBackgroundColor, 
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
 
@@ -185,7 +181,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Original sub-text (Adjusted slightly to match the new structure)
+                
                   const SizedBox(height: 8),
                   const Text(
                     'How did your day go compared to your planned working hours?',
@@ -201,7 +197,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
                     child: TimelineView(activities: activities),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24), // Added vertical padding to separate timeline and cards
+                    padding: const EdgeInsets.symmetric(vertical: 24), 
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: activities.map((activity) {
@@ -241,7 +237,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
   }
 }
 
-// --- Timeline View Widget ---
+
 
 class TimelineView extends StatelessWidget {
   final List<Activity> activities;
@@ -273,12 +269,12 @@ class TimelineView extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Row( // Use Row to separate the time labels and the timeline content
+      child: Row( 
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Time Column (Fixed Width)
+          
           SizedBox(
-            width: 80, // Fixed width for the time column
+            width: 80, 
             child: Column(
               children: hoursToDisplay.map((hour) {
                 return SizedBox(
@@ -301,11 +297,11 @@ class TimelineView extends StatelessWidget {
             ),
           ),
 
-          // 2. Timeline Content
+  
           Expanded(
             child: Stack(
               children: [
-                // Horizontal dividers for each hour
+              
                 Column(
                   children: hoursToDisplay.map((_) {
                     return SizedBox(
@@ -318,9 +314,9 @@ class TimelineView extends StatelessWidget {
                   }).toList(),
                 ),
 
-                // Orange vertical "Planned working hours" bar
+               
                 Positioned(
-                  left: 30, // Positioned relative to the Expanded area's left edge
+                  left: 30, 
                   top: ((_timeToMinutes(const TimeOfDay(hour: 9, minute: 0)) - _timeToMinutes(startHour)) / 60) * hourHeight,
                   height: ((_timeToMinutes(const TimeOfDay(hour: 17, minute: 0)) - _timeToMinutes(const TimeOfDay(hour: 9, minute: 0))) / 60) * hourHeight,
                   child: Container(
@@ -332,9 +328,9 @@ class TimelineView extends StatelessWidget {
                   ),
                 ),
 
-                // "Planned working hours" label
+             
                 Positioned(
-                  left: 55, // Positioned relative to the Expanded area's left edge
+                  left: 55, 
                   top: ((_timeToMinutes(const TimeOfDay(hour: 11, minute: 30)) - _timeToMinutes(startHour)) / 60) * hourHeight,
                   child: const Text(
                     'Planned\nworking hours',
@@ -346,7 +342,7 @@ class TimelineView extends StatelessWidget {
                   ),
                 ),
 
-                // Activity bars and labels
+             
                 ...activities.expand((activity) {
                   return activity.timeSlots.map((slot) {
                     final startMinutes = _timeToMinutes(slot.start);
@@ -356,13 +352,10 @@ class TimelineView extends StatelessWidget {
                     final top = ((startMinutes - baseMinutes) / 60) * hourHeight;
                     final height = ((endMinutes - startMinutes) / 60) * hourHeight;
 
-                    // Skip drawing zero-duration slots
+               
                     if (height <= 0) return Container();
 
-                    // Calculate a dynamic horizontal position for the bar and label
-                    // 1. Get the total width of the Expanded area.
-                    // 2. Set the bar's position near the right edge.
-                    // 3. Set the label's position to the left of the bar.
+                  
 
                     const double barWidth = 16.0;
                     const double rightPadding = 16.0;
@@ -391,10 +384,10 @@ class TimelineView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                // Activity Label
+                             
                                 Positioned(
                                   right: constraints.maxWidth - labelRight,
-                                  top: (height / 2) - (10), // Center vertically
+                                  top: (height / 2) - (10), 
                                   child: Text(
                                     activity.name,
                                     style: const TextStyle(
@@ -419,7 +412,7 @@ class TimelineView extends StatelessWidget {
   }
 }
 
-// --- Activity Card Widget ---
+
 
 class ActivityCard extends StatefulWidget {
   final Activity activity;
@@ -599,7 +592,7 @@ class _ActivityCardState extends State<ActivityCard> {
   }
 }
 
-// --- Time Picker Widget---
+
 
 class TimePicker extends StatelessWidget {
   final TimeOfDay initialTime;
@@ -631,7 +624,7 @@ class TimePicker extends StatelessWidget {
 }
 
 
-// --- Bottom Navigation Widget ---
+
 
 class BottomNavigation extends StatelessWidget {
   const BottomNavigation({super.key});
@@ -650,8 +643,8 @@ class BottomNavigation extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black, // Active icon and label color
-        unselectedItemColor: Colors.black, // Inactive icon and label color
+        selectedItemColor: Colors.black, 
+        unselectedItemColor: Colors.black, 
         selectedFontSize: 12,
         unselectedFontSize: 12,
         items: const [
@@ -682,7 +675,7 @@ class BottomNavigation extends StatelessWidget {
 }
 
 
-// Main function to run the app
+
 void main() {
   runApp(const MyApp());
 }
@@ -694,8 +687,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      // Home should probably be DailyCheckIn in a real app,
-      // but keeping the test harness simple:
+     
       home: WorkingHoursPage(),
     );
   }
