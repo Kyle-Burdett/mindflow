@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 
 class ActivityData {
   final DateTime date;
@@ -24,6 +25,10 @@ class _TrackScreenState extends State<TrackScreen> {
   final activityData = [
     ActivityData(DateTime(2025, 10, 1), 1.5, 2.0, 0.5),
     ActivityData(DateTime(2025, 10, 2), 0.8, 3.2, 1.0),
+    ActivityData(DateTime(2025, 10, 3), 2.0, 1.0, 0.0),
+    ActivityData(DateTime(2025, 10, 1), 1.5, 2.0, 0.5),
+    ActivityData(DateTime(2025, 10, 2), 0.8, 3.2, 1.0),
+    ActivityData(DateTime(2025, 10, 3), 2.0, 1.0, 0.0),
     ActivityData(DateTime(2025, 10, 3), 2.0, 1.0, 0.0),
   ];
 
@@ -128,7 +133,7 @@ class _TrackScreenState extends State<TrackScreen> {
                               if (index < 0 || index >= activityData.length) return const SizedBox.shrink();
                               final date = activityData[index].date;
                               return Text(
-                                'date',
+                                DateFormat.Md().format(date),
                                 style: const TextStyle(fontSize: 10),
                               );
                             },
