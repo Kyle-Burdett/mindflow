@@ -8,7 +8,7 @@
 .history
 .env
 
-.idea/
+*.idea/
 *.iml
 
 # Flutter repo-specific
