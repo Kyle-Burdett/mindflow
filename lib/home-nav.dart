@@ -35,6 +35,11 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
       activeIcon: Image.asset('assets/icons/resources-selected.png', height: 28),
       label: "Resources",
     ),
+    BottomNavigationBarItem(
+      icon: Image.asset('assets/icons/settings.png', height: 28),
+      activeIcon: Image.asset('assets/icons/settings-selected.png', height: 28),
+      label: "Resources",
+    ),
   ];
 
   // Placeholders until screens are developed
@@ -71,23 +76,20 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         ),
       ),
     ),
+    Center(
+      child: Text(
+        'Settings Placeholder',
+        style: TextStyle(
+          fontSize: 24,
+        ),
+      ),
+    ),
   ];
   
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              //Route to settings
-            },
-            icon: Image.asset('assets/icons/settings.png', width: 24),
-            iconSize: 16,
-          ),
-        ],
-      ),
       body: screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: bottomNavItems,
