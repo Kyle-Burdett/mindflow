@@ -1,11 +1,11 @@
-// Imports required for Flutter UI widgets and state management.
+
 import 'package:flutter/material.dart';
 
-// IMPORTANT: Import the settings_page.dart file and the UserData model
+
 import 'settings_page.dart';
 import 'working_hours_page.dart';
 
-// The main DailyCheckIn widget, which is a stateful widget to manage UI state.
+
 class DailyCheckIn extends StatefulWidget {
   final VoidCallback onComplete;
 
@@ -15,23 +15,20 @@ class DailyCheckIn extends StatefulWidget {
   State<DailyCheckIn> createState() => _DailyCheckInState();
 }
 
-// The state class for DailyCheckIn, holding all the data and UI logic.
+
 class _DailyCheckInState extends State<DailyCheckIn> {
-  // State variable to track the selected navigation bar item.
+ 
   int _selectedIndex = 0;
 
-  // Define the index for the Settings button (it's the 5th item, so index 4)
+
   static const int _settingsIndex = 4;
 
-  // --- Mock User Data for SettingsPage ---
-  // In a real app, you would fetch the current user's data from a service.
+ 
   final UserData _mockUser = UserData(
     name: 'Jane Doe',
     email: 'jane.doe@example.com',
   );
-  // ----------------------------------------
-
-  // Data model for the check-in form.
+ 
   final Map<String, dynamic> _checkInData = {
     'moodScore': 7.0,
     'energyScore': 7.0,
@@ -39,22 +36,21 @@ class _DailyCheckInState extends State<DailyCheckIn> {
     'productivityScore': 7.0,
     'notes': '',
     'selectedTags': <String>[],
-    // List of tasks, where each task is a Map<String, String> like
-    // {'name': 'Project 1', 'startTime': '10:00 AM', 'endTime': '01:00 PM'}
+   
     'workTasks': <Map<String, String>>[],
   };
 
-  // List of available tags for the UI.
+
   final List<String> availableTags = [
     "Focused", "Distracted", "Motivated", "Tired", "Productive", "Overwhelmed",
     "Calm", "Anxious", "Creative", "Blocked", "Collaborative", "Isolated",
     "Energetic", "Drained", "Satisfied", "Frustrated",
   ];
 
-  // The custom color from the hex code EF9C53.
+
   final Color customAccentColor = const Color(0xFFEF9C53);
 
-  // Function to handle toggling a tag on or off.
+  
   void _handleTagToggle(String tag) {
     setState(() {
       if (_checkInData['selectedTags'].contains(tag)) {
@@ -65,26 +61,26 @@ class _DailyCheckInState extends State<DailyCheckIn> {
     });
   }
 
-  // Function to handle form submission.
+
   void _handleSubmit() {
-    // This is where the data is saved.
+  
     debugPrint("Check-in data: $_checkInData");
     widget.onComplete();
   }
 
-  // Function to handle BottomNavigationBar item tap.
+ 
   void _onItemTapped(int index) {
     if (index == _settingsIndex) {
-      // Navigate to the SettingsPage
+     
       Navigator.push(
         context,
         MaterialPageRoute(
-          // Pass the mock user data to the SettingsPage
+         
           builder: (context) => SettingsPage(user: _mockUser),
         ),
       );
     } else {
-      // For all other tabs, update the selected index (simulating tab switching)
+   
       setState(() {
         _selectedIndex = index;
       });
@@ -92,14 +88,13 @@ class _DailyCheckInState extends State<DailyCheckIn> {
   }
 
 
-  // The main build method where the UI is constructed.
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // Scaffold background color
+
       backgroundColor: const Color(0xFFFFDBBB),
       appBar: AppBar(
-        // AppBar background color
+
         backgroundColor: const Color(0xFFFFDBBB),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -115,7 +110,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
 
-              // Mood and energy section.
+             
               _buildScoreCard(
                 title: 'How are you feeling?',
                 description: 'Rate your current state on a scale of 1-10',
@@ -160,7 +155,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
               ),
               const SizedBox(height: 16),
 
-              // Work hours section.
+            
               _buildCard(
                 title: 'Work Hours',
                 icon: Icons.access_time,
@@ -170,7 +165,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: () async {
-                        // Push to WorkingHoursPage and wait for a result (the updated tasks)
+                        
                         final List<Map<String, String>>? updatedTasks = await Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -178,7 +173,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                           ),
                         );
 
-                        // If data was returned, update the state
+                     
                         if (updatedTasks != null) {
                           setState(() {
                             _checkInData['workTasks'] = updatedTasks;
@@ -212,9 +207,9 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // Display task name
+                              
                                 Text(task['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                // Display time range
+                               
                                 Text('${task['startTime']} - ${task['endTime']}'),
                               ],
                             ),
@@ -227,13 +222,13 @@ class _DailyCheckInState extends State<DailyCheckIn> {
               ),
               const SizedBox(height: 16),
 
-              // Tags section.
+            
               _buildCard(
                 title: 'How would you describe today?',
                 description: 'Select tags that describe your workday',
                 content: Wrap(
-                  spacing: 8.0, // horizontal spacing
-                  runSpacing: 8.0, // vertical spacing
+                  spacing: 8.0, 
+                  runSpacing: 8.0, 
                   children: availableTags.map((tag) {
                     final isSelected = _checkInData['selectedTags'].contains(tag);
                     return ActionChip(
@@ -249,7 +244,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
               ),
               const SizedBox(height: 16),
 
-              // Notes section.
+          
               _buildCard(
                 title: 'Additional Notes',
                 description: 'Any thoughts or observations about your day?',
@@ -271,7 +266,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
               ),
               const SizedBox(height: 16),
 
-              // Cancel and save buttons.
+             
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -303,7 +298,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
               ),
               const SizedBox(height: 16),
 
-              // Daily Check-in Tips Section.
+            
               Card(
                 elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -317,7 +312,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      // A list of tips in bullet points
+                     
                       _buildTipPoint('Be honest with your rating - this data is for your benefit.'),
                       _buildTipPoint('Try to check in at the same time each day for consistency.'),
                       _buildTipPoint('Use the notes section to track patterns and triggers.'),
@@ -330,7 +325,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
           ),
         ),
       ),
-      // Bottom navigation bar
+   
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
@@ -339,7 +334,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
         backgroundColor: Colors.white,
         selectedFontSize: 12,
         unselectedFontSize: 12,
-        // *** MODIFIED: Use the new handler that checks for the settings index ***
+      
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
@@ -368,7 +363,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
   }
 
 
-  // Helper methods to build reusable UI components.
+  
 
   Widget _buildTipPoint(String text) {
     return Padding(
@@ -395,7 +390,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
     IconData? icon,
   }) {
     return Card(
-      elevation: 0, // Minimal elevation for a clean look.
+      elevation: 0, 
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -404,7 +399,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
           children: [
             Row(
               children: [
-                if (icon != null) Icon(icon, size: 20, color: customAccentColor), // Change icon color
+                if (icon != null) Icon(icon, size: 20, color: customAccentColor), 
                 if (icon != null) const SizedBox(width: 8),
                 Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ],
@@ -471,7 +466,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
           min: min,
           max: max,
           divisions: (max - min).toInt(),
-          // Change the active color of the slider.
+          
           activeColor: customAccentColor,
         ),
         Row(
