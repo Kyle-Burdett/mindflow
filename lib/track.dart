@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-
-class ActivityData {
-  final DateTime date;
-  final double runningHours;
-  final double codingHours;
-  final double readingHours;
-
-  ActivityData(this.date, this.runningHours, this.codingHours, this.readingHours);
-}
+import 'package:mindflow/models/track.dart';
 
 class TrackScreen extends StatefulWidget {
   const TrackScreen({super.key});
@@ -22,14 +14,52 @@ class _TrackScreenState extends State<TrackScreen> {
 
   String trackView = 'daily';
 
-  final activityData = [
-    ActivityData(DateTime(2025, 10, 1), 1.5, 2.0, 0.5),
-    ActivityData(DateTime(2025, 10, 2), 0.8, 3.2, 1.0),
-    ActivityData(DateTime(2025, 10, 3), 2.0, 1.0, 0.0),
-    ActivityData(DateTime(2025, 10, 1), 1.5, 2.0, 0.5),
-    ActivityData(DateTime(2025, 10, 2), 0.8, 3.2, 1.0),
-    ActivityData(DateTime(2025, 10, 3), 2.0, 1.0, 0.0),
-    ActivityData(DateTime(2025, 10, 3), 2.0, 1.0, 0.0),
+  final trackData = [
+    TrackData(
+      DateTime(2025, 10, 1),
+      {"Project 1": 4, "Meetings": 2, "Project 2": 3},
+      [
+        "Unexpected meetings", "Feeling good"
+      ],
+      2.5,
+      5
+    ),
+    TrackData(
+      DateTime(2025, 10, 2),
+      {"Project 1": 4, "Meetings": 2, "Project 2": 3},
+      [
+        "Urgent deadlines", "Unfocused"
+      ],
+      2.5,
+      5
+    ),
+    TrackData(
+      DateTime(2025, 10, 3),
+      {"Project 1": 5, "Meetings": 3, "Project 2": 2},
+      [
+        "emergency work", "Low energy"
+      ],
+      2.5,
+      5
+    ),
+    TrackData(
+      DateTime(2025, 10, 4),
+      {"Project 1": 7, "Meetings": 0.5, "Project 2": 1},
+      [
+        "Quiet", "Feeling good"
+      ],
+      2.5,
+      5
+    ),
+    TrackData(
+      DateTime(2025, 10, 5),
+      {"Project 1": 3, "Meetings": 1, "Project 2": 4},
+      [
+        "Unexpected meetings", "Feeling good"
+      ],
+      2.5,
+      5
+    ),
   ];
 
   @override
@@ -130,8 +160,8 @@ class _TrackScreenState extends State<TrackScreen> {
                             showTitles: true,
                             getTitlesWidget: (value, meta) {
                               final index = value.toInt();
-                              if (index < 0 || index >= activityData.length) return const SizedBox.shrink();
-                              final date = activityData[index].date;
+                              if (index < 0 || index >= trackData.length) return const SizedBox.shrink();
+                              final date = trackData[index].date;
                               return Text(
                                 DateFormat.Md().format(date),
                                 style: const TextStyle(fontSize: 10),
@@ -144,15 +174,15 @@ class _TrackScreenState extends State<TrackScreen> {
                         ),
                       ),
                       borderData: FlBorderData(show: false),
-                      barGroups: activityData.asMap().entries.map((entry) {
+                      barGroups: trackData.asMap().entries.map((entry) {
                         final index = entry.key;
-                        final d = entry.value;
+                        final data = entry.value;
 
                         return BarChartGroupData(
                           x: index,
                           barRods: [
                             BarChartRodData(
-                              toY: d.runningHours + d.codingHours + d.readingHours,
+                              toY: data.taskHours.values.fold(0, (a, b) => a + b),
                               rodStackItems: [
                                 BarChartRodStackItem(0, d.runningHours, Colors.orange),
                                 BarChartRodStackItem(d.runningHours, d.runningHours + d.codingHours, Colors.blue),
