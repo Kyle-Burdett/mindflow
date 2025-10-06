@@ -51,15 +51,6 @@ class _TrackScreenState extends State<TrackScreen> {
       2.5,
       5
     ),
-    TrackData(
-      DateTime(2025, 10, 5),
-      {"Project 1": 3, "Meetings": 1, "Project 2": 4},
-      [
-        "Unexpected meetings", "Feeling good"
-      ],
-      2.5,
-      5
-    ),
   ];
 
   @override
