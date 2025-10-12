@@ -4,5 +4,6 @@ class TrackData {
   final List<String> tags; // Will change to tag class object (List<Tag>)
   final double productivityScore;
   final double moodScore;
-  TrackData(this.date, this.taskHours, this.tags, this.productivityScore, this.moodScore);
+  final int taskSwitches;
+  TrackData(this.date, this.taskHours, this.tags, this.productivityScore, this.moodScore, this.taskSwitches);
 }
