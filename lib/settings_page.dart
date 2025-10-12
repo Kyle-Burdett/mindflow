@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
-
 
 const Color _kPrimaryColor = Color(0xFFDB863B);
 const Color _kBackgroundColor = Color(0xFFFFDBBB);
@@ -103,8 +101,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   late AppSettings _settings;
 
-  int _selectedIndex = 4;
-
   final List<Map<String, String>> _focusAreaOptions = const [
     {"id": "productivity", "label": "Improving Productivity"},
     {"id": "work-life-balance", "label": "Work/Life Balance"},
@@ -157,15 +153,6 @@ class _SettingsPageState extends State<SettingsPage> {
     print('Back button pressed');
 
   }
-
-  BottomNavigationBarItem _buildNavItem(
-      IconData icon, String label, Color color) {
-    return BottomNavigationBarItem(
-      icon: Icon(icon, color: color, size: 28.0),
-      label: label,
-    );
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +208,6 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
           ),
         ),
-        bottomNavigationBar: _buildCustomBottomNavigationBar(),
       ),
     );
   }
@@ -332,7 +318,7 @@ class _SettingsPageState extends State<SettingsPage> {
             padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
             child: Row(
               children: [
-                const Icon(LucideIcons.bell, size: 24, color: _kPrimaryColor),
+                const Icon(Icons.notifications, size: 24, color: _kPrimaryColor),
                 const SizedBox(width: 12),
                 const Text('Reminder Time',
                     style: TextStyle(fontWeight: FontWeight.w500)),
@@ -617,47 +603,6 @@ class _SettingsPageState extends State<SettingsPage> {
           Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
           Text(value, style: TextStyle(color: Colors.grey.shade600)),
         ],
-      ),
-    );
-  }
-
-  Widget _buildCustomBottomNavigationBar() {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: Color(0xFFE5E7EB), width: 1.0)),
-        color: Colors.white,
-      ),
-      child: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          _buildNavItem(LucideIcons.home, 'Home',
-              _selectedIndex == 0 ? _kPrimaryColor : Colors.black),
-          _buildNavItem(LucideIcons.lineChart, 'Track',
-              _selectedIndex == 1 ? _kPrimaryColor : Colors.black),
-          _buildNavItem(LucideIcons.lightbulb, 'Insights',
-              _selectedIndex == 2 ? _kPrimaryColor : Colors.black),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.article,
-                color: _selectedIndex == 3 ? _kPrimaryColor : Colors.black,
-                size: 28.0),
-            label: 'Resources',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: _kPrimaryColor, size: 28.0),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: _kPrimaryColor,
-        unselectedItemColor: Colors.black,
-        backgroundColor: Colors.white,
-        type: BottomNavigationBarType.fixed,
-        showUnselectedLabels: true,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-            print('Navigating to index $index');
-          });
-        },
       ),
     );
   }
