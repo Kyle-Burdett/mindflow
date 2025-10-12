@@ -122,3 +122,4 @@ app.*.symbols
 .idea/workspace.xml
 mindflow.iml
 mindflow.iml
+android/app/google-services.json

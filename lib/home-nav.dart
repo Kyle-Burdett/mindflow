@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindflow/track.dart';
 
 class MainHomeScreen extends StatefulWidget {
   const MainHomeScreen({super.key});
@@ -52,14 +53,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         ),
       ),
     ),
-    Center(
-      child: Text(
-        'Track Placeholder',
-        style: TextStyle(
-          fontSize: 24,
-        ),
-      ),
-    ),
+    TrackScreen(),
     Center(
       child: Text(
         'Insights Placeholder',
@@ -99,7 +93,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
             _currentIndex = value;
           });
         },
-        // Styling
+        // Bottom nav bar Styling
         showUnselectedLabels: true,
         selectedItemColor: Color(0xFFEF9C53),
         unselectedItemColor: Colors.black,
