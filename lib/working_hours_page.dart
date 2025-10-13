@@ -230,7 +230,6 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
           ),
         ],
       ),
-      bottomNavigationBar: const BottomNavigation(),
     );
   }
 }
@@ -616,76 +615,6 @@ class TimePicker extends StatelessWidget {
     return OutlinedButton(
       onPressed: () => _showTimePicker(context),
       child: Text(MaterialLocalizations.of(context).formatTimeOfDay(initialTime, alwaysUse24HourFormat: false)),
-    );
-  }
-}
-
-
-
-
-class BottomNavigation extends StatelessWidget {
-  const BottomNavigation({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-      ),
-      child: BottomNavigationBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Track',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lightbulb_outline),
-            label: 'Insights',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.article),
-            label: 'Resources',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-
-      home: WorkingHoursPage(),
     );
   }
 }

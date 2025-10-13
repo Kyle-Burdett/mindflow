@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 
 import 'settings_page.dart';
@@ -7,9 +8,8 @@ import 'working_hours_page.dart';
 
 
 class DailyCheckIn extends StatefulWidget {
-  final VoidCallback onComplete;
 
-  const DailyCheckIn({Key? key, required this.onComplete}) : super(key: key);
+  const DailyCheckIn({Key? key}) : super(key: key);
 
   @override
   State<DailyCheckIn> createState() => _DailyCheckInState();
@@ -63,7 +63,6 @@ class _DailyCheckInState extends State<DailyCheckIn> {
   void _handleSubmit() {
 
     debugPrint("Check-in data: $_checkInData");
-    widget.onComplete();
   }
 
 
@@ -73,7 +72,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
         context,
         MaterialPageRoute(
 
-          builder: (context) => SettingsPage(user: _mockUser),
+          builder: (context) => SettingsPage(),
         ),
       );
     } else {
@@ -96,7 +95,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
         backgroundColor: const Color(0xFFFFDBBB),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: widget.onComplete,
+          onPressed: () => context.pop(),
         ),
         title: const Text('Daily Check-in'),
         elevation: 0,
@@ -269,7 +268,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: widget.onComplete,
+                      onPressed: () => {},
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: BorderSide(color: customAccentColor, width: 2),
@@ -321,40 +320,6 @@ class _DailyCheckInState extends State<DailyCheckIn> {
             ],
           ),
         ),
-      ),
-      // Bottom navigation bar
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
-        selectedItemColor: customAccentColor,
-        unselectedItemColor: Colors.black,
-        backgroundColor: Colors.white,
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
-
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Track',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lightbulb_outline),
-            label: 'Insights',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.article),
-            label: 'Resources',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
       ),
     );
   }
