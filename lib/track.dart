@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/models/track.dart';
+import 'package:mindflow/view-models/track_view_model.dart';
+import 'package:provider/provider.dart';
 
 class TrackScreen extends StatefulWidget {
   const TrackScreen({super.key});
@@ -119,7 +122,9 @@ class _TrackScreenState extends State<TrackScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return ChangeNotifierProvider<TrackViewModel>(
+      create: (_) => locator<TrackViewModel>(),
+      child: SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFFFFF3E9),
         body: Padding(
@@ -509,6 +514,7 @@ class _TrackScreenState extends State<TrackScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 }
