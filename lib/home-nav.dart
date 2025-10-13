@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mindflow/homepage.dart';
+import 'package:mindflow/settings_page.dart';
 import 'package:mindflow/track.dart';
 
 class MainHomeScreen extends StatefulWidget {
@@ -45,14 +47,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
 
   // Placeholders until screens are developed
   List<Widget> screens = [
-    Center(
-      child: Text(
-        'Home Placeholder',
-        style: TextStyle(
-          fontSize: 24,
-        ),
-      ),
-    ),
+    Homepage(),
     TrackScreen(),
     Center(
       child: Text(
@@ -70,14 +65,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         ),
       ),
     ),
-    Center(
-      child: Text(
-        'Settings Placeholder',
-        style: TextStyle(
-          fontSize: 24,
-        ),
-      ),
-    ),
+    SettingsPage(),
   ];
   
 

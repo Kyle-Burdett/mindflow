@@ -90,9 +90,8 @@ class AppSettings {
 
 
 class SettingsPage extends StatefulWidget {
-  final UserData user;
 
-  const SettingsPage({Key? key, required this.user}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -100,6 +99,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   late AppSettings _settings;
+  UserData user = UserData(name: "Kyle", email: "BE.2023.F1Y5D3");
 
   final List<Map<String, String>> _focusAreaOptions = const [
     {"id": "productivity", "label": "Improving Productivity"},
@@ -116,8 +116,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
 
     _settings = AppSettings(
-      name: widget.user.name ?? "",
-      email: widget.user.email ?? "",
+      name: user.name ?? "",
+      email: user.email ?? "",
       plannedStartTime: const TimeOfDay(hour: 8, minute: 0),
       plannedEndTime: const TimeOfDay(hour: 13, minute: 0),
       dailyCheckInReminder: true,

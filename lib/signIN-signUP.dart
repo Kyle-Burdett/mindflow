@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
   runApp(const MindFlowApp());
@@ -62,7 +63,7 @@ class GetStartedPage extends StatelessWidget {
                     backgroundColor: const Color(0xFFB66623),
                     padding: const EdgeInsets.all(spacing * 3),
                   ),
-                  onPressed: () => Navigator.pushNamed(context, '/signin'),
+                  onPressed: () => context.push('/sign-in'),
                   child: const Text('Sign In'),
                 ),
               ),
@@ -73,7 +74,7 @@ class GetStartedPage extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.all(spacing * 3),
                   ),
-                  onPressed: () => Navigator.pushNamed(context, '/signup'),
+                  onPressed: () => context.push('/sign-up'),
                   child: const Text('Create Account'),
                 ),
               ),
@@ -142,7 +143,7 @@ class SignInPage extends StatelessWidget {
                   backgroundColor: const Color(0xFFB66623),
                   padding: const EdgeInsets.all(spacing * 3),
                 ),
-                onPressed: () {},
+                onPressed: () => context.go('/home'),
                 child: const Text('Sign In'),
               ),
             ),
@@ -152,7 +153,7 @@ class SignInPage extends StatelessWidget {
               children: [
                 const Text("Don't have an account? "),
                 GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, '/signup'),
+                  onTap: () => context.replace('/sign-up'),
                   child: const Text(
                     'Sign Up',
                     style: TextStyle(color: Color(0xFFB66623), fontWeight: FontWeight.bold),
@@ -162,7 +163,7 @@ class SignInPage extends StatelessWidget {
             ),
             const SizedBox(height: spacing * 3),
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text('← Back to welcome'),
             ),
           ],
@@ -243,7 +244,7 @@ class SignUpPage extends StatelessWidget {
               children: [
                 const Text("Already have an account? "),
                 GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, '/signin'),
+                  onTap: () => context.replace('/sign-in'),
                   child: const Text(
                     'Sign In',
                     style: TextStyle(color: Color(0xFFB66623), fontWeight: FontWeight.bold),
@@ -253,7 +254,7 @@ class SignUpPage extends StatelessWidget {
             ),
             const SizedBox(height: spacing * 3),
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text('← Back to welcome'),
             ),
           ],

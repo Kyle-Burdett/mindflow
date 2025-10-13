@@ -1,6 +1,7 @@
 // lib/test.dart
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 // --- App Colors and Utility Classes (Kept as is) ---
 class _AppColors {
@@ -96,20 +97,19 @@ class _Metric extends StatelessWidget {
   }
 }
 
-// Main Screen Widget (formerly HomePage, now DailyCheckIn)
-class DailyCheckIn extends StatefulWidget {
+// Main Screen Widget
+class Homepage extends StatefulWidget {
   // Added onComplete to match the original main.dart usage
-  final VoidCallback onComplete;
 
-  // Renamed from HomePage to DailyCheckIn
-  const DailyCheckIn({super.key, required this.onComplete});
+  // Renamed from HomePage to Homepage
+  const Homepage({super.key});
 
   @override
-  State<DailyCheckIn> createState() => _DailyCheckInState();
+  State<Homepage> createState() => _HomepageState();
 }
 
 // State for the Main Screen Widget (formerly _HomePageState)
-class _DailyCheckInState extends State<DailyCheckIn> {
+class _HomepageState extends State<Homepage> {
   DateTime today = DateTime.now();
   int weekOffset = 0; // use arrows to move this
   late DateTime selected;
@@ -252,8 +252,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                     width: double.infinity,
                     child: FilledButton(
                       onPressed: () {
-                        // Call the onComplete callback
-                        widget.onComplete();
+                        context.push('/check-in');
                       },
                       style: FilledButton.styleFrom(
                         backgroundColor: _AppColors.accent,
@@ -326,39 +325,6 @@ class _DailyCheckInState extends State<DailyCheckIn> {
       ),
 
       // Bottom nav (icons matched to screenshot)
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: _AppColors.card,
-        indicatorColor: _AppColors.accentSoft,
-        selectedIndex: currentTab,
-        onDestinationSelected: (i) => setState(() => currentTab = i),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_filled, color: _AppColors.accent),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.stacked_line_chart),
-            selectedIcon: Icon(Icons.stacked_line_chart, color: _AppColors.accent),
-            label: 'Track',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.lightbulb_outline),
-            selectedIcon: Icon(Icons.lightbulb, color: _AppColors.accent),
-            label: 'Insights',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.book_outlined),
-            selectedIcon: Icon(Icons.book, color: _AppColors.accent),
-            label: 'Resources',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings, color: _AppColors.accent),
-            label: 'Settings',
-          ),
-        ],
-      ),
     ); // <-- close Scaffold
   }
 }

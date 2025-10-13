@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Simulating app loading until we implement everything else
     await Future.delayed(const Duration(seconds: 2));
     if (context.mounted) {
-      context.go('/home');
+      context.go('/get-started');
     }
   }
 
