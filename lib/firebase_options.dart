@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBdoWrpFt7Aa81HBBOQYA-hw7gBYYY2d0o',
-    appId: '1:826569933105:android:a4bfd1cf7607679ac53010',
+    appId: '1:826569933105:android:a399254371aa8c5ec53010',
     messagingSenderId: '826569933105',
     projectId: 'mindflow-a55fe',
     storageBucket: 'mindflow-a55fe.firebasestorage.app',
@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'mindflow-a55fe.firebasestorage.app',
     measurementId: 'G-BY58SL0F6B',
   );
+
 }

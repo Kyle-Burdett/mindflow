@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
 
 void main() {
   runApp(const MindFlowApp());
@@ -234,7 +235,9 @@ class SignUpPage extends StatelessWidget {
                   backgroundColor: const Color(0xFFB66623),
                   padding: const EdgeInsets.all(spacing * 3),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  UserViewModel().addUser("firestoretest2@gmail.com", "Firestore test 2", DateTime.now(), DateTime.now(), true);
+                },
                 child: const Text('Create Account'),
               ),
             ),
