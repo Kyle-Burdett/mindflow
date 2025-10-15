@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ResourcesPage extends StatefulWidget {
@@ -260,8 +259,8 @@ class _ResourcesPageState extends State<ResourcesPage> {
                               ),
                               child: Icon(
                                 resource["type"] == "video"
-                                    ? FontAwesomeIcons.video
-                                    : FontAwesomeIcons.fileAlt,
+                                    ? Icons.video_camera_back_outlined
+                                    : Icons.file_copy_outlined,
                                 color: Colors.white,
                                 size: 20,
                               ),
@@ -331,7 +330,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              FontAwesomeIcons.solidStar,
+                              Icons.star,
                               color: primaryColor,
                               size: 48,
                             ),
