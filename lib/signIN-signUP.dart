@@ -257,7 +257,7 @@ class SignUpPage extends StatelessWidget {
             ),
             const SizedBox(height: spacing * 3),
             TextButton(
-              onPressed: () => context.pop(),
+              onPressed: () => UserViewModel().fetchUserDetails('xJJ0wVdZY9pKxNQ08xiQ'),
               child: const Text('← Back to welcome'),
             ),
           ],

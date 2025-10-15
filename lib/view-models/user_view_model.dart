@@ -1,12 +1,10 @@
+import 'package:mindflow/models/user.dart';
 import 'package:mindflow/repositories/user_repository.dart';
 
 class UserViewModel {
-  String name = '';
-  String email = '';
-  DateTime startTime = DateTime.now();
-  DateTime endTime = DateTime.now();
-  bool reminder = false;
 
+  UserDetails? user;
+  
   UserRepository _userRepository = UserRepository();
 
   Future<void> addUser(String email, String name, DateTime startTime, DateTime endTime, bool reminder) async {
@@ -15,6 +13,15 @@ class UserViewModel {
       print("Add user success!");
     } else {
       print("Add user Failed!");
+    }
+  }
+
+  Future<void> fetchUserDetails(String userId) async {
+    UserDetails? userDetails = await _userRepository.fetchUserDetails(userId);
+    if (userDetails != null) {
+      user = userDetails;
+    } else {
+      print("Fetch user Failed!");
     }
   }
 

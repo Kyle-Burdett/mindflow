@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mindflow/models/user.dart';
 
 class UserRepository {
   Future<bool> addUser(String email, String name, DateTime startTime, DateTime endTime, bool reminder) async {
@@ -15,5 +16,11 @@ class UserRepository {
       return false;
     }
     return true;
+  }
+
+  Future<UserDetails?> fetchUserDetails(String userId) async {
+      final document = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final userDetails = UserDetails.fromDoc(document);
+      return userDetails;
   }
 }
