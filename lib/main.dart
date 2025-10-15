@@ -1,12 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/daily_check_in.dart';
+import 'package:mindflow/firebase_options.dart';
 import 'package:mindflow/home-nav.dart';
 import 'package:mindflow/signIN-signUP.dart';
 import 'package:mindflow/splash.dart';
 import 'package:mindflow/working_hours_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 

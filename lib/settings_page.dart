@@ -224,48 +224,37 @@ class _SettingsPageState extends State<SettingsPage> {
         children: [
 
           Expanded(
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: _handleBack,
-                ),
-                const Spacer(),
-
-                const Center(
-                  child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Settings',
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
-                      Text(
-                        'Customize your MindFlow wellness experience',
-                        style: TextStyle(color: Colors.grey, fontSize: 14),
-                      ),
-                    ],
+            child: const Center(
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Settings',
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
                   ),
-                ),
-
-                const Spacer(),
-              ],
+                  Text(
+                    'Customize your MindFlow wellness experience',
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ),
 
-          ElevatedButton(
-            onPressed: _handleSave,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _kPrimaryColor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            ),
-            child: const Text('Save Changes'),
-          ),
+          // ElevatedButton(
+          //   onPressed: _handleSave,
+          //   style: ElevatedButton.styleFrom(
+          //     backgroundColor: _kPrimaryColor,
+          //     foregroundColor: Colors.white,
+          //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          //   ),
+          //   child: const Text('Save Changes'),
+          // ),
         ],
       ),
     );
