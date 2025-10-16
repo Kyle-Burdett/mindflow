@@ -42,4 +42,16 @@ class UserDetails {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'email': email,
+      'startTime': startTime ?? FieldValue.serverTimestamp(),
+      'endTime': endTime ?? FieldValue.serverTimestamp(),
+      'productivity': productivity,
+      'balance': balance,
+      'reminder': reminder,
+      'reminderTime': reminderTime ?? FieldValue.serverTimestamp(),
+    };
+  }
 }
