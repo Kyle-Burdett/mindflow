@@ -43,4 +43,3 @@ flutter:
     - family: quicksand
       fonts:
         - asset: assets/fonts/quicksand-variable.ttf
-
