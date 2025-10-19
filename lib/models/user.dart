@@ -1,20 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserDetails {
+class UserModel {
   String? id;
   String? name;
   String? email;
-  Timestamp? startTime;
-  Timestamp? endTime;
+  DateTime? startTime;
+  DateTime? endTime;
   String? password;
   bool? productivity;
   bool? balance;
   bool? reminder;
-  Timestamp? reminderTime;
+  DateTime? reminderTime;
   
   int? totalHoursWorked;
 
-  UserDetails(
+  UserModel(
       {this.id,
       this.balance,
       this.email,
@@ -27,18 +27,18 @@ class UserDetails {
       this.startTime,
       this.totalHoursWorked});
 
-  factory UserDetails.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory UserModel.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
-    return UserDetails(
+    return UserModel(
       id: doc.id,
       name: data['name'] ?? '',
       email: data['email'] ?? '',
-      startTime: (data['startTime'] as Timestamp?),
-      endTime: (data['startTime'] as Timestamp?),
+      startTime: (data['startTime'] as DateTime?),
+      endTime: (data['startTime'] as DateTime?),
       productivity: data['productivity'] as bool?,
       balance: data['balance'] as bool?,
       reminder: data['reminder'] as bool?,
-      reminderTime: (data['reminderTime'] as Timestamp?),
+      reminderTime: (data['reminderTime'] as DateTime?),
     );
   }
 

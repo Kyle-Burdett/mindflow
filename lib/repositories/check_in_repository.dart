@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mindflow/models/check-in.dart';
 
 class CheckInRepository {
+
+  DocumentSnapshot? _lastCheckIn;
+
   Future<bool> addCheckIn(String userId, DailyCheckInModel checkIn) async {
     try {
       await FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').doc(checkIn.date.toString())
@@ -17,5 +20,25 @@ class CheckInRepository {
       final document = await FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').doc(checkInId).get();
       final checkIn = DailyCheckInModel.fromDoc(document);
       return checkIn;
+  }
+
+  Future<List<DailyCheckInModel>?> fetchAllCheckInDetails(String userId, {int limit = 7}) async {
+      
+      Query query = FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').orderBy("date").limit(limit);
+
+      if (_lastCheckIn != null) {
+        query = query.startAfterDocument(_lastCheckIn!);
+      }
+
+      QuerySnapshot<Map<String, dynamic>>? documentData = (await query.get()) as QuerySnapshot<Map<String, dynamic>>?;
+      
+      if (documentData != null) {
+        if (documentData.docs.isNotEmpty) {
+          _lastCheckIn = documentData.docs.last;
+        }
+
+        return documentData.docs.map((doc) => DailyCheckInModel.fromDoc(doc)).toList();
+      }
+      return null;
   }
 }

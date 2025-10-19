@@ -1,35 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
-
-void main() {
-  runApp(const MindFlowApp());
-}
-
-class MindFlowApp extends StatelessWidget {
-  const MindFlowApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MindFlow',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: const Color(0xFFB66623),
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: const Color(0xFFB66623),
-          secondary: const Color(0xFFB66623),
-        ),
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const GetStartedPage(),
-        '/signin': (context) => const SignInPage(),
-        '/signup': (context) => const SignUpPage(),
-      },
-    );
-  }
-}
+import 'package:provider/provider.dart';
 
 const double spacing = 4.0;
 
@@ -101,7 +74,9 @@ class SignInPage extends StatelessWidget {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
 
-    return Scaffold(
+    return ChangeNotifierProvider<UserViewModel>(
+      create: (_) => locator<UserViewModel>(),
+      child: Scaffold(
       backgroundColor: const Color(0xFFFFF1E6),
       body: Padding(
         padding: const EdgeInsets.all(spacing * 8),
@@ -144,7 +119,9 @@ class SignInPage extends StatelessWidget {
                   backgroundColor: const Color(0xFFB66623),
                   padding: const EdgeInsets.all(spacing * 3),
                 ),
-                onPressed: () => context.go('/home'),
+                onPressed: () {
+                  locator<UserViewModel>().signIn(context, emailController.text, passwordController.text);
+                },
                 child: const Text('Sign In'),
               ),
             ),
@@ -170,7 +147,7 @@ class SignInPage extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }
 
@@ -184,7 +161,9 @@ class SignUpPage extends StatelessWidget {
     final passwordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
 
-    return Scaffold(
+    return ChangeNotifierProvider<UserViewModel>(
+      create: (_) => locator<UserViewModel>(), 
+      child: Scaffold(
       backgroundColor: const Color(0xFFFFF1E6),
       body: Padding(
         padding: const EdgeInsets.all(spacing * 8),
@@ -201,6 +180,7 @@ class SignUpPage extends StatelessWidget {
             const SizedBox(height: spacing * 6),
             TextField(
               controller: emailController,
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.email_outlined, color: Color(0xFFB66623)),
                 labelText: 'Email',
@@ -236,7 +216,7 @@ class SignUpPage extends StatelessWidget {
                   padding: const EdgeInsets.all(spacing * 3),
                 ),
                 onPressed: () {
-                  UserViewModel().addUser("firestoretest2@gmail.com", "Firestore test 2", DateTime.now(), DateTime.now(), true);
+                  locator<UserViewModel>().signUp(context, emailController.text, passwordController.text);
                 },
                 child: const Text('Create Account'),
               ),
@@ -257,12 +237,12 @@ class SignUpPage extends StatelessWidget {
             ),
             const SizedBox(height: spacing * 3),
             TextButton(
-              onPressed: () => UserViewModel().fetchUserDetails('Gdh8RKMDRHxmKT1pRxE4'),
+              onPressed: () => context.pop(),
               child: const Text('← Back to welcome'),
             ),
           ],
         ),
       ),
-    );
+    ));
   }
 }

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/daily_check_in.dart';
 import 'package:mindflow/firebase_options.dart';
 import 'package:mindflow/home-nav.dart';
@@ -13,6 +14,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  setupLocator();
   runApp(MyApp());
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mindflow/homepage.dart';
+import 'package:mindflow/resource_page.dart';
 import 'package:mindflow/settings_page.dart';
 import 'package:mindflow/track.dart';
 
@@ -57,14 +58,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         ),
       ),
     ),
-    Center(
-      child: Text(
-        'Resources Placeholder',
-        style: TextStyle(
-          fontSize: 24,
-        ),
-      ),
-    ),
+    ResourcesPage(),
     SettingsPage(),
   ];
   

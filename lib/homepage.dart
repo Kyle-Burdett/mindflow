@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
 // --- App Colors and Utility Classes (Kept as is) ---
 class _AppColors {
@@ -159,7 +162,9 @@ class _HomepageState extends State<Homepage> {
     final start = _startOfWeek(today.add(Duration(days: 7 * weekOffset)));
     final weekDays = List.generate(7, (i) => start.add(Duration(days: i)));
 
-    return Scaffold(
+    return ChangeNotifierProvider<UserViewModel>(
+      create: (_) => locator<UserViewModel>(),
+      child: Scaffold(
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -170,7 +175,7 @@ class _HomepageState extends State<Homepage> {
               children: [
                 const SizedBox(height: 4),
                 Text(
-                  'Good morning, Alex!',
+                  'Welcome back, ${locator<UserViewModel>().user.name}!',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: _AppColors.textDark,
@@ -323,8 +328,6 @@ class _HomepageState extends State<Homepage> {
           ],
         ),
       ),
-
-      // Bottom nav (icons matched to screenshot)
-    ); // <-- close Scaffold
+    ));
   }
 }
