@@ -1,0 +1,141 @@
+import 'package:flutter/material.dart';
+
+class WellnessGoalsScreen extends StatefulWidget {
+  @override
+  _WellnessGoalsScreenState createState() => _WellnessGoalsScreenState();
+}
+
+class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
+  bool reduceBurnout = false;
+  bool improveBalance = false;
+  bool monitorProductivity = false;
+  bool trackEnergyLevels = false;
+  bool reduceStress = false;
+  bool buildWorkHabits = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFFFF0E1),
+      body: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Text(
+        "Your wellness goals",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ),
+
+      SizedBox(height: 10),
+
+            Center(
+              child: Text(
+                "What would you like to focus on?",
+                style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
+              ),
+            SizedBox(height: 20),
+
+      LinearProgressIndicator(
+              value: 0.8,
+              color: Color(0xFFEF9C53),
+              backgroundColor: Colors.grey[200],
+            ),
+            SizedBox(height: 30),
+
+
+
+       Text(
+              "Select your primary goals(Select all that apply) ",
+              style: TextStyle(fontSize: 18, color: Colors.black),
+            ),
+
+        SizedBox(height: 30),
+
+
+            buildToggle("Reduce Burnout", reduceBurnout, (val) {
+              setState(() => reduceBurnout = val);
+            }),
+            buildToggle("Improve work-life balance", improveBalance, (val) {
+              setState(() => improveBalance = val);
+            }),
+            buildToggle("Monitor productivity patterns", monitorProductivity, (val) {
+              setState(() => monitorProductivity = val);
+            }),
+            buildToggle("Track energy levels", trackEnergyLevels, (val) {
+              setState(() => trackEnergyLevels = val);
+            }),
+            buildToggle("Reduce stress and anxiety", reduceStress, (val) {
+              setState(() => reduceStress = val);
+            }),
+            buildToggle("Build better work habits", buildWorkHabits, (val) {
+              setState(() => buildWorkHabits = val);
+            }),
+            SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Color(0xFFEF9C53),
+                    backgroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: Text("Back", style: TextStyle(fontSize: 16)),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/planning');  // Correct navigation here
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFEF9C53),
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: Text("Continue",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white)),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildToggle(String label, bool value, ValueChanged<bool> onChanged) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: Color(0xFFEF9C53),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

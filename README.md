@@ -1,6 +1,6 @@
-# mindflow
+# mindflow_app
 
-A new Flutter project.
+a wellness application
 
 ## Getting Started
 
