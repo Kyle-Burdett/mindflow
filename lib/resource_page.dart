@@ -364,39 +364,6 @@ class _ResourcesPageState extends State<ResourcesPage> {
           ],
         ),
       ),
-
-
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: primaryColor,
-        unselectedItemColor: Colors.grey[600],
-        currentIndex: 3,
-        onTap: (index) {
-
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.show_chart_outlined),
-            label: "Track",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lightbulb_outline),
-            label: "Insights",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.folder_copy_outlined),
-            label: "Resources",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            label: "Settings",
-          ),
-        ],
-      ),
     );
   }
 }

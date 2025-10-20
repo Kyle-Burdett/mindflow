@@ -268,7 +268,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => {},
+                      onPressed: () => context.pop(),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: BorderSide(color: customAccentColor, width: 2),

@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
 
 // --- App Colors and Utility Classes (Kept as is) ---
 class _AppColors {
@@ -160,171 +162,169 @@ class _HomepageState extends State<Homepage> {
     final weekDays = List.generate(7, (i) => start.add(Duration(days: i)));
 
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          children: [
-            // Greeting
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+    body: SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        children: [
+          // Greeting
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 4),
+              Text(
+                'Welcome back, Kyle!',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: _AppColors.textDark,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '${_weekdayLong(today.weekday)}, ${_monthName(today.month)} ${today.day}, ${today.year}',
+                style: const TextStyle(color: _AppColors.textMid),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+    
+          // Week strip
+          Container(
+            decoration: BoxDecoration(
+              color: _AppColors.card,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+            child: Column(
               children: [
-                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+                      onPressed: () => setState(() => weekOffset--),
+                    ),
+                    const Spacer(),
+                    const Text('Today',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                      onPressed: () => setState(() => weekOffset++),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: weekDays.map((d) {
+                    final isSelected = _isSameDay(d, selected);
+                    return _DayPill(
+                      labelTop: _weekdayNameShort(d.weekday),
+                      labelBottom: '${d.day}',
+                      selected: isSelected,
+                      onTap: () => setState(() => selected = d),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+    
+          const SizedBox(height: 18),
+    
+          // Analytics for date
+          _Card(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  'Good morning, Alex!',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  'Analytics for ${_two(selected.day)}/${_two(selected.month)}/${selected.year}',
+                  style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     color: _AppColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  '${_weekdayLong(today.weekday)}, ${_monthName(today.month)} ${today.day}, ${today.year}',
-                  style: const TextStyle(color: _AppColors.textMid),
+                const SizedBox(height: 12),
+                const Text(
+                  'No wellness data recorded for this date',
+                  style: TextStyle(color: _AppColors.textMid),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () {
+                      context.push('/check-in');
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: _AppColors.accent,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text("Add Today's Check-in"),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-
-            // Week strip
-            Container(
-              decoration: BoxDecoration(
-                color: _AppColors.card,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-                        onPressed: () => setState(() => weekOffset--),
-                      ),
-                      const Spacer(),
-                      const Text('Today',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600)),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.arrow_forward_ios, size: 18),
-                        onPressed: () => setState(() => weekOffset++),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: weekDays.map((d) {
-                      final isSelected = _isSameDay(d, selected);
-                      return _DayPill(
-                        labelTop: _weekdayNameShort(d.weekday),
-                        labelBottom: '${d.day}',
-                        selected: isSelected,
-                        onTap: () => setState(() => selected = d),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            // Analytics for date
-            _Card(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Analytics for ${_two(selected.day)}/${_two(selected.month)}/${selected.year}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: _AppColors.textDark,
+          ),
+    
+          const SizedBox(height: 18),
+    
+          // This Week's Analytics
+          _Card(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      "This Week's Analytics",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: _AppColors.textDark),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'No wellness data recorded for this date',
-                    style: TextStyle(color: _AppColors.textMid),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: () {
-                        context.push('/check-in');
-                      },
-                      style: FilledButton.styleFrom(
-                        backgroundColor: _AppColors.accent,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text("Add Today's Check-in"),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            // This Week's Analytics
-            _Card(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 8),
-                      child: Text(
-                        "This Week's Analytics",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: _AppColors.textDark),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: const [
-                      _Metric(icon: Icons.favorite_border, value: '7', label: 'Avg Stress'),
-                      _Metric(icon: Icons.adjust, value: '7', label: 'Avg Productivity'),
-                      _Metric(icon: Icons.access_time, value: '7', label: 'Total Hours'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () {
-                  // TODO: navigate to tips
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Open wellness tips")),
-                  );
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: _AppColors.accent,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text('Wellness Tips'),
-              ),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: const [
+                    _Metric(icon: Icons.favorite_border, value: '7', label: 'Avg Stress'),
+                    _Metric(icon: Icons.adjust, value: '7', label: 'Avg Productivity'),
+                    _Metric(icon: Icons.access_time, value: '7', label: 'Total Hours'),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+    
+          const SizedBox(height: 20),
+    
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () {
+                // TODO: navigate to tips
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Open wellness tips")),
+                );
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: _AppColors.accent,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Wellness Tips'),
+            ),
+          ),
+        ],
       ),
-
-      // Bottom nav (icons matched to screenshot)
-    ); // <-- close Scaffold
+    ),
+        );
   }
 }

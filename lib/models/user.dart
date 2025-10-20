@@ -1,23 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserDetails {
+class UserModel {
   String? id;
   String? name;
-  String? email;
-  Timestamp? startTime;
-  Timestamp? endTime;
+  DateTime? startTime;
+  DateTime? endTime;
   String? password;
   bool? productivity;
   bool? balance;
   bool? reminder;
-  Timestamp? reminderTime;
+  DateTime? reminderTime;
   
   int? totalHoursWorked;
 
-  UserDetails(
+  UserModel(
       {this.id,
       this.balance,
-      this.email,
       this.endTime,
       this.name,
       this.password,
@@ -27,19 +25,29 @@ class UserDetails {
       this.startTime,
       this.totalHoursWorked});
 
-  factory UserDetails.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory UserModel.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
-    return UserDetails(
+    return UserModel(
       id: doc.id,
       name: data['name'] ?? '',
-      email: data['email'] ?? '',
-      startTime: (data['startTime'] as Timestamp?),
-      endTime: (data['startTime'] as Timestamp?),
+      startTime: (data['startTime'] as Timestamp).toDate(),
+      endTime: (data['startTime'] as Timestamp).toDate(),
       productivity: data['productivity'] as bool?,
       balance: data['balance'] as bool?,
       reminder: data['reminder'] as bool?,
-      reminderTime: (data['reminderTime'] as Timestamp?),
+      reminderTime: (data['reminderTime'] as Timestamp).toDate(),
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'startTime': Timestamp.fromDate(startTime!),
+      'endTime': Timestamp.fromDate(endTime!),
+      'productivity': productivity,
+      'balance': balance,
+      'reminder': reminder,
+      'reminderTime': reminderTime != null ? Timestamp.fromDate(reminderTime!) : FieldValue.serverTimestamp(),
+    };
+  }
 }

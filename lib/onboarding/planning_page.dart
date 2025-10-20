@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
 class PlanningScreen extends StatefulWidget {
   @override
@@ -17,6 +21,22 @@ class _PlanningScreenState extends State<PlanningScreen> {
     return picked;
   }
 
+  DateTime getDateTime(TimeOfDay time) {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, time.hour, time.minute);
+  }
+
+  @override
+  void initState() {
+    if (locator<UserViewModel>().user.startTime != null) {
+      _startTime = TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!);
+    }
+    if (locator<UserViewModel>().user.endTime != null) {
+      _startTime = TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!);
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isValidTimeRange() {
@@ -25,7 +45,10 @@ class _PlanningScreenState extends State<PlanningScreen> {
       return endMinutes > startMinutes;
     }
 
-    return Scaffold(
+    return ChangeNotifierProvider<UserViewModel>(
+      create: (_) => locator<UserViewModel>(),
+      child: Consumer<UserViewModel>(
+      builder: (context, model, child) => Scaffold(
       backgroundColor: Color(0xFFFFF0E1),
       body: SafeArea(
         child: Padding(
@@ -122,7 +145,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      context.pop();
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Color(0xFFEF9C53),
@@ -135,11 +158,10 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   ElevatedButton(
                     onPressed: isValidTimeRange()
                         ? () {
-                      // Put your finish logic here or navigate somewhere else
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Planning finished!')),
-                      );
-                    }
+                          model.user.startTime = getDateTime(_startTime);
+                          model.user.endTime = getDateTime(_endTime);
+                          model.onboardUser(context);
+                        }
                         : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFEF9C53),
@@ -157,6 +179,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
           ),
         ),
       ),
-    );
+    )));
   }
 }

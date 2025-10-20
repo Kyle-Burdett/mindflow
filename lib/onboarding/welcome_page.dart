@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class WelcomeScreen extends StatelessWidget {
   @override
@@ -79,7 +80,7 @@ class WelcomeScreen extends StatelessWidget {
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/tellus');
+                      context.push('/onboarding/tell-us');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFEF9C53),
