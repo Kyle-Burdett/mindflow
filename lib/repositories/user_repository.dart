@@ -4,7 +4,7 @@ import 'package:mindflow/models/user.dart';
 class UserRepository {
   Future<bool> addUser(UserModel user) async {
     try {
-      await FirebaseFirestore.instance.collection('users').add(user.toMap());
+      await FirebaseFirestore.instance.collection('users').doc(user.id).set(user.toMap());
     } catch (e) {
       print("Cannot add user: $e");
       return false;

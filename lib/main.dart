@@ -5,6 +5,10 @@ import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/daily_check_in.dart';
 import 'package:mindflow/firebase_options.dart';
 import 'package:mindflow/home-nav.dart';
+import 'package:mindflow/onboarding/about_you_page.dart';
+import 'package:mindflow/onboarding/planning_page.dart';
+import 'package:mindflow/onboarding/welcome_page.dart';
+import 'package:mindflow/onboarding/wellness_goals_page.dart';
 import 'package:mindflow/signIN-signUP.dart';
 import 'package:mindflow/splash.dart';
 import 'package:mindflow/working_hours_page.dart';
@@ -51,6 +55,22 @@ class MyApp extends StatelessWidget {
       GoRoute(
         path: '/check-in-hours',
         builder: (context, state) => const WorkingHoursPage(),
+      ),
+      GoRoute(
+        path: '/onboarding/welcome',
+        builder: (context, state) => WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/tell-us',
+        builder: (context, state) => TellUsScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/goals',
+        builder: (context, state) => WellnessGoalsScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/planning',
+        builder: (context, state) => PlanningScreen(),
       ),
     ],
   );

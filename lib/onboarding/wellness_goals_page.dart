@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
 class WellnessGoalsScreen extends StatefulWidget {
   @override
@@ -15,7 +19,10 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ChangeNotifierProvider<UserViewModel>(
+      create: (_) => locator<UserViewModel>(),
+      child: Consumer<UserViewModel>(
+      builder: (context, model, child) => Scaffold(
       backgroundColor: Color(0xFFFFF0E1),
       body: Padding(
         padding: EdgeInsets.all(20),
@@ -76,16 +83,13 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
             buildToggle("Reduce stress and anxiety", reduceStress, (val) {
               setState(() => reduceStress = val);
             }),
-            buildToggle("Build better work habits", buildWorkHabits, (val) {
-              setState(() => buildWorkHabits = val);
-            }),
             SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    context.pop();
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Color(0xFFEF9C53),
@@ -97,7 +101,9 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/planning');  // Correct navigation here
+                    model.user.productivity = monitorProductivity;
+                    model.user.balance = improveBalance;
+                    context.push('/onboarding/planning');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFEF9C53),
@@ -114,7 +120,7 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
           ],
         ),
       ),
-    );
+    )));
   }
 
   Widget buildToggle(String label, bool value, ValueChanged<bool> onChanged) {
@@ -125,7 +131,7 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: Color(0xFFEF9C53),
+            activeThumbColor: Color(0xFFEF9C53),
           ),
           SizedBox(width: 10),
           Expanded(

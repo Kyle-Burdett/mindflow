@@ -6,7 +6,7 @@ class CheckInViewModel extends ChangeNotifier {
 
   List<DailyCheckInModel> dailyCheckInList = [];
   DailyCheckInModel? currentDailyCheckIn;
-  String userId = "Gdh8RKMDRHxmKT1pRxE4";
+  String userId = "";
   int checkInLimit = 7;
   bool _hasMore = true;
 

@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UserModel {
   String? id;
   String? name;
-  String? email;
   DateTime? startTime;
   DateTime? endTime;
   String? password;
@@ -17,7 +16,6 @@ class UserModel {
   UserModel(
       {this.id,
       this.balance,
-      this.email,
       this.endTime,
       this.name,
       this.password,
@@ -32,26 +30,24 @@ class UserModel {
     return UserModel(
       id: doc.id,
       name: data['name'] ?? '',
-      email: data['email'] ?? '',
-      startTime: (data['startTime'] as DateTime?),
-      endTime: (data['startTime'] as DateTime?),
+      startTime: (data['startTime'] as Timestamp).toDate(),
+      endTime: (data['startTime'] as Timestamp).toDate(),
       productivity: data['productivity'] as bool?,
       balance: data['balance'] as bool?,
       reminder: data['reminder'] as bool?,
-      reminderTime: (data['reminderTime'] as DateTime?),
+      reminderTime: (data['reminderTime'] as Timestamp).toDate(),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'email': email,
-      'startTime': startTime ?? FieldValue.serverTimestamp(),
-      'endTime': endTime ?? FieldValue.serverTimestamp(),
+      'startTime': Timestamp.fromDate(startTime!),
+      'endTime': Timestamp.fromDate(endTime!),
       'productivity': productivity,
       'balance': balance,
       'reminder': reminder,
-      'reminderTime': reminderTime ?? FieldValue.serverTimestamp(),
+      'reminderTime': reminderTime != null ? Timestamp.fromDate(reminderTime!) : FieldValue.serverTimestamp(),
     };
   }
 }

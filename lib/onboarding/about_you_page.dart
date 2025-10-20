@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
 class TellUsScreen extends StatefulWidget {
   @override
@@ -27,7 +31,10 @@ class _TellUsScreenState extends State<TellUsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ChangeNotifierProvider<UserViewModel>(
+      create: (_) => locator<UserViewModel>(),
+      child: Consumer<UserViewModel>(
+      builder: (context, model, child) => Scaffold(
       backgroundColor: Color(0xFFFFF0E1),
       body: Padding(
         padding: EdgeInsets.all(20),
@@ -83,7 +90,7 @@ class _TellUsScreenState extends State<TellUsScreen> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    context.pop();
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Color(0xFFEF9C53),
@@ -96,7 +103,8 @@ class _TellUsScreenState extends State<TellUsScreen> {
                 ElevatedButton(
                   onPressed: _isNameEntered
                       ? () {
-                    Navigator.pushNamed(context, '/wellness');
+                        model.user.name = _nameController.text;
+                        context.push('/onboarding/goals');
                   }
                       : null,  // Disabled when no name
                   style: ElevatedButton.styleFrom(
@@ -116,6 +124,6 @@ class _TellUsScreenState extends State<TellUsScreen> {
           ],
         ),
       ),
-    );
+    )));
   }
 }

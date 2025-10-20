@@ -76,7 +76,8 @@ class SignInPage extends StatelessWidget {
 
     return ChangeNotifierProvider<UserViewModel>(
       create: (_) => locator<UserViewModel>(),
-      child: Scaffold(
+      child: Consumer<UserViewModel>(
+      builder: (context, model, child) => Scaffold(
       backgroundColor: const Color(0xFFFFF1E6),
       body: Padding(
         padding: const EdgeInsets.all(spacing * 8),
@@ -120,7 +121,7 @@ class SignInPage extends StatelessWidget {
                   padding: const EdgeInsets.all(spacing * 3),
                 ),
                 onPressed: () {
-                  locator<UserViewModel>().signIn(context, emailController.text, passwordController.text);
+                  model.signIn(context, emailController.text, passwordController.text);
                 },
                 child: const Text('Sign In'),
               ),
@@ -147,7 +148,7 @@ class SignInPage extends StatelessWidget {
           ],
         ),
       ),
-    ));
+    )));
   }
 }
 
@@ -163,7 +164,8 @@ class SignUpPage extends StatelessWidget {
 
     return ChangeNotifierProvider<UserViewModel>(
       create: (_) => locator<UserViewModel>(), 
-      child: Scaffold(
+      child: Consumer<UserViewModel>(
+      builder: (context, model, child) => Scaffold(
       backgroundColor: const Color(0xFFFFF1E6),
       body: Padding(
         padding: const EdgeInsets.all(spacing * 8),
@@ -216,7 +218,7 @@ class SignUpPage extends StatelessWidget {
                   padding: const EdgeInsets.all(spacing * 3),
                 ),
                 onPressed: () {
-                  locator<UserViewModel>().signUp(context, emailController.text, passwordController.text);
+                  model.signUp(context, emailController.text, passwordController.text);
                 },
                 child: const Text('Create Account'),
               ),
@@ -243,6 +245,6 @@ class SignUpPage extends StatelessWidget {
           ],
         ),
       ),
-    ));
+    )));
   }
 }
