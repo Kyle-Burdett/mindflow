@@ -14,21 +14,25 @@ class UserViewModel extends ChangeNotifier {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> addUser(UserModel user) async {
+  Future<bool?> addUser(UserModel user) async {
     bool success = await _userRepository.addUser(user);
     if (success) {
       print("Add user success!");
+      return true;
     } else {
       print("Add user Failed!");
+      return false;
     }
   }
 
-  Future<void> fetchUserDetails(String userId) async {
+  Future<bool?> fetchUserDetails(String userId) async {
     UserModel? userDetails = await _userRepository.fetchUserDetails(userId);
     if (userDetails != null) {
       user = userDetails;
+      return true;
     } else {
       print("Fetch user Failed!");
+      return false;
     }
   }
 
@@ -99,12 +103,11 @@ class UserViewModel extends ChangeNotifier {
 
   Future<void> onboardUser(BuildContext context) async {
 
-    await addUser(user);
+    bool? success = await addUser(user);
 
-    if (context.mounted) {
-      context.go('/home');
+    if (success == true && context.mounted) {
+      context.push('/home');
     }
-    
   }
 
   Future<User?> authSignIn(String email, String password) async {
@@ -133,11 +136,11 @@ class UserViewModel extends ChangeNotifier {
     }
     
 
-    await fetchUserDetails(userId);
+    bool? success = await fetchUserDetails(userId);
 
     locator<CheckInViewModel>().fetchAllCheckIns(userId);
 
-    if (context.mounted && user.name != null && user.name!.isNotEmpty) {
+    if (success == true && context.mounted && user.name != null && user.name!.isNotEmpty) {
       context.go('/home');
     } 
   }
