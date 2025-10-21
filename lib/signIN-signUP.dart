@@ -224,7 +224,7 @@ class SignUpPage extends StatelessWidget {
                       padding: const EdgeInsets.all(spacing * 3),
                     ),
                     onPressed: () {
-                      model.signUp(context, emailController.text, passwordController.text);
+                      model.signUp(context, emailController.text, passwordController.text, confirmPasswordController.text);
                     },
                     child: const Text('Create Account'),
                   ),

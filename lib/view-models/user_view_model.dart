@@ -49,7 +49,7 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-  signUp(BuildContext context, String email, String password) async {
+  signUp(BuildContext context, String email, String password, String confirmPassword) async {
     // Signup validation
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -78,7 +78,19 @@ class UserViewModel extends ChangeNotifier {
     }
 
     // Password validation
-    validatePassword(password);
+    String? passwordMessage = validatePassword(password, confirmPassword);
+    if (passwordMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(passwordMessage),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+    
     final createdUser = await authRegisterUser(email, password);
     if (createdUser != null) {
       user.id = createdUser.uid;
@@ -145,7 +157,7 @@ class UserViewModel extends ChangeNotifier {
     } 
   }
 
-  String? validatePassword(String password) {
+  String? validatePassword(String password, String confirmPassword) {
     final hasUpperCase = RegExp(r'[A-Z]');
     final hasLowerCase = RegExp(r'[a-z]');
     final hasDigits = RegExp(r'\d');
@@ -163,6 +175,8 @@ class UserViewModel extends ChangeNotifier {
       return 'Password must contain at least one digit';
     } else if (!hasSpecialCharacters.hasMatch(password)) {
       return 'Password must contain at least one special character';
+    } else if (password != confirmPassword) {
+      return 'Passwords do not match';
     }
 
     return null;
