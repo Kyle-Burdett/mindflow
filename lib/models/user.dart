@@ -31,7 +31,7 @@ class UserModel {
       id: doc.id,
       name: data['name'] ?? '',
       startTime: (data['startTime'] as Timestamp).toDate(),
-      endTime: (data['startTime'] as Timestamp).toDate(),
+      endTime: (data['endTime'] as Timestamp).toDate(),
       productivity: data['productivity'] as bool?,
       balance: data['balance'] as bool?,
       reminder: data['reminder'] as bool?,

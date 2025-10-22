@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/models/tag.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
-import 'package:mindflow/view-models/user_view_model.dart';
 import 'package:provider/provider.dart';
 import 'working_hours_page.dart';
 
@@ -71,7 +70,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<CheckInViewModel>.value(
       value: locator<CheckInViewModel>(),
-      child: Consumer<UserViewModel>(
+      child: Consumer<CheckInViewModel>(
       builder: (context, model, child) => Scaffold(
       backgroundColor: const Color(0xFFFFDBBB),
       appBar: AppBar(
@@ -186,7 +185,12 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(task.key, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                Text('${task.value}'),
+                                // Column(
+                                //   children: task.value.map((task) {
+                                //       return Text('${task.value}');
+                                //     }
+                                //   ).toList(),
+                                // ),
                               ],
                             ),
                           );

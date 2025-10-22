@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/models/check-in.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
 class TimeSlot {
@@ -37,6 +40,18 @@ class WorkingHoursPage extends StatefulWidget {
 }
 
 class _WorkingHoursPageState extends State<WorkingHoursPage> {
+  // Colors to differentiate between tasks
+  final colors = [
+    Colors.blue,
+    Colors.green,
+    Colors.purple,
+    Colors.red,
+    Colors.pink,
+    Colors.indigo,
+    Colors.orange,
+  ];
+
+  // Default tasks when no activities have been added yet.
   List<Activity> activities = [
     Activity(
       id: "1",
@@ -123,41 +138,76 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
     });
   }
 
-
-
-  void _saveAndExit() {
-
-    for (Activity activity in activities) {
-      
-    }
-
-    final List<Map<String, String>> resultTasks = activities.expand((activity) {
-      return activity.timeSlots.map((slot) {
-
-        if (slot.start.hour == slot.end.hour && slot.start.minute == slot.end.minute) {
-          return null;
-        }
-        return {
-          'name': activity.name,
-          'startTime': slot.start.format(context),
-          'endTime': slot.end.format(context),
-        };
-      }).whereType<Map<String, String>>().toList(); // Filter out nulls
-    }).toList();
-
-
-    Navigator.of(context).pop(resultTasks);
+  DateTime getStandardTime(TimeOfDay time) {
+    return DateTime(2000, 1, 1, time.hour, time.minute);
   }
 
+  Map<String, List<TimeRange>> mapActivitiesToTaskHours(
+    List<Activity> activities) {
+  Map<String, List<TimeRange>> taskHours = {};
 
+  for (var activity in activities) {
+    taskHours[activity.name] = activity.timeSlots.map((slot) {
+      DateTime start = getStandardTime(slot.start);
+      DateTime end = getStandardTime(slot.end);
+      return TimeRange(start: start, end: end);
+    }).toList();
+  }
+
+  return taskHours;
+}
+
+List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, List<Color> colors) {
+  List<Activity> activities = [];
+  int counter = 1;
+
+  taskHours.forEach((taskName, ranges) {
+    List<TimeSlot> timeSlots = ranges.map((range) {
+      return TimeSlot(
+        start: TimeOfDay(hour: range.start.hour, minute: range.start.minute),
+        end: TimeOfDay(hour: range.end.hour, minute: range.end.minute),
+      );
+    }).toList();
+
+    final color = colors[(counter - 1) % colors.length];
+    final bgColor = color.withValues(alpha: 0.2);
+
+    activities.add(
+      Activity(
+        id: counter.toString(),
+        name: taskName,
+        color: color,
+        bgColor: bgColor,
+        timeSlots: timeSlots,
+      ),
+    );
+
+    counter++;
+  });
+
+  return activities;
+}
+
+  void _saveAndExit() {
+    locator<CheckInViewModel>().currentDailyCheckIn.taskHours = mapActivitiesToTaskHours(activities);
+    context.pop();
+  }
 
   double _getTimelineHeight() {
     const double hourHeight = 60.0;
-    final startHour = const TimeOfDay(hour: 9, minute: 0);
+    final startHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!);
     final endHour = const TimeOfDay(hour: 18, minute: 0);
     final totalHoursToDisplay = (endHour.hour - startHour.hour);
 
     return (totalHoursToDisplay + 1) * hourHeight + 32;
+  }
+
+  @override
+  void initState() {
+    if (locator<CheckInViewModel>().currentDailyCheckIn.taskHours.isNotEmpty) {
+      activities = mapTaskHoursToActivities(locator<CheckInViewModel>().currentDailyCheckIn.taskHours, colors);
+    }
+    super.initState();
   }
 
 

@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/models/track.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:mindflow/view-models/track_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +16,7 @@ class TrackScreen extends StatefulWidget {
 
 class _TrackScreenState extends State<TrackScreen> {
 
-  String trackView = 'daily';
+  String trackView = 'Past Week';
 
   Map<String, Color> categoryColors = {};
 
@@ -122,10 +123,10 @@ class _TrackScreenState extends State<TrackScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<TrackViewModel>(
-      create: (_) => locator<TrackViewModel>(),
-      child: SafeArea(
-      child: Scaffold(
+    return ChangeNotifierProvider<CheckInViewModel>.value(
+      value: locator<CheckInViewModel>(),
+      child: Consumer<CheckInViewModel>(
+      builder: (context, model, child) => Scaffold(
         backgroundColor: Color(0xFFFFF3E9),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -134,64 +135,61 @@ class _TrackScreenState extends State<TrackScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 36),
-                // Filter for different track views. (Will be last 7 days, last month, and last year)
+                // Filter for different track views. (Will be last 7 days, last month, and last 3 months)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     GestureDetector(
-                      onTap: () => setState(() => trackView = 'daily'),
+                      onTap: () => setState(() => trackView = 'lastWeek'),
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         decoration: BoxDecoration(
-                          color: trackView == 'daily' ? Color(0xFFDB863B) : Colors.white,
+                          color: trackView == 'lastWeek' ? Color(0xFFDB863B) : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          'Daily',
+                          'Last Week',
                           style: TextStyle(
-                            fontFamily: "merriweather",
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: trackView == 'daily' ? Colors.white : Color(0xFF2E2E2E),
+                            color: trackView == 'lastWeek' ? Colors.white : Color(0xFF2E2E2E),
                           ),
                         ),
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => setState(() => trackView = 'weekly'),
+                      onTap: () => setState(() => trackView = 'lastMonth'),
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         decoration: BoxDecoration(
-                          color: trackView == 'weekly' ? Color(0xFFDB863B) : Colors.white,
+                          color: trackView == 'lastMonth' ? Color(0xFFDB863B) : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          'Weekly',
+                          'Last Month',
                           style: TextStyle(
-                            fontFamily: "merriweather",
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: trackView == 'weekly' ? Colors.white : Color(0xFF2E2E2E),
+                            color: trackView == 'lastMonth' ? Colors.white : Color(0xFF2E2E2E),
                           ),
                         ),
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => setState(() => trackView = 'monthly'),
+                      onTap: () => setState(() => trackView = 'lastThreeMonths'),
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         decoration: BoxDecoration(
-                          color: trackView == 'monthly' ? Color(0xFFDB863B) : Colors.white,
+                          color: trackView == 'lastThreeMonths' ? Color(0xFFDB863B) : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          'Monthly',
+                          'Last 3 Months',
                           style: TextStyle(
-                            fontFamily: "merriweather",
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: trackView == 'monthly' ? Colors.white : Color(0xFF2E2E2E),
+                            color: trackView == 'lastThreeMonths' ? Colors.white : Color(0xFF2E2E2E),
                           ),
                         ),
                       ),
@@ -202,7 +200,6 @@ class _TrackScreenState extends State<TrackScreen> {
                 Text(
                   'Hourly breakdown',
                   style: TextStyle(
-                    fontFamily: "merriweather",
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E2E2E),
@@ -306,7 +303,6 @@ class _TrackScreenState extends State<TrackScreen> {
                               Text(
                                 entry.key,
                                 style: const TextStyle(
-                                  fontFamily: "merriweather",
                                   fontSize: 13,
                                   color: Color(0xFF2E2E2E),
                                 ),
@@ -322,7 +318,6 @@ class _TrackScreenState extends State<TrackScreen> {
                 Text(
                   'Mood',
                   style: TextStyle(
-                    fontFamily: "merriweather",
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E2E2E),
@@ -347,7 +342,6 @@ class _TrackScreenState extends State<TrackScreen> {
                 Text(
                   'Productivity',
                   style: TextStyle(
-                    fontFamily: "merriweather",
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E2E2E),
@@ -372,7 +366,6 @@ class _TrackScreenState extends State<TrackScreen> {
                 Text(
                   'Context Switching',
                   style: TextStyle(
-                    fontFamily: "merriweather",
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E2E2E),
@@ -439,9 +432,8 @@ class _TrackScreenState extends State<TrackScreen> {
                 ),
                 SizedBox(height: 32),
                 Text(
-                  'Overflow',
+                  'Overtime',
                   style: TextStyle(
-                    fontFamily: "merriweather",
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E2E2E),

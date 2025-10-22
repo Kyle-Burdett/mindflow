@@ -1,6 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mindflow/models/tag.dart';
 
+class TimeRange {
+  final DateTime start;
+  final DateTime end;
+
+  TimeRange({required this.start, required this.end});
+
+  factory TimeRange.fromMap(Map<String, dynamic> map) {
+    return TimeRange(
+      start: (map['start'] as Timestamp).toDate(),
+      end: (map['end'] as Timestamp).toDate(),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'start': Timestamp.fromDate(start),
+      'end': Timestamp.fromDate(end),
+    };
+  }
+}
+
 class DailyCheckInModel {
   String id;
   DateTime date;
@@ -10,7 +31,7 @@ class DailyCheckInModel {
   double stressScore;
   String notes;
   List<Tag> tags;
-  Map<String, List<DateTime>> taskHours;
+  Map<String, List<TimeRange>> taskHours;
 
   DailyCheckInModel({
     required this.id,
@@ -38,10 +59,10 @@ class DailyCheckInModel {
           .map((e) => Tag.fromMap(Map<String, dynamic>.from(e)))
           .toList(),
       taskHours: (data['taskHours'] as Map<String, dynamic>? ?? {}).map(
-        (key, value) => MapEntry(
-          key,
-          (value as List<dynamic>)
-              .map((ts) => (ts as Timestamp).toDate())
+        (taskName, list) => MapEntry(
+          taskName,
+          (list as List<dynamic>)
+              .map((range) => TimeRange.fromMap(Map<String, dynamic>.from(range)))
               .toList(),
         ),
       ),
@@ -56,12 +77,8 @@ class DailyCheckInModel {
       'productivityScore': productivityScore,
       'notes': notes,
       'tags': tags.map((t) => t.toMap()).toList(),
-      'taskHours': taskHours.map(
-        (key, value) => MapEntry(
-          key,
-          value.map((d) => Timestamp.fromDate(d)).toList(),
-        ),
-      ),
+      'taskHours': taskHours.map((taskName, ranges) => MapEntry(
+        taskName, ranges.map((r) => r.toMap()).toList())),
     };
   }
 }

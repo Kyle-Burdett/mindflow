@@ -27,17 +27,7 @@ class CheckInRepository {
   }
 
   Future<List<DailyCheckInModel>?> fetchAllCheckInDetails(String userId, {int limit = 7}) async {
-    
-      // Query query = FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').orderBy("date").limit(limit);
-
-      // if (_lastCheckIn != null) {
-      //   query = query.startAfterDocument(_lastCheckIn!);
-      // }
-
-      // QuerySnapshot<Map<String, dynamic>>? documentData = (await query.get()) as QuerySnapshot<Map<String, dynamic>>?;
-      
     QuerySnapshot<Map<String, dynamic>>? documentData = await FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').orderBy("date").get();
-
     if (documentData.docs.isNotEmpty) {
       return documentData.docs.map((doc) => DailyCheckInModel.fromDoc(doc)).toList();
     } else {

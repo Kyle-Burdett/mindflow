@@ -174,7 +174,7 @@ class _HomepageState extends State<Homepage> {
             children: [
               const SizedBox(height: 4),
               Text(
-                'Welcome back, Kyle!',
+                'Welcome back, ${locator<UserViewModel>().user.name}!',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: _AppColors.textDark,
