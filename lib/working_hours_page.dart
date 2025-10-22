@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:provider/provider.dart';
 
 class TimeSlot {
   TimeOfDay start;
@@ -124,6 +127,10 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
 
   void _saveAndExit() {
 
+    for (Activity activity in activities) {
+      
+    }
+
     final List<Map<String, String>> resultTasks = activities.expand((activity) {
       return activity.timeSlots.map((slot) {
 
@@ -159,7 +166,10 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
 
     const Color pageBackgroundColor = Color(0xFFFFDBBB);
 
-    return Scaffold(
+    return ChangeNotifierProvider<CheckInViewModel>.value(
+      value: locator<CheckInViewModel>(),
+      child: Consumer<CheckInViewModel>(
+      builder: (context, model, child) => Scaffold(
       backgroundColor: pageBackgroundColor,
       appBar: AppBar(
         backgroundColor: pageBackgroundColor,
@@ -230,7 +240,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
           ),
         ],
       ),
-    );
+    )));
   }
 }
 

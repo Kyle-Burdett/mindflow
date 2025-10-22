@@ -2,14 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mindflow/models/tag.dart';
 
 class DailyCheckInModel {
-  final String id;
-  final DateTime date;
-  final num energyScore;
-  final num moodScore;
-  final num productivityScore;
-  final String notes;
-  final List<Tag> tags;
-  final Map<String, List<DateTime>> taskHours;
+  String id;
+  DateTime date;
+  double energyScore;
+  double moodScore;
+  double productivityScore;
+  double stressScore;
+  String notes;
+  List<Tag> tags;
+  Map<String, List<DateTime>> taskHours;
 
   DailyCheckInModel({
     required this.id,
@@ -17,6 +18,7 @@ class DailyCheckInModel {
     required this.energyScore,
     required this.moodScore,
     required this.productivityScore,
+    required this.stressScore,
     required this.notes,
     required this.tags,
     required this.taskHours,
@@ -30,6 +32,7 @@ class DailyCheckInModel {
       energyScore: data['energyScore'] ?? 0,
       moodScore: data['moodScore'] ?? 0,
       productivityScore: data['productivityScore'] ?? 0,
+      stressScore: data['stressScore'] ?? 0,
       notes: data['notes'] ?? '',
       tags: (data['tags'] as List<dynamic>? ?? [])
           .map((e) => Tag.fromMap(Map<String, dynamic>.from(e)))

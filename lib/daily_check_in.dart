@@ -1,9 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-
-import 'settings_page.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/models/tag.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
+import 'package:provider/provider.dart';
 import 'working_hours_page.dart';
 
 
@@ -15,18 +17,9 @@ class DailyCheckIn extends StatefulWidget {
   State<DailyCheckIn> createState() => _DailyCheckInState();
 }
 
-
 class _DailyCheckInState extends State<DailyCheckIn> {
-  int _selectedIndex = 0;
 
-
-  static const int _settingsIndex = 4;
-
-
-  final UserData _mockUser = UserData(
-    name: 'Jane Doe',
-    email: 'jane.doe@example.com',
-  );
+  final currentCheckIn = locator<CheckInViewModel>().currentDailyCheckIn;
 
   final Map<String, dynamic> _checkInData = {
     'moodScore': 7.0,
@@ -39,59 +32,49 @@ class _DailyCheckInState extends State<DailyCheckIn> {
     'workTasks': <Map<String, String>>[],
   };
 
-
-  final List<String> availableTags = [
-    "Focused", "Distracted", "Motivated", "Tired", "Productive", "Overwhelmed",
-    "Calm", "Anxious", "Creative", "Blocked", "Collaborative", "Isolated",
-    "Energetic", "Drained", "Satisfied", "Frustrated",
+  final List<Tag> availableTags = [
+    Tag(name: "Focused", category: "productivity", value: 1),
+    Tag(name: "Distracted", category: "productivity", value: -1),
+    Tag(name: "Motivated", category: "mood", value: 1),
+    Tag(name: "Tired", category: "energy", value: -1),
+    Tag(name: "Productive", category: "productivity", value: 1),
+    Tag(name: "Overwhelmed", category: "mood", value: -1),
+    Tag(name: "Calm", category: "mood", value: 1),
+    Tag(name: "Anxious", category: "mood", value: -1),
+    Tag(name: "Creative", category: "productivity", value: 1),
+    Tag(name: "Blocked", category: "productivity", value: -1),
+    Tag(name: "Collaborative", category: "productivity", value: 1),
+    Tag(name: "Drained", category: "energy", value: -1),
+    Tag(name: "Energetic", category: "energy", value: 1),
+    Tag(name: "Frustrated", category: "mood", value: -1),
+    Tag(name: "Satisfied", category: "mood", value: 1),
   ];
-
 
   final Color customAccentColor = const Color(0xFFEF9C53);
 
-  void _handleTagToggle(String tag) {
+  void _handleTagToggle(Tag tag) {
     setState(() {
-      if (_checkInData['selectedTags'].contains(tag)) {
-        _checkInData['selectedTags'].remove(tag);
+      if (currentCheckIn.tags.contains(tag)) {
+        currentCheckIn.tags.remove(tag);
       } else {
-        _checkInData['selectedTags'].add(tag);
+        currentCheckIn.tags.add(tag);
       }
     });
   }
 
-
   void _handleSubmit() {
-
-    debugPrint("Check-in data: $_checkInData");
+    locator<CheckInViewModel>().currentDailyCheckIn = currentCheckIn;
+    locator<CheckInViewModel>().addCheckIn(currentCheckIn);
   }
-
-
-  void _onItemTapped(int index) {
-    if (index == _settingsIndex) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-
-          builder: (context) => SettingsPage(),
-        ),
-      );
-    } else {
-
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-
+    return ChangeNotifierProvider<CheckInViewModel>.value(
+      value: locator<CheckInViewModel>(),
+      child: Consumer<UserViewModel>(
+      builder: (context, model, child) => Scaffold(
       backgroundColor: const Color(0xFFFFDBBB),
       appBar: AppBar(
-
         backgroundColor: const Color(0xFFFFDBBB),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -114,8 +97,8 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                 children: [
                   _buildSlider(
                     label: 'Mood',
-                    value: _checkInData['moodScore'],
-                    onChanged: (value) => setState(() => _checkInData['moodScore'] = value),
+                    value: currentCheckIn.moodScore,
+                    onChanged: (value) => setState(() => currentCheckIn.moodScore = value),
                     min: 1,
                     max: 10,
                     startLabel: 'Very Low',
@@ -123,8 +106,8 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                   ),
                   _buildSlider(
                     label: 'Energy Level',
-                    value: _checkInData['energyScore'],
-                    onChanged: (value) => setState(() => _checkInData['energyScore'] = value),
+                    value: currentCheckIn.energyScore,
+                    onChanged: (value) => setState(() => currentCheckIn.energyScore = value),
                     min: 1,
                     max: 10,
                     startLabel: 'Exhausted',
@@ -132,8 +115,8 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                   ),
                   _buildSlider(
                     label: 'Stress Level',
-                    value: _checkInData['stressScore'],
-                    onChanged: (value) => setState(() => _checkInData['stressScore'] = value),
+                    value: currentCheckIn.stressScore,
+                    onChanged: (value) => setState(() => currentCheckIn.stressScore = value),
                     min: 1,
                     max: 10,
                     startLabel: 'Very Calm',
@@ -141,8 +124,8 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                   ),
                   _buildSlider(
                     label: 'Productivity',
-                    value: _checkInData['productivityScore'],
-                    onChanged: (value) => setState(() => _checkInData['productivityScore'] = value),
+                    value: currentCheckIn.productivityScore,
+                    onChanged: (value) => setState(() => currentCheckIn.productivityScore = value),
                     min: 1,
                     max: 10,
                     startLabel: 'Unproductive',
@@ -169,7 +152,6 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                           ),
                         );
 
-
                         if (updatedTasks != null) {
                           setState(() {
                             _checkInData['workTasks'] = updatedTasks;
@@ -179,8 +161,8 @@ class _DailyCheckInState extends State<DailyCheckIn> {
 
                       icon: const Icon(Icons.add, size: 16, color: Colors.white),
                       label: Text(
-                        _checkInData['workTasks'].isNotEmpty
-                            ? 'Edit Work Hours (${_checkInData['workTasks'].length} slots tracked)'
+                        currentCheckIn.taskHours.isNotEmpty
+                            ? 'Edit Work Hours (${currentCheckIn.taskHours.length} slots tracked)'
                             : 'Add Work Hours',
                         style: const TextStyle(color: Colors.white),
                       ),
@@ -189,10 +171,10 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                         backgroundColor: customAccentColor,
                       ),
                     ),
-                    if (_checkInData['workTasks'].isNotEmpty) ...[
+                    if (currentCheckIn.taskHours.isNotEmpty) ...[
                       const SizedBox(height: 16),
                       Column(
-                        children: _checkInData['workTasks'].map<Widget>((task) {
+                        children: currentCheckIn.taskHours.entries.map((task) {
                           return Container(
                             margin: const EdgeInsets.symmetric(vertical: 4),
                             padding: const EdgeInsets.all(12),
@@ -203,10 +185,8 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-
-                                Text(task['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
-
-                                Text('${task['startTime']} - ${task['endTime']}'),
+                                Text(task.key, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                Text('${task.value}'),
                               ],
                             ),
                           );
@@ -226,9 +206,9 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                   spacing: 8.0, // horizontal spacing
                   runSpacing: 8.0, // vertical spacing
                   children: availableTags.map((tag) {
-                    final isSelected = _checkInData['selectedTags'].contains(tag);
+                    final isSelected = currentCheckIn.tags.contains(tag);
                     return ActionChip(
-                      label: Text(tag),
+                      label: Text(tag.name),
                       onPressed: () => _handleTagToggle(tag),
                       backgroundColor: isSelected ? customAccentColor : null,
                       labelStyle: TextStyle(
@@ -257,7 +237,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onChanged: (value) => _checkInData['notes'] = value,
+                  onChanged: (value) => currentCheckIn.notes = value,
                 ),
               ),
               const SizedBox(height: 16),
@@ -321,7 +301,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
           ),
         ),
       ),
-    );
+    )));
   }
 
 

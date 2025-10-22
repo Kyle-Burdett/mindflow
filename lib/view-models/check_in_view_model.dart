@@ -5,10 +5,10 @@ import 'package:mindflow/repositories/check_in_repository.dart';
 class CheckInViewModel extends ChangeNotifier {
 
   List<DailyCheckInModel> dailyCheckInList = [];
-  DailyCheckInModel? currentDailyCheckIn;
+  DailyCheckInModel currentDailyCheckIn = DailyCheckInModel(id: '', date: DateTime.now(), energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {});
+
   String userId = "";
   int checkInLimit = 7;
-  bool _hasMore = true;
 
   
   final CheckInRepository _checkInRepository = CheckInRepository();
@@ -32,16 +32,12 @@ class CheckInViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchAllCheckIns(String userId) async {
-    if (_hasMore) {
-      List<DailyCheckInModel>? dailyCheckIns = await _checkInRepository.fetchAllCheckInDetails(userId);
-      if (dailyCheckIns != null) {
-        if (dailyCheckIns.length < checkInLimit) {
-          _hasMore = false;
-        }
-        dailyCheckInList.addAll(dailyCheckIns);
-      } else {
-        print("Fetch user Failed!");
-      }
+    List<DailyCheckInModel>? dailyCheckIns = await _checkInRepository.fetchAllCheckInDetails(userId);
+
+    if (dailyCheckIns != null) {
+      dailyCheckInList.addAll(dailyCheckIns);
+    } else {
+      print("Fetch users Failed!");
     }
   }
 }

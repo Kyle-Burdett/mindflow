@@ -74,8 +74,8 @@ class SignInPage extends StatelessWidget {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
 
-    return ChangeNotifierProvider<UserViewModel>(
-      create: (_) => locator<UserViewModel>(),
+    return ChangeNotifierProvider<UserViewModel>.value(
+      value: locator<UserViewModel>(),
       child: Consumer<UserViewModel>(
       builder: (context, model, child) => Scaffold(
       backgroundColor: const Color(0xFFFFF1E6),
@@ -166,8 +166,8 @@ class SignUpPage extends StatelessWidget {
     final passwordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
 
-    return ChangeNotifierProvider<UserViewModel>(
-      create: (_) => locator<UserViewModel>(), 
+    return ChangeNotifierProvider<UserViewModel>.value(
+      value: locator<UserViewModel>(), 
       child: Consumer<UserViewModel>(
       builder: (context, model, child) => Scaffold(
       backgroundColor: const Color(0xFFFFF1E6),
