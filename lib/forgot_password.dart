@@ -109,25 +109,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         ),
                       ),
 
-                    // --- Code Input (Visible after code is sent) ---
-                    if (_isCodeSent)
-                      Padding(
-                        padding: const EdgeInsets.only(top: spacing * 4),
-                        child: TextField(
-                          controller: _codeController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            suffixIcon: Icon(Icons.visibility_off_outlined, color: primaryColor),
-                            hintText: 'Enter code here...',
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
-                      ),
+                    
 
                     const SizedBox(height: spacing * 8),
 
