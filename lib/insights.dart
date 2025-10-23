@@ -5,19 +5,25 @@ import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
-class InsightsPage extends StatelessWidget {
-  // Example data — these would come from your backend in real use.
-  final double productivityLevel = 0.9; // 90%
-  final double workLifeBalanceLevel = 0.3; // 30%
-  final double isolationLevel = 0.4; // 40%
-  final double energyLevel = 0.6; // 60%
+class InsightsPage extends StatefulWidget {
+  @override
+  State<InsightsPage> createState() => _InsightsPageState();
+}
 
+class _InsightsPageState extends State<InsightsPage> {
+  
+  
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<CheckInViewModel>.value(
       value: locator<CheckInViewModel>(),
       child: Consumer<CheckInViewModel>(
-      builder: (context, model, child) => Scaffold(
+      builder: (context, model, child) {
+          double productivityLevel = locator<CheckInViewModel>().weeklyInsights!.avgProductivity; 
+          double workLifeBalanceLevel = locator<CheckInViewModel>().weeklyInsights!.avgWorkLifeBalance; 
+          double isolationLevel = locator<CheckInViewModel>().weeklyInsights!.avgIsolation; 
+          double energyLevel = locator<CheckInViewModel>().weeklyInsights!.avgEnergy; 
+        return Scaffold(
       backgroundColor: Color(0xFFFFF3E9),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -45,11 +51,11 @@ class InsightsPage extends StatelessWidget {
               _buildFocusCard(
                 context: context,
                 title: "Productivity",
-                color: Colors.green,
+                color: productivityLevel > 0.7 ? Colors.green : productivityLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: productivityLevel,
                 description:
-                    "Over the past 7 days, you have had excellent productivity levels",
-                footer: "No actions recommended",
+                    "Over the past 7 days, you have had a productivity score of %${(productivityLevel * 100).toStringAsFixed(0)}",
+                footer: productivityLevel >= 0.5 || productivityLevel == 0 ? "No actions recommended" : "Check out these resources to improve your productivity",
               ),
 
               const SizedBox(height: 16),
@@ -58,11 +64,13 @@ class InsightsPage extends StatelessWidget {
               _buildFocusCard(
                 context: context,
                 title: "Work/Life Balance",
-                color: Colors.redAccent,
+                color: workLifeBalanceLevel > 0.7 ? Colors.green : workLifeBalanceLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: workLifeBalanceLevel,
                 description:
-                    "Over the past 7 days, you’ve worked an average of 2 hours extra per day than you planned",
-                footer: "Check out these tricks for managing working hours",
+                  locator<CheckInViewModel>().weeklyInsights!.totalOvertimeHours > 0 
+                  ? "Over the past 7 days, you’ve worked ${locator<CheckInViewModel>().weeklyInsights?.totalOvertimeHours} hours overtime"
+                  : "Over the past 7 days, you have had a Work/Life Balance score of %${(workLifeBalanceLevel * 100).toStringAsFixed(0)}",
+                footer: workLifeBalanceLevel >= 0.5 || workLifeBalanceLevel == 0 ? "No actions recommended" : "Check out these tricks for managing working hours",
                 showArrow: true,
               ),
 
@@ -77,12 +85,12 @@ class InsightsPage extends StatelessWidget {
               _buildFocusCard(
                 context: context,
                 title: "Isolation",
-                color: Colors.blueAccent,
+                color: isolationLevel > 0.7 ? Colors.green : isolationLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: isolationLevel,
                 description:
-                    "Over the past 7 days, you’ve mentioned being isolated 4 times",
+                    "Over the past 7 days, you have had an Isolation score of %${(isolationLevel * 100).toStringAsFixed(0)}",
                 footer:
-                    "Read about how to improve that when working from home.",
+                   isolationLevel >= 0.5 || isolationLevel == 0 ? "No actions recommended" : "Read about how to improve that when working from home.",
                 showArrow: true,
               ),
 
@@ -92,12 +100,12 @@ class InsightsPage extends StatelessWidget {
               _buildFocusCard(
                 context: context,
                 title: "Energy",
-                color: Colors.yellow.shade600,
+                color: energyLevel > 0.7 ? Colors.green : energyLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: energyLevel,
                 description:
-                    "You’ve had moderate energy levels over the past week",
+                    "Over the past 7 days, you have had an energy score of %${(energyLevel * 100).toStringAsFixed(0)}",
                 footer:
-                    "If you feel you need to, check out some additional resources on how you can improve this",
+                    energyLevel >= 0.5 || energyLevel == 0 ? "No actions recommended" : "If you feel you need to, check out some additional resources on how you can improve this",
                 showArrow: false,
               ),
 
@@ -106,7 +114,10 @@ class InsightsPage extends StatelessWidget {
           ),
         ),
       ),
-    )));
+    );
+    }
+    ),
+    );
   }
 
   Widget _buildFocusCard({
@@ -120,7 +131,7 @@ class InsightsPage extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        if (percent < 0.4) {
+        if (percent < 0.5) {
           context.go('/home-second');
         }
       },
@@ -169,7 +180,7 @@ class InsightsPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Text(description,
+                  Text(percent == 0 ? "More data needed before we can provide insights" : description,
                       style:
                           const TextStyle(fontSize: 13, color: Colors.black87)),
                   const SizedBox(height: 6),
