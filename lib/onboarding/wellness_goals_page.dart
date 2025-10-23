@@ -19,8 +19,8 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<UserViewModel>(
-      create: (_) => locator<UserViewModel>(),
+    return ChangeNotifierProvider<UserViewModel>.value(
+      value: locator<UserViewModel>(),
       child: Consumer<UserViewModel>(
       builder: (context, model, child) => Scaffold(
       backgroundColor: Color(0xFFFFF0E1),

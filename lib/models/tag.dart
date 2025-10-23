@@ -1,7 +1,7 @@
 class Tag {
   final String category;
   final String name;
-  final num value;
+  final int value;
 
   Tag({
     required this.category,
@@ -24,4 +24,15 @@ class Tag {
       'value': value,
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Tag &&
+        other.name == name;
+  }
+
+  @override
+  int get hashCode => name.hashCode;
 }

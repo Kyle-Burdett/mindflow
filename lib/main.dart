@@ -1,10 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/daily_check_in.dart';
 import 'package:mindflow/firebase_options.dart';
-import 'package:mindflow/forgot_password.dart'; // IMPORTED
+import 'package:mindflow/forgot_password.dart';
 import 'package:mindflow/home-nav.dart';
 import 'package:mindflow/onboarding/about_you_page.dart';
 import 'package:mindflow/onboarding/planning_page.dart';
@@ -12,16 +13,28 @@ import 'package:mindflow/onboarding/welcome_page.dart';
 import 'package:mindflow/onboarding/wellness_goals_page.dart';
 import 'package:mindflow/signIN-signUP.dart';
 import 'package:mindflow/splash.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:mindflow/working_hours_page.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Handling background message: ${message.messageId}");
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  final messaging = FirebaseMessaging.instance;
+  await messaging.requestPermission();
+  print("FCM: ${await messaging.getToken()}");
 
   setupLocator();
   // Wrap MyApp with ChangeNotifierProvider to make UserViewModel available
@@ -38,7 +51,7 @@ class MyApp extends StatelessWidget {
 
   final GoRouter _router = GoRouter(
     // Initial redirect logic to check auth status immediately
-    redirect: (BuildContext context, GoRouterState state) {
+    redirect: (BuildContext context, GoRouterState state) async {
       final auth = FirebaseAuth.instance;
       final isAuthenticated = auth.currentUser != null;
 
@@ -65,6 +78,8 @@ class MyApp extends StatelessWidget {
       // 2. If user IS authenticated and tries to access an unauthenticated path (like sign-in), redirect to home
       // We only redirect to home if they are not already in the middle of onboarding.
       if (isAuthenticated && unauthenticatedPaths.contains(state.matchedLocation) && state.matchedLocation != '/') {
+        await locator<UserViewModel>().fetchUserDetails(auth.currentUser!.uid);
+        await locator<CheckInViewModel>().fetchAllCheckIns(locator<UserViewModel>().user.id!);
         // You would ideally check here if onboarding is complete (e.g., via UserViewModel.isOnboarded)
         // For now, we assume if they hit sign-in/up while authenticated, they should go home.
         return '/home';
@@ -101,7 +116,11 @@ class MyApp extends StatelessWidget {
       // --- END AUTH ROUTES ---
       GoRoute(
         path: '/home',
-        builder: (context, state) => const MainHomeScreen(),
+        builder: (context, state) => MainHomeScreen(),
+      ),
+      GoRoute(
+        path: '/home-second',
+        builder: (context, state) => MainHomeScreen(initialIndex: 3),
       ),
       GoRoute(
         path: '/check-in',

@@ -3,7 +3,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/models/track.dart';
-import 'package:mindflow/view-models/track_view_model.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
 class TrackScreen extends StatefulWidget {
@@ -15,91 +16,28 @@ class TrackScreen extends StatefulWidget {
 
 class _TrackScreenState extends State<TrackScreen> {
 
-  String trackView = 'daily';
+  String trackView = 'lastWeek';
 
   Map<String, Color> categoryColors = {};
 
-  final idealHours = 8;
+  final idealHours = locator<UserViewModel>().user.endTime!.difference(locator<UserViewModel>().user.startTime!).inHours;
 
-  final trackData = [
-    TrackData(
-      DateTime(2025, 10, 1),
-      {"Project 1": 4, "Meetings": 2, "Project 2": 3},
-      [
-        "Unexpected meetings", "Feeling good"
-      ],
-      5,
-      2,
-      4
-    ),
-    TrackData(
-      DateTime(2025, 10, 2),
-      {"Project 1": 4, "Meetings": 2, "Project 2": 3},
-      [
-        "Urgent deadlines", "Unfocused"
-      ],
-      8,
-      5,
-      5
-    ),
-    TrackData(
-      DateTime(2025, 10, 3),
-      {"Project 1": 5, "Meetings": 3, "Project 2": 2},
-      [
-        "emergency work", "Low energy"
-      ],
-      2,
-      5,
-      3
-    ),
-    TrackData(
-      DateTime(2025, 10, 4),
-      {"Project 1": 7, "Meetings": 0.5, "Project 2": 1},
-      [
-        "Quiet", "Feeling good"
-      ],
-      3,
-      7,
-      8
-    ),
-    TrackData(
-      DateTime(2025, 10, 5),
-      {"Project 1": 7, "Meetings": 0.5, "Project 2": 1},
-      [
-        "Quiet", "Feeling good"
-      ],
-      7,
-      8,
-      2
-    ),
-    TrackData(
-      DateTime(2025, 10, 6),
-      {"Project 1": 7, "Meetings": 0.5, "Project 2": 1},
-      [
-        "Quiet", "Feeling good"
-      ],
-      6,
-      10,
-      4
-    ),
-    TrackData(
-      DateTime(2025, 10, 7),
-      {"Project 1": 7, "Meetings": 0.5, "Project 2": 1},
-      [
-        "Quiet", "Feeling good"
-      ],
-      5,
-      5,
-      2
-    ),
+  List<TrackData> displayingTrackData = [];
 
-  ];
+  List<TrackData> trackDataList = locator<CheckInViewModel>().trackData;
 
+
+  List<TrackData> filterByDays(List<TrackData> data, int days) {
+    final now = DateTime.now();
+    final filterLimit = now.subtract(Duration(days: days));
+    return data.where((item) => item.date.isAfter(filterLimit)).toList();
+  }
 
   @override
   void initState() {
+    displayingTrackData = filterByDays(trackDataList, 7);
     final tasks = {
-      for (var d in trackData) ...d.taskHours.keys
+      for (var d in displayingTrackData) ...d.taskHours.keys
     }.toList();
 
     final graphColors = [
@@ -122,10 +60,10 @@ class _TrackScreenState extends State<TrackScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<TrackViewModel>(
-      create: (_) => locator<TrackViewModel>(),
-      child: SafeArea(
-      child: Scaffold(
+    return ChangeNotifierProvider<CheckInViewModel>.value(
+      value: locator<CheckInViewModel>(),
+      child: Consumer<CheckInViewModel>(
+      builder: (context, model, child) => Scaffold(
         backgroundColor: Color(0xFFFFF3E9),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -134,75 +72,83 @@ class _TrackScreenState extends State<TrackScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 36),
-                // Filter for different track views. (Will be last 7 days, last month, and last year)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => setState(() => trackView = 'daily'),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: trackView == 'daily' ? Color(0xFFDB863B) : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          'Daily',
-                          style: TextStyle(
-                            fontFamily: "merriweather",
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: trackView == 'daily' ? Colors.white : Color(0xFF2E2E2E),
+                // Filter for different track views. (Will be last 7 days, last month, and last 3 months)
+                SafeArea(
+                  top: true,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () => setState(() {
+                          trackView = 'lastWeek';
+                          displayingTrackData = filterByDays(trackDataList, 7);
+                        }),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: trackView == 'lastWeek' ? Color(0xFFDB863B) : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            'Last Week',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: trackView == 'lastWeek' ? Colors.white : Color(0xFF2E2E2E),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () => setState(() => trackView = 'weekly'),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: trackView == 'weekly' ? Color(0xFFDB863B) : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          'Weekly',
-                          style: TextStyle(
-                            fontFamily: "merriweather",
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: trackView == 'weekly' ? Colors.white : Color(0xFF2E2E2E),
+                      GestureDetector(
+                        onTap: () => setState(() {
+                          trackView = 'lastMonth';
+                          displayingTrackData = filterByDays(trackDataList, 30);
+                        }),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: trackView == 'lastMonth' ? Color(0xFFDB863B) : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            'Last Month',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: trackView == 'lastMonth' ? Colors.white : Color(0xFF2E2E2E),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () => setState(() => trackView = 'monthly'),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: trackView == 'monthly' ? Color(0xFFDB863B) : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          'Monthly',
-                          style: TextStyle(
-                            fontFamily: "merriweather",
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: trackView == 'monthly' ? Colors.white : Color(0xFF2E2E2E),
+                      GestureDetector(
+                        onTap: () => setState(() {
+                          trackView = 'lastThreeMonths';
+                          displayingTrackData = filterByDays(trackDataList, 90);
+                        }),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: trackView == 'lastThreeMonths' ? Color(0xFFDB863B) : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            'Last 3 Months',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: trackView == 'lastThreeMonths' ? Colors.white : Color(0xFF2E2E2E),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 SizedBox(height: 32),
                 Text(
                   'Hourly breakdown',
                   style: TextStyle(
-                    fontFamily: "merriweather",
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E2E2E),
@@ -230,8 +176,8 @@ class _TrackScreenState extends State<TrackScreen> {
                                   showTitles: true,
                                   getTitlesWidget: (value, meta) {
                                     final index = value.toInt();
-                                    if (index < 0 || index >= trackData.length) return const SizedBox.shrink();
-                                    final date = trackData[index].date;
+                                    if (index < 0 || index >= displayingTrackData.length) return const SizedBox.shrink();
+                                    final date = displayingTrackData[index].date;
                                     return Text(
                                       DateFormat("MMM d").format(date),
                                       style: const TextStyle(fontSize: 12),
@@ -250,7 +196,7 @@ class _TrackScreenState extends State<TrackScreen> {
                               ),
                             ),
                             borderData: FlBorderData(show: false),
-                            barGroups: trackData.asMap().entries.map((entry) {
+                            barGroups: displayingTrackData.asMap().entries.map((entry) {
                               final index = entry.key;
                               final d = entry.value;
                         
@@ -306,7 +252,6 @@ class _TrackScreenState extends State<TrackScreen> {
                               Text(
                                 entry.key,
                                 style: const TextStyle(
-                                  fontFamily: "merriweather",
                                   fontSize: 13,
                                   color: Color(0xFF2E2E2E),
                                 ),
@@ -322,7 +267,6 @@ class _TrackScreenState extends State<TrackScreen> {
                 Text(
                   'Mood',
                   style: TextStyle(
-                    fontFamily: "merriweather",
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E2E2E),
@@ -338,7 +282,7 @@ class _TrackScreenState extends State<TrackScreen> {
                   child: Wrap(
                     spacing: 16,
                     runSpacing: 16,
-                    children: trackData.map((trackItem) {
+                    children: displayingTrackData.map((trackItem) {
                     return UserStat(date: trackItem.date, statValue: trackItem.moodScore);
                   }).toList(),
                   ),
@@ -347,7 +291,6 @@ class _TrackScreenState extends State<TrackScreen> {
                 Text(
                   'Productivity',
                   style: TextStyle(
-                    fontFamily: "merriweather",
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E2E2E),
@@ -363,7 +306,7 @@ class _TrackScreenState extends State<TrackScreen> {
                   child: Wrap(
                     spacing: 16,
                     runSpacing: 16,
-                    children: trackData.map((trackItem) {
+                    children: displayingTrackData.map((trackItem) {
                     return UserStat(date: trackItem.date, statValue: trackItem.productivityScore);
                   }).toList(),
                   ),
@@ -372,7 +315,6 @@ class _TrackScreenState extends State<TrackScreen> {
                 Text(
                   'Context Switching',
                   style: TextStyle(
-                    fontFamily: "merriweather",
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E2E2E),
@@ -393,11 +335,11 @@ class _TrackScreenState extends State<TrackScreen> {
                       titlesData: FlTitlesData(
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
-                            showTitles: true,
+                            showTitles: false,
                             getTitlesWidget: (value, meta) {
                               final index = value.toInt();
-                              if (index < 0 || index >= trackData.length) return const SizedBox.shrink();
-                              final date = trackData[index].date;
+                              if (index < 0 || index >= displayingTrackData.length) return const SizedBox.shrink();
+                              final date = displayingTrackData[index].date;
                               return Padding(
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Text(
@@ -420,7 +362,7 @@ class _TrackScreenState extends State<TrackScreen> {
                       borderData: FlBorderData(show: false),
                       lineBarsData: [
                         LineChartBarData(
-                          spots: trackData.asMap().entries.map((trackItem) {
+                          spots: displayingTrackData.asMap().entries.map((trackItem) {
 
                             final index = trackItem.key.toDouble();
                             final switches = trackItem.value.taskSwitches;
@@ -439,9 +381,8 @@ class _TrackScreenState extends State<TrackScreen> {
                 ),
                 SizedBox(height: 32),
                 Text(
-                  'Overflow',
+                  'Overtime',
                   style: TextStyle(
-                    fontFamily: "merriweather",
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF2E2E2E),
@@ -465,10 +406,10 @@ class _TrackScreenState extends State<TrackScreen> {
                             showTitles: true,
                             getTitlesWidget: (value, meta) {
                               final index = value.toInt();
-                              if (index < 0 || index >= trackData.length) {
+                              if (index < 0 || index >= displayingTrackData.length) {
                                 return const SizedBox.shrink();
                               }
-                              final date = trackData[index].date;
+                              final date = displayingTrackData[index].date;
                               return Text(
                                 DateFormat("MMM d").format(date),
                                 style: const TextStyle(fontSize: 12),
@@ -487,7 +428,7 @@ class _TrackScreenState extends State<TrackScreen> {
                         ),
                       ),
                       borderData: FlBorderData(show: false),
-                      barGroups: trackData.asMap().entries.map((trackItem) {
+                      barGroups: displayingTrackData.asMap().entries.map((trackItem) {
                         final index = trackItem.key;
                         final track = trackItem.value;
                         

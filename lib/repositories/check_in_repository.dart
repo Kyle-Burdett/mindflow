@@ -3,12 +3,17 @@ import 'package:mindflow/models/check-in.dart';
 
 class CheckInRepository {
 
-  DocumentSnapshot? _lastCheckIn;
+  // DocumentSnapshot? _lastCheckIn;
+
+  String formatDate(DateTime date) {
+    return '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
 
   Future<bool> addCheckIn(String userId, DailyCheckInModel checkIn) async {
     try {
-      await FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').doc(checkIn.date.toString())
-      .set(checkIn.toMap(),SetOptions(merge: true));
+      print(checkIn.toMap());
+      await FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').doc(formatDate(checkIn.date))
+      .set(checkIn.toMap(), SetOptions(merge: true));
     } catch (e) {
       print("Cannot add checkin: $e");
       return false;
@@ -23,22 +28,11 @@ class CheckInRepository {
   }
 
   Future<List<DailyCheckInModel>?> fetchAllCheckInDetails(String userId, {int limit = 7}) async {
-      
-      Query query = FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').orderBy("date").limit(limit);
-
-      if (_lastCheckIn != null) {
-        query = query.startAfterDocument(_lastCheckIn!);
-      }
-
-      QuerySnapshot<Map<String, dynamic>>? documentData = (await query.get()) as QuerySnapshot<Map<String, dynamic>>?;
-      
-      if (documentData != null) {
-        if (documentData.docs.isNotEmpty) {
-          _lastCheckIn = documentData.docs.last;
-        }
-
-        return documentData.docs.map((doc) => DailyCheckInModel.fromDoc(doc)).toList();
-      }
-      return null;
+    QuerySnapshot<Map<String, dynamic>>? documentData = await FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').orderBy("date", descending: true).get();
+    if (documentData.docs.isNotEmpty) {
+      return documentData.docs.map((doc) => DailyCheckInModel.fromDoc(doc)).toList();
+    } else {
+      return [];
+    }
   }
 }

@@ -1,17 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
-class InsightsPage extends StatelessWidget {
-  // Example data — these would come from your backend in real use.
-  final double productivityLevel = 0.9; // 90%
-  final double workLifeBalanceLevel = 0.3; // 30%
-  final double isolationLevel = 0.4; // 40%
-  final double energyLevel = 0.6; // 60%
+class InsightsPage extends StatefulWidget {
+  @override
+  State<InsightsPage> createState() => _InsightsPageState();
+}
 
+class _InsightsPageState extends State<InsightsPage> {
+  
+  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFEDDC8), // light peach background
+    return ChangeNotifierProvider<CheckInViewModel>.value(
+      value: locator<CheckInViewModel>(),
+      child: Consumer<CheckInViewModel>(
+      builder: (context, model, child) {
+          double productivityLevel = locator<CheckInViewModel>().weeklyInsights!.avgProductivity; 
+          double workLifeBalanceLevel = locator<CheckInViewModel>().weeklyInsights!.avgWorkLifeBalance; 
+          double isolationLevel = locator<CheckInViewModel>().weeklyInsights!.avgIsolation; 
+          double energyLevel = locator<CheckInViewModel>().weeklyInsights!.avgEnergy; 
+        return Scaffold(
+      backgroundColor: Color(0xFFFFF3E9),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -20,12 +33,6 @@ class InsightsPage extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.settings, color: Colors.black),
-          )
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -42,24 +49,28 @@ class InsightsPage extends StatelessWidget {
 
               // Productivity Card
               _buildFocusCard(
+                context: context,
                 title: "Productivity",
-                color: Colors.green,
+                color: productivityLevel > 0.7 ? Colors.green : productivityLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: productivityLevel,
                 description:
-                    "Over the past 7 days, you have had excellent productivity levels",
-                footer: "No actions recommended",
+                    "Over the past 7 days, you have had a productivity score of %${(productivityLevel * 100).toStringAsFixed(0)}",
+                footer: productivityLevel >= 0.5 || productivityLevel == 0 ? "No actions recommended" : "Check out these resources to improve your productivity",
               ),
 
               const SizedBox(height: 16),
 
               // Work/Life Balance
               _buildFocusCard(
+                context: context,
                 title: "Work/Life Balance",
-                color: Colors.redAccent,
+                color: workLifeBalanceLevel > 0.7 ? Colors.green : workLifeBalanceLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: workLifeBalanceLevel,
                 description:
-                    "Over the past 7 days, you’ve worked an average of 2 hours extra per day than you planned",
-                footer: "Check out these tricks for managing working hours",
+                  locator<CheckInViewModel>().weeklyInsights!.totalOvertimeHours > 0 
+                  ? "Over the past 7 days, you’ve worked ${locator<CheckInViewModel>().weeklyInsights?.totalOvertimeHours} hours overtime"
+                  : "Over the past 7 days, you have had a Work/Life Balance score of %${(workLifeBalanceLevel * 100).toStringAsFixed(0)}",
+                footer: workLifeBalanceLevel >= 0.5 || workLifeBalanceLevel == 0 ? "No actions recommended" : "Check out these tricks for managing working hours",
                 showArrow: true,
               ),
 
@@ -72,13 +83,14 @@ class InsightsPage extends StatelessWidget {
 
               // Isolation
               _buildFocusCard(
+                context: context,
                 title: "Isolation",
-                color: Colors.blueAccent,
+                color: isolationLevel > 0.7 ? Colors.green : isolationLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: isolationLevel,
                 description:
-                    "Over the past 7 days, you’ve mentioned being isolated 4 times",
+                    "Over the past 7 days, you have had an Isolation score of %${(isolationLevel * 100).toStringAsFixed(0)}",
                 footer:
-                    "Read about how to improve that when working from home.",
+                   isolationLevel >= 0.5 || isolationLevel == 0 ? "No actions recommended" : "Read about how to improve that when working from home.",
                 showArrow: true,
               ),
 
@@ -86,13 +98,14 @@ class InsightsPage extends StatelessWidget {
 
               // Energy
               _buildFocusCard(
+                context: context,
                 title: "Energy",
-                color: Colors.yellow.shade600,
+                color: energyLevel > 0.7 ? Colors.green : energyLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: energyLevel,
                 description:
-                    "You’ve had moderate energy levels over the past week",
+                    "Over the past 7 days, you have had an energy score of %${(energyLevel * 100).toStringAsFixed(0)}",
                 footer:
-                    "If you feel you need to, check out some additional resources on how you can improve this",
+                    energyLevel >= 0.5 || energyLevel == 0 ? "No actions recommended" : "If you feel you need to, check out some additional resources on how you can improve this",
                 showArrow: false,
               ),
 
@@ -101,25 +114,14 @@ class InsightsPage extends StatelessWidget {
           ),
         ),
       ),
-
-      // Bottom navigation bar
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.black,
-        currentIndex: 2,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.track_changes), label: 'Track'),
-          BottomNavigationBarItem(icon: Icon(Icons.insights), label: 'Insights'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Resources'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-        ],
-      ),
+    );
+    }
+    ),
     );
   }
 
   Widget _buildFocusCard({
+    required BuildContext context,
     required String title,
     required Color color,
     required double percent,
@@ -127,61 +129,68 @@ class InsightsPage extends StatelessWidget {
     required String footer,
     bool showArrow = false,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: title == "Productivity" ? Colors.blueAccent : Colors.transparent,
-          width: title == "Productivity" ? 2 : 0,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 4),
+    return GestureDetector(
+      onTap: () {
+        if (percent < 0.5) {
+          context.go('/home-second');
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: title == "Productivity" ? Colors.blueAccent : Colors.transparent,
+            width: title == "Productivity" ? 2 : 0,
           ),
-        ],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircularPercentIndicator(
-            radius: 30.0,
-            lineWidth: 8.0,
-            percent: percent,
-            progressColor: color,
-            backgroundColor: Colors.grey.shade200,
-            circularStrokeCap: CircularStrokeCap.round,
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(title,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                    if (showArrow)
-                      const Spacer(),
-                    if (showArrow)
-                      const Icon(Icons.arrow_forward_ios, size: 14),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(description,
-                    style:
-                        const TextStyle(fontSize: 13, color: Colors.black87)),
-                const SizedBox(height: 6),
-                Text(footer,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.15),
+              blurRadius: 6,
+              offset: const Offset(0, 4),
             ),
-          ),
-        ],
+          ],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircularPercentIndicator(
+              radius: 30.0,
+              lineWidth: 8.0,
+              percent: percent,
+              progressColor: color,
+              backgroundColor: Colors.grey.shade200,
+              circularStrokeCap: CircularStrokeCap.round,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(title,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      if (showArrow)
+                        const Spacer(),
+                      if (showArrow)
+                        const Icon(Icons.arrow_forward_ios, size: 14),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(percent == 0 ? "More data needed before we can provide insights" : description,
+                      style:
+                          const TextStyle(fontSize: 13, color: Colors.black87)),
+                  const SizedBox(height: 6),
+                  Text(footer,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

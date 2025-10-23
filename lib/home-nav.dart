@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/homepage.dart';
+import 'package:mindflow/insights.dart';
 import 'package:mindflow/resource_page.dart';
 import 'package:mindflow/settings_page.dart';
 import 'package:mindflow/track.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
 
 class MainHomeScreen extends StatefulWidget {
-  const MainHomeScreen({super.key});
+  final int? initialIndex;
+  const MainHomeScreen({super.key, this.initialIndex});
 
   @override
   State<MainHomeScreen> createState() => _MainHomeScreenState();
 }
 
 class _MainHomeScreenState extends State<MainHomeScreen> {
+
+  @override
+  void initState() {
+    locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(DateTime.now());
+    _currentIndex = widget.initialIndex ?? 0;
+    super.initState();
+  }
 
   // Index defines what tab we're on from the bottom navigation bar.
   int _currentIndex = 0;
@@ -50,18 +61,10 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   List<Widget> screens = [
     Homepage(),
     TrackScreen(),
-    Center(
-      child: Text(
-        'Insights Placeholder',
-        style: TextStyle(
-          fontSize: 24,
-        ),
-      ),
-    ),
+    InsightsPage(),
     ResourcesPage(),
     SettingsPage(),
   ];
-  
 
   @override
   Widget build(BuildContext context) {

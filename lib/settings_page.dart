@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const Color _kPrimaryColor = Color(0xFFDB863B);
-const Color _kBackgroundColor = Color(0xFFFFDBBB);
+const Color _kBackgroundColor = Color(0xFFFFF3E9);
 
 
 class UserData {
@@ -154,6 +154,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   }
 
+  void _handleUpdatePlannedHours() {
+    print('Update button pressed. Planned Start: ${_settings.plannedStartTime.format(context)}, Planned End: ${_settings.plannedEndTime.format(context)}');
+  }
+
   @override
   Widget build(BuildContext context) {
     final customTheme = Theme.of(context).copyWith(
@@ -194,9 +198,31 @@ class _SettingsPageState extends State<SettingsPage> {
 
 
                           _buildPlannedWorkingHoursSection(context),
+
+                          const SizedBox(height: 16),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: _handleUpdatePlannedHours,
+                              style: ElevatedButton.styleFrom(
+
+                                backgroundColor: _kPrimaryColor,
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size(double.infinity, 48),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text(
+                                'Update',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 16),
 
-                          // About Section
                           _buildAboutSection(context),
                           const SizedBox(height: 30),
                         ],
@@ -246,15 +272,6 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
 
-          // ElevatedButton(
-          //   onPressed: _handleSave,
-          //   style: ElevatedButton.styleFrom(
-          //     backgroundColor: _kPrimaryColor,
-          //     foregroundColor: Colors.white,
-          //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          //   ),
-          //   child: const Text('Save Changes'),
-          // ),
         ],
       ),
     );
@@ -353,34 +370,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
-          ),
-
-          _buildReminderRow(
-            context,
-            title: 'Weekly Progress Reports',
-            description: 'Receive weekly summaries of your wellness trends',
-            showDivider: true,
-            value: _settings.weeklyProgressReport,
-            onChanged: (bool newValue) {
-              setState(() {
-                _settings =
-                    _settings.copyWith(weeklyProgressReport: newValue);
-              });
-            },
-          ),
-
-          _buildReminderRow(
-            context,
-            title: 'Achievement Notification',
-            description: 'Get notified when you reach wellness milestones',
-            showDivider: false,
-            value: _settings.achievementNotifications,
-            onChanged: (bool newValue) {
-              setState(() {
-                _settings =
-                    _settings.copyWith(achievementNotifications: newValue);
-              });
-            },
           ),
         ],
       ),

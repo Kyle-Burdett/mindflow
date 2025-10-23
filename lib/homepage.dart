@@ -1,23 +1,18 @@
-// lib/test.dart
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
 
-// --- App Colors and Utility Classes (Kept as is) ---
 class _AppColors {
-  // pulled to resemble your mock (peach + orange)
-  static const bg = Color(0xFFF6EADF);            // page background
-  static const card = Colors.white;               // cards
-  static const accent = Color(0xFFE88D3D);        // orange buttons/icons
-  static const accentSoft = Color(0xFFFFE1C9);    // soft orange chip
+  static const card = Colors.white;
+  static const accent = Color(0xFFE88D3D);
+  static const accentSoft = Color(0xFFFFE1C9);
   static const textDark = Color(0xFF2B2B2B);
   static const textMid = Color(0xFF6B6B6B);
   static const divider = Color(0xFFEFE6DE);
 }
 
-// Custom Card Wrapper
 class _Card extends StatelessWidget {
   final Widget child;
   const _Card({required this.child});
@@ -122,6 +117,7 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
     selected = today;
+    
   }
 
   // Start of week = Sunday
@@ -154,6 +150,13 @@ class _HomepageState extends State<Homepage> {
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 
+  bool _isDateBeforeOrToday(DateTime date) {
+    final now = DateTime.now();
+    final aDate = DateTime(date.year, date.month, date.day);
+    final bDate = DateTime(now.year, now.month, now.day);
+    return aDate.isBefore(bDate) || aDate.isAtSameMomentAs(bDate);
+  }
+
   String _two(int n) => n < 10 ? '0$n' : '$n';
 
   @override
@@ -172,7 +175,7 @@ class _HomepageState extends State<Homepage> {
             children: [
               const SizedBox(height: 4),
               Text(
-                'Welcome back, Kyle!',
+                'Welcome back, ${locator<UserViewModel>().user.name}!',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: _AppColors.textDark,
@@ -222,7 +225,12 @@ class _HomepageState extends State<Homepage> {
                       labelTop: _weekdayNameShort(d.weekday),
                       labelBottom: '${d.day}',
                       selected: isSelected,
-                      onTap: () => setState(() => selected = d),
+                      onTap: () => setState(() {
+                        selected = d;
+                        locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(d);
+                        locator<CheckInViewModel>().currentDate = d;
+                        print("Current date: ${locator<CheckInViewModel>().currentCheckInDate}");
+                      }),
                     );
                   }).toList(),
                 ),
@@ -233,6 +241,7 @@ class _HomepageState extends State<Homepage> {
           const SizedBox(height: 18),
     
           // Analytics for date
+          if (_isDateBeforeOrToday(selected))
           _Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,7 +272,7 @@ class _HomepageState extends State<Homepage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text("Add Today's Check-in"),
+                    child: const Text("Add Check-in"),
                   ),
                 ),
               ],
@@ -307,10 +316,7 @@ class _HomepageState extends State<Homepage> {
             width: double.infinity,
             child: FilledButton(
               onPressed: () {
-                // TODO: navigate to tips
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Open wellness tips")),
-                );
+                context.go('/home-second');
               },
               style: FilledButton.styleFrom(
                 backgroundColor: _AppColors.accent,
