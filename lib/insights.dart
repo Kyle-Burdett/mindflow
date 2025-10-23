@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -48,6 +49,7 @@ class _InsightsPageState extends State<InsightsPage> {
               const SizedBox(height: 16),
 
               // Productivity Card
+              if (locator<UserViewModel>().user.productivity == true)
               _buildFocusCard(
                 context: context,
                 title: "Productivity",
@@ -61,6 +63,7 @@ class _InsightsPageState extends State<InsightsPage> {
               const SizedBox(height: 16),
 
               // Work/Life Balance
+              if (locator<UserViewModel>().user.balance == true)
               _buildFocusCard(
                 context: context,
                 title: "Work/Life Balance",
@@ -74,14 +77,10 @@ class _InsightsPageState extends State<InsightsPage> {
                 showArrow: true,
               ),
 
-              const SizedBox(height: 24),
-              const Text(
-                "Other fields",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
               const SizedBox(height: 16),
 
               // Isolation
+              if (locator<UserViewModel>().user.isolation == true)
               _buildFocusCard(
                 context: context,
                 title: "Isolation",
@@ -97,6 +96,75 @@ class _InsightsPageState extends State<InsightsPage> {
               const SizedBox(height: 16),
 
               // Energy
+              if (locator<UserViewModel>().user.energy == true)
+              _buildFocusCard(
+                context: context,
+                title: "Energy",
+                color: energyLevel > 0.7 ? Colors.green : energyLevel > 0.4 ? Colors.yellow : Colors.redAccent,
+                percent: energyLevel,
+                description:
+                    "Over the past 7 days, you have had an energy score of %${(energyLevel * 100).toStringAsFixed(0)}",
+                footer:
+                    energyLevel >= 0.5 || energyLevel == 0 ? "No actions recommended" : "If you feel you need to, check out some additional resources on how you can improve this",
+                showArrow: false,
+              ),
+
+              const SizedBox(height: 24),
+              const Text(
+                "Other fields",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 16),
+
+              // Productivity Card
+              if (locator<UserViewModel>().user.productivity != true)
+              _buildFocusCard(
+                context: context,
+                title: "Productivity",
+                color: productivityLevel > 0.7 ? Colors.green : productivityLevel > 0.4 ? Colors.yellow : Colors.redAccent,
+                percent: productivityLevel,
+                description:
+                    "Over the past 7 days, you have had a productivity score of %${(productivityLevel * 100).toStringAsFixed(0)}",
+                footer: productivityLevel >= 0.5 || productivityLevel == 0 ? "No actions recommended" : "Check out these resources to improve your productivity",
+              ),
+
+              const SizedBox(height: 16),
+
+              // Work/Life Balance
+              if (locator<UserViewModel>().user.balance != true)
+              _buildFocusCard(
+                context: context,
+                title: "Work/Life Balance",
+                color: workLifeBalanceLevel > 0.7 ? Colors.green : workLifeBalanceLevel > 0.4 ? Colors.yellow : Colors.redAccent,
+                percent: workLifeBalanceLevel,
+                description:
+                  locator<CheckInViewModel>().weeklyInsights!.totalOvertimeHours > 0 
+                  ? "Over the past 7 days, you’ve worked ${locator<CheckInViewModel>().weeklyInsights?.totalOvertimeHours} hours overtime"
+                  : "Over the past 7 days, you have had a Work/Life Balance score of %${(workLifeBalanceLevel * 100).toStringAsFixed(0)}",
+                footer: workLifeBalanceLevel >= 0.5 || workLifeBalanceLevel == 0 ? "No actions recommended" : "Check out these tricks for managing working hours",
+                showArrow: true,
+              ),
+
+              const SizedBox(height: 16),
+
+              // Isolation
+              if (locator<UserViewModel>().user.isolation != true)
+              _buildFocusCard(
+                context: context,
+                title: "Isolation",
+                color: isolationLevel > 0.7 ? Colors.green : isolationLevel > 0.4 ? Colors.yellow : Colors.redAccent,
+                percent: isolationLevel,
+                description:
+                    "Over the past 7 days, you have had an Isolation score of %${(isolationLevel * 100).toStringAsFixed(0)}",
+                footer:
+                   isolationLevel >= 0.5 || isolationLevel == 0 ? "No actions recommended" : "Read about how to improve that when working from home.",
+                showArrow: true,
+              ),
+
+              const SizedBox(height: 16),
+
+              // Energy
+              if (locator<UserViewModel>().user.energy != true)
               _buildFocusCard(
                 context: context,
                 title: "Energy",

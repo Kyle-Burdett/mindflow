@@ -190,7 +190,6 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
 
   void _saveAndExit() {
     locator<CheckInViewModel>().setCheckInHours(mapActivitiesToTaskHours(activities));
-    print("${locator<CheckInViewModel>().currentDailyCheckIn.id} + ${locator<CheckInViewModel>().currentDailyCheckIn.taskHours['Project 1']!.first.start}");
     context.pop();
   }
 

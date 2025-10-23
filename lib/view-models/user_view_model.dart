@@ -164,6 +164,7 @@ class UserViewModel extends ChangeNotifier {
     bool? success = await addUser(user);
 
     if (success == true && context.mounted) {
+      await locator<CheckInViewModel>().fetchAllCheckIns(user.id!);
       context.go('/home'); // Changed to context.go
     }
 

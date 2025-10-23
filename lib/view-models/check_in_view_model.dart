@@ -90,6 +90,15 @@ class CheckInViewModel extends ChangeNotifier {
     }
   }
 
+  String setCheckInText() {
+    final checkIn = dailyCheckInList.firstWhere((checkIn) => checkIn.id == currentCheckInDate, orElse: () => DailyCheckInModel(id: "", date: currentDate, energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {}));
+    if (checkIn.id.isEmpty) {
+      return "Add Check-in";
+    } else {
+      return "Edit Check-in";
+    }
+  }
+
   void setCheckInHours(Map<String, List<TimeRange>> taskHours) {
     currentDailyCheckIn.taskHours = taskHours;
     notifyListeners();
@@ -100,7 +109,7 @@ class CheckInViewModel extends ChangeNotifier {
 
     checkIn.taskHours.forEach((_, timeRanges) {
       for (var range in timeRanges) {
-        totalHours += range.end.difference(range.start).inHours / 60.0;
+        totalHours += range.end.difference(range.start).inHours;
       }
     });
 
@@ -164,8 +173,8 @@ class CheckInViewModel extends ChangeNotifier {
       sumWLB += scores["workLifeBalance"]!;
       sumIso += scores["isolation"]!;
 
-      sumHours = getTotalWorkHours(c);
-      sumOvertime = getOvertimeHours(c);
+      sumHours += getTotalWorkHours(c);
+      sumOvertime += getOvertimeHours(c);
     }
 
     final count = recent.length;

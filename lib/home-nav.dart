@@ -53,7 +53,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     BottomNavigationBarItem(
       icon: Image.asset('assets/icons/settings.png', height: 28),
       activeIcon: Image.asset('assets/icons/settings-selected.png', height: 28),
-      label: "Resources",
+      label: "Settings",
     ),
   ];
 
