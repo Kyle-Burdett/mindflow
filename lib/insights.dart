@@ -101,21 +101,6 @@ class InsightsPage extends StatelessWidget {
           ),
         ),
       ),
-
-      // Bottom navigation bar
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.black,
-        currentIndex: 2,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.track_changes), label: 'Track'),
-          BottomNavigationBarItem(icon: Icon(Icons.insights), label: 'Insights'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Resources'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-        ],
-      ),
     );
   }
 

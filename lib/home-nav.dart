@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/homepage.dart';
+import 'package:mindflow/insights.dart';
 import 'package:mindflow/resource_page.dart';
 import 'package:mindflow/settings_page.dart';
 import 'package:mindflow/track.dart';
@@ -58,14 +59,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   List<Widget> screens = [
     Homepage(),
     TrackScreen(),
-    Center(
-      child: Text(
-        'Insights Placeholder',
-        style: TextStyle(
-          fontSize: 24,
-        ),
-      ),
-    ),
+    InsightsPage(),
     ResourcesPage(),
     SettingsPage(),
   ];

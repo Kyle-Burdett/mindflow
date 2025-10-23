@@ -117,6 +117,7 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
     selected = today;
+    
   }
 
   // Start of week = Sunday
