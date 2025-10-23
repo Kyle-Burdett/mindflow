@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/homepage.dart';
 import 'package:mindflow/resource_page.dart';
 import 'package:mindflow/settings_page.dart';
 import 'package:mindflow/track.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
 
 class MainHomeScreen extends StatefulWidget {
   const MainHomeScreen({super.key});
@@ -12,6 +14,12 @@ class MainHomeScreen extends StatefulWidget {
 }
 
 class _MainHomeScreenState extends State<MainHomeScreen> {
+
+  @override
+  void initState() {
+    locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(DateTime.now());
+    super.initState();
+  }
 
   // Index defines what tab we're on from the bottom navigation bar.
   int _currentIndex = 0;

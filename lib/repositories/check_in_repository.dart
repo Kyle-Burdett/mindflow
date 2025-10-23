@@ -11,6 +11,7 @@ class CheckInRepository {
 
   Future<bool> addCheckIn(String userId, DailyCheckInModel checkIn) async {
     try {
+      print(checkIn.toMap());
       await FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').doc(formatDate(checkIn.date))
       .set(checkIn.toMap(), SetOptions(merge: true));
     } catch (e) {
@@ -27,7 +28,7 @@ class CheckInRepository {
   }
 
   Future<List<DailyCheckInModel>?> fetchAllCheckInDetails(String userId, {int limit = 7}) async {
-    QuerySnapshot<Map<String, dynamic>>? documentData = await FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').orderBy("date").get();
+    QuerySnapshot<Map<String, dynamic>>? documentData = await FirebaseFirestore.instance.collection('users').doc(userId).collection('daily-check-in').orderBy("date", descending: true).get();
     if (documentData.docs.isNotEmpty) {
       return documentData.docs.map((doc) => DailyCheckInModel.fromDoc(doc)).toList();
     } else {

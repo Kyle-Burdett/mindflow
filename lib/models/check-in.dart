@@ -50,10 +50,10 @@ class DailyCheckInModel {
     return DailyCheckInModel(
       id: doc.id,
       date: (data['date'] as Timestamp).toDate(),
-      energyScore: data['energyScore'] ?? 0,
-      moodScore: data['moodScore'] ?? 0,
-      productivityScore: data['productivityScore'] ?? 0,
-      stressScore: data['stressScore'] ?? 0,
+      energyScore: data['energyScore'] ?? 5,
+      moodScore: data['moodScore'] ?? 5,
+      productivityScore: data['productivityScore'] ?? 5,
+      stressScore: data['stressScore'] ?? 5,
       notes: data['notes'] ?? '',
       tags: (data['tags'] as List<dynamic>? ?? [])
           .map((e) => Tag.fromMap(Map<String, dynamic>.from(e)))
@@ -75,6 +75,7 @@ class DailyCheckInModel {
       'energyScore': energyScore,
       'moodScore': moodScore,
       'productivityScore': productivityScore,
+      'stressScore': productivityScore,
       'notes': notes,
       'tags': tags.map((t) => t.toMap()).toList(),
       'taskHours': taskHours.map((taskName, ranges) => MapEntry(

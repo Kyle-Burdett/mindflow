@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
 
 class _AppColors {
-  static const bg = Color(0xFFF6EADF);
   static const card = Colors.white;
   static const accent = Color(0xFFE88D3D);
   static const accentSoft = Color(0xFFFFE1C9);
@@ -224,7 +224,12 @@ class _HomepageState extends State<Homepage> {
                       labelTop: _weekdayNameShort(d.weekday),
                       labelBottom: '${d.day}',
                       selected: isSelected,
-                      onTap: () => setState(() => selected = d),
+                      onTap: () => setState(() {
+                        selected = d;
+                        locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(d);
+                        locator<CheckInViewModel>().currentDate = d;
+                        print("Current date: ${locator<CheckInViewModel>().currentCheckInDate}");
+                      }),
                     );
                   }).toList(),
                 ),

@@ -189,14 +189,15 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
 }
 
   void _saveAndExit() {
-    locator<CheckInViewModel>().currentDailyCheckIn.taskHours = mapActivitiesToTaskHours(activities);
+    locator<CheckInViewModel>().setCheckInHours(mapActivitiesToTaskHours(activities));
+    print("${locator<CheckInViewModel>().currentDailyCheckIn.id} + ${locator<CheckInViewModel>().currentDailyCheckIn.taskHours['Project 1']!.first.start}");
     context.pop();
   }
 
   double _getTimelineHeight() {
     const double hourHeight = 60.0;
     final startHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!);
-    final endHour = const TimeOfDay(hour: 18, minute: 0);
+    final endHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!);
     final totalHoursToDisplay = (endHour.hour - startHour.hour);
 
     return (totalHoursToDisplay + 1) * hourHeight + 32;
@@ -312,8 +313,8 @@ class TimelineView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const double hourHeight = 60.0;
-    final startHour = const TimeOfDay(hour: 9, minute: 0);
-    final endHour = const TimeOfDay(hour: 18, minute: 0);
+    final startHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!);
+    final endHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!);
     final totalHoursToDisplay = (endHour.hour - startHour.hour);
 
     final hoursToDisplay = List.generate(totalHoursToDisplay + 1, (index) {
@@ -374,8 +375,8 @@ class TimelineView extends StatelessWidget {
 
                 Positioned(
                   left: 30,
-                  top: ((_timeToMinutes(const TimeOfDay(hour: 9, minute: 0)) - _timeToMinutes(startHour)) / 60) * hourHeight,
-                  height: ((_timeToMinutes(const TimeOfDay(hour: 17, minute: 0)) - _timeToMinutes(const TimeOfDay(hour: 9, minute: 0))) / 60) * hourHeight,
+                  top: ((_timeToMinutes(startHour) - _timeToMinutes(startHour)) / 60) * hourHeight,
+                  height: ((_timeToMinutes(endHour) - _timeToMinutes(startHour)) / 60) * hourHeight,
                   child: Container(
                     width: 16,
                     decoration: BoxDecoration(
