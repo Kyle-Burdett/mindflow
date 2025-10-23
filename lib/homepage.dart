@@ -241,7 +241,6 @@ class _HomepageState extends State<Homepage> {
           const SizedBox(height: 18),
     
           // Analytics for date
-          if (_isDateBeforeOrToday(selected))
           _Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,12 +252,8 @@ class _HomepageState extends State<Homepage> {
                     color: _AppColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  'No wellness data recorded for this date',
-                  style: TextStyle(color: _AppColors.textMid),
-                ),
                 const SizedBox(height: 16),
+                if (_isDateBeforeOrToday(selected))
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
@@ -272,7 +267,7 @@ class _HomepageState extends State<Homepage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text("Add Check-in"),
+                    child: Text(locator<CheckInViewModel>().setCheckInText()),
                   ),
                 ),
               ],
@@ -298,12 +293,15 @@ class _HomepageState extends State<Homepage> {
                   ),
                 ),
                 const SizedBox(height: 6),
+                if (locator<CheckInViewModel>().weeklyInsights?.avgProductivity == 0)
+                Center(child: Text("More data needed before we can provide insights", style: TextStyle(fontWeight: FontWeight.w700)),),
+                if (locator<CheckInViewModel>().weeklyInsights?.avgProductivity != 0)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: const [
-                    _Metric(icon: Icons.favorite_border, value: '7', label: 'Avg Stress'),
-                    _Metric(icon: Icons.adjust, value: '7', label: 'Avg Productivity'),
-                    _Metric(icon: Icons.access_time, value: '7', label: 'Total Hours'),
+                  children: [
+                    _Metric(icon: Icons.favorite_border, value: (locator<CheckInViewModel>().weeklyInsights!.avgEnergy * 10).toStringAsFixed(0), label: 'Avg Energy'),
+                    _Metric(icon: Icons.adjust, value: (locator<CheckInViewModel>().weeklyInsights!.avgProductivity * 10).toStringAsFixed(0), label: 'Avg Productivity'),
+                    _Metric(icon: Icons.access_time, value: locator<CheckInViewModel>().weeklyInsights!.avgTotalHours.toStringAsFixed(0), label: 'Total Hours'),
                   ],
                 ),
               ],

@@ -8,6 +8,8 @@ class UserModel {
   String? password;
   bool? productivity;
   bool? balance;
+  bool? isolation;
+  bool? energy;
   bool? reminder;
   DateTime? reminderTime;
   
@@ -20,6 +22,8 @@ class UserModel {
       this.name,
       this.password,
       this.productivity,
+      this.energy,
+      this.isolation,
       this.reminder,
       this.reminderTime,
       this.startTime,
@@ -34,6 +38,8 @@ class UserModel {
       endTime: (data['endTime'] as Timestamp).toDate(),
       productivity: data['productivity'] as bool?,
       balance: data['balance'] as bool?,
+      energy: data['energy'] as bool?,
+      isolation: data['isolation'] as bool?,
       reminder: data['reminder'] as bool?,
       reminderTime: (data['reminderTime'] as Timestamp).toDate(),
     );

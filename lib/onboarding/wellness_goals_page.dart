@@ -14,7 +14,7 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
   bool improveBalance = false;
   bool monitorProductivity = false;
   bool trackEnergyLevels = false;
-  bool reduceStress = false;
+  bool isolation = false;
   bool buildWorkHabits = false;
 
   @override
@@ -66,11 +66,6 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
             ),
 
         SizedBox(height: 30),
-
-
-            buildToggle("Reduce Burnout", reduceBurnout, (val) {
-              setState(() => reduceBurnout = val);
-            }),
             buildToggle("Improve work-life balance", improveBalance, (val) {
               setState(() => improveBalance = val);
             }),
@@ -80,8 +75,8 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
             buildToggle("Track energy levels", trackEnergyLevels, (val) {
               setState(() => trackEnergyLevels = val);
             }),
-            buildToggle("Reduce stress and anxiety", reduceStress, (val) {
-              setState(() => reduceStress = val);
+            buildToggle("Reduce Isolation", isolation, (val) {
+              setState(() => isolation = val);
             }),
             SizedBox(height: 40),
             Row(
@@ -103,6 +98,8 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
                   onPressed: () {
                     model.user.productivity = monitorProductivity;
                     model.user.balance = improveBalance;
+                    model.user.energy = trackEnergyLevels;
+                    model.user.isolation = isolation;
                     context.push('/onboarding/planning');
                   },
                   style: ElevatedButton.styleFrom(

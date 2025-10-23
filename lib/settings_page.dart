@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
 
 const Color _kPrimaryColor = Color(0xFFDB863B);
 const Color _kBackgroundColor = Color(0xFFFFF3E9);
@@ -118,12 +120,12 @@ class _SettingsPageState extends State<SettingsPage> {
     _settings = AppSettings(
       name: user.name ?? "",
       email: user.email ?? "",
-      plannedStartTime: const TimeOfDay(hour: 8, minute: 0),
-      plannedEndTime: const TimeOfDay(hour: 13, minute: 0),
+      plannedStartTime: TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!),
+      plannedEndTime: TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!),
       dailyCheckInReminder: true,
       weeklyProgressReport: true,
       achievementNotifications: true,
-      reminderTime: const TimeOfDay(hour: 9, minute: 0),
+      reminderTime: const TimeOfDay(hour: 17, minute: 0),
       targetMoodScore: 7.0,
       targetProductivityScore: 8.0,
       maxStressLevel: 4.0,
@@ -155,6 +157,14 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _handleUpdatePlannedHours() {
+    locator<UserViewModel>().addUser(locator<UserViewModel>().user);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('User updated successfully!'),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
     print('Update button pressed. Planned Start: ${_settings.plannedStartTime.format(context)}, Planned End: ${_settings.plannedEndTime.format(context)}');
   }
 
@@ -449,7 +459,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   'Start Time',
                   _settings.plannedStartTime,
                       (time) => setState(
-                          () => _settings = _settings.copyWith(plannedStartTime: time)),
+                          () {
+                            _settings = _settings.copyWith(plannedStartTime: time);
+                            locator<UserViewModel>().user.startTime = DateTime(2000, 1, 1, time.hour, time.minute);
+                          }),
                 ),
               ),
               const SizedBox(width: 16),
@@ -459,7 +472,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   'End Time',
                   _settings.plannedEndTime,
                       (time) => setState(
-                          () => _settings = _settings.copyWith(plannedEndTime: time)),
+                          () { 
+                            _settings = _settings.copyWith(plannedEndTime: time);
+                            locator<UserViewModel>().user.endTime = DateTime(2000, 1, 1, time.hour, time.minute);
+                          }),
                 ),
               ),
             ],
