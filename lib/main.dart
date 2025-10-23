@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/daily_check_in.dart';
 import 'package:mindflow/firebase_options.dart';
+import 'package:mindflow/forgot_password.dart'; // IMPORTED
 import 'package:mindflow/home-nav.dart';
 import 'package:mindflow/onboarding/about_you_page.dart';
 import 'package:mindflow/onboarding/planning_page.dart';
@@ -12,21 +13,69 @@ import 'package:mindflow/onboarding/wellness_goals_page.dart';
 import 'package:mindflow/signIN-signUP.dart';
 import 'package:mindflow/splash.dart';
 import 'package:mindflow/working_hours_page.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+
   setupLocator();
-  runApp(MyApp());
+  // Wrap MyApp with ChangeNotifierProvider to make UserViewModel available
+  runApp(
+    ChangeNotifierProvider<UserViewModel>(
+      create: (_) => locator<UserViewModel>(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
   final GoRouter _router = GoRouter(
+    // Initial redirect logic to check auth status immediately
+    redirect: (BuildContext context, GoRouterState state) {
+      final auth = FirebaseAuth.instance;
+      final isAuthenticated = auth.currentUser != null;
+
+      // Check if the user is currently in any onboarding path
+      final isOnboardingPath = state.matchedLocation.startsWith('/onboarding');
+
+      // Paths that do NOT require authentication
+      const List<String> unauthenticatedPaths = [
+        '/', // Splash screen
+        '/get-started',
+        '/sign-in',
+        '/sign-up',
+        '/forgot-password', // ADDED forgot password path here
+      ];
+
+      final isGoingToProtectedPath =
+          !unauthenticatedPaths.contains(state.matchedLocation) && !isOnboardingPath;
+
+      // 1. If user is NOT authenticated and tries to access a protected path, redirect to sign-in
+      if (!isAuthenticated && isGoingToProtectedPath) {
+        return '/get-started';
+      }
+
+      // 2. If user IS authenticated and tries to access an unauthenticated path (like sign-in), redirect to home
+      // We only redirect to home if they are not already in the middle of onboarding.
+      if (isAuthenticated && unauthenticatedPaths.contains(state.matchedLocation) && state.matchedLocation != '/') {
+        // You would ideally check here if onboarding is complete (e.g., via UserViewModel.isOnboarded)
+        // For now, we assume if they hit sign-in/up while authenticated, they should go home.
+        return '/home';
+      }
+
+      // No redirect needed
+      return null;
+    },
+    // Use the auth state stream to automatically trigger a router refresh
+    refreshListenable: ValueNotifier<User?>(FirebaseAuth.instance.currentUser),
+
     routes: [
       GoRoute(
         path: '/',
@@ -44,6 +93,12 @@ class MyApp extends StatelessWidget {
         path: '/sign-up',
         builder: (context, state) => const SignUpPage(),
       ),
+      // --- ADDED FORGOT PASSWORD ROUTE ---
+      GoRoute(
+        path: '/forgot-password',
+        builder: (context, state) => const ForgotPasswordPage(),
+      ),
+      // --- END AUTH ROUTES ---
       GoRoute(
         path: '/home',
         builder: (context, state) => const MainHomeScreen(),
@@ -56,21 +111,22 @@ class MyApp extends StatelessWidget {
         path: '/check-in-hours',
         builder: (context, state) => const WorkingHoursPage(),
       ),
+      // --- ONBOARDING ROUTES ---
       GoRoute(
         path: '/onboarding/welcome',
-        builder: (context, state) => WelcomeScreen(),
+        builder: (context, state) => WelcomeScreen(), // Assuming this is the correct class name for Welcome
       ),
       GoRoute(
         path: '/onboarding/tell-us',
-        builder: (context, state) => TellUsScreen(),
+        builder: (context, state) => TellUsScreen(), // Assuming this is the correct class name for AboutYouPage
       ),
       GoRoute(
         path: '/onboarding/goals',
-        builder: (context, state) => WellnessGoalsScreen(),
+        builder: (context, state) => WellnessGoalsScreen(), // Assuming this is the correct class name for WellnessGoalsPage
       ),
       GoRoute(
         path: '/onboarding/planning',
-        builder: (context, state) => PlanningScreen(),
+        builder: (context, state) => PlanningScreen(), // Assuming this is the correct class name for PlanningPage
       ),
     ],
   );
@@ -81,7 +137,8 @@ class MyApp extends StatelessWidget {
       title: 'Mindflow',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFDB863B)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFDB863B)),
+        // Add other theme customizations here if needed
       ),
       routerConfig: _router,
     );

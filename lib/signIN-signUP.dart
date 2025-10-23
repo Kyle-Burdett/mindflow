@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+
 import 'package:go_router/go_router.dart';
-import 'package:mindflow/core/locator.dart';
-import 'package:mindflow/view-models/user_view_model.dart';
+
 import 'package:provider/provider.dart';
 
+import 'package:mindflow/view-models/user_view_model.dart'; // Assumed
+
+// Note: Removed the unused 'package:mindflow/core/locator.dart' import.
+
 const double spacing = 4.0;
+const Color primaryColor = Color(0xFFB66623); // Existing color constant
+const Color backgroundColor = Color(0xFFFFF1E6); // Existing color constant
 
 // ---------------- GET STARTED PAGE ----------------
 class GetStartedPage extends StatelessWidget {
@@ -12,15 +18,16 @@ class GetStartedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Content remains the same as your previous version.
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF1E6),
+      backgroundColor: backgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(spacing * 8),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.favorite_border, color: Color(0xFFB66623), size: 80),
+              const Icon(Icons.favorite_border, color: primaryColor, size: 80),
               const SizedBox(height: spacing * 3),
               const Text('MindFlow',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
@@ -34,7 +41,7 @@ class GetStartedPage extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFB66623),
+                    backgroundColor: primaryColor,
                     padding: const EdgeInsets.all(spacing * 3),
                   ),
                   onPressed: () => context.push('/sign-in'),
@@ -71,14 +78,31 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
+    // Wrap the stateful content in the Consumer to access UserViewModel
+    return Consumer<UserViewModel>(
+      builder: (context, model, child) => _SignInContent(model: model),
+    );
+  }
+}
 
-    return ChangeNotifierProvider<UserViewModel>.value(
-      value: locator<UserViewModel>(),
-      child: Consumer<UserViewModel>(
-      builder: (context, model, child) => Scaffold(
-      backgroundColor: const Color(0xFFFFF1E6),
+// Private Stateful Widget to manage password visibility state
+class _SignInContent extends StatefulWidget {
+  final UserViewModel model;
+  const _SignInContent({required this.model});
+
+  @override
+  State<_SignInContent> createState() => _SignInContentState();
+}
+
+class _SignInContentState extends State<_SignInContent> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  bool _isPasswordVisible = false; // State to control password visibility
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: backgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(spacing * 8),
         child: Center(
@@ -96,36 +120,74 @@ class SignInPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: spacing * 6),
+                // --- Email Field ---
                 TextField(
                   controller: emailController,
                   decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.email_outlined, color: Color(0xFFB66623)),
+                    prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
                     labelText: 'Email',
                     hintText: 'Enter your email',
                   ),
                 ),
                 const SizedBox(height: spacing * 3),
+                // --- Password Field (with eye icon) ---
                 TextField(
                   controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.lock_outline, color: Color(0xFFB66623)),
+                  obscureText: !_isPasswordVisible, // Use the state variable
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
                     labelText: 'Password',
                     hintText: 'Enter your password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: primaryColor,
+                      ),
+                      onPressed: () {
+                        // Toggle the state
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
                 ),
-                const SizedBox(height: spacing * 6),
+                const SizedBox(height: spacing * 1),
+                // --- FORGOT PASSWORD BUTTON ---
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => context.push('/forgot-password'),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: primaryColor, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: spacing * 4),
+                // --- Sign In Button ---
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFB66623),
+                      backgroundColor: primaryColor,
                       padding: const EdgeInsets.all(spacing * 3),
                     ),
-                    onPressed: () {
-                      model.signIn(context, emailController.text, passwordController.text);
+                    onPressed: widget.model.isLoading ? null : () {
+                      // *** MODIFIED: Pass context to the signIn method ***
+                      widget.model.signIn(context, emailController.text, passwordController.text);
                     },
-                    child: const Text('Sign In'),
+                    child: widget.model.isLoading
+                        ? const Center(child: SizedBox(
+                      height: 24, width: 24,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                    ))
+                        : const Text('Sign In'),
                   ),
                 ),
                 const SizedBox(height: spacing * 3),
@@ -137,7 +199,7 @@ class SignInPage extends StatelessWidget {
                       onTap: () => context.replace('/sign-up'),
                       child: const Text(
                         'Sign Up',
-                        style: TextStyle(color: Color(0xFFB66623), fontWeight: FontWeight.bold),
+                        style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -152,7 +214,7 @@ class SignInPage extends StatelessWidget {
           ),
         ),
       ),
-          )));
+    );
   }
 }
 
@@ -162,15 +224,35 @@ class SignUpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    final confirmPasswordController = TextEditingController();
+    // Wrap the stateful content in the Consumer to access UserViewModel
+    return Consumer<UserViewModel>(
+      builder: (context, model, child) => _SignUpContent(model: model),
+    );
+  }
+}
 
-    return ChangeNotifierProvider<UserViewModel>.value(
-      value: locator<UserViewModel>(), 
-      child: Consumer<UserViewModel>(
-      builder: (context, model, child) => Scaffold(
-      backgroundColor: const Color(0xFFFFF1E6),
+// Private Stateful Widget to manage password visibility states
+class _SignUpContent extends StatefulWidget {
+  final UserViewModel model;
+  const _SignUpContent({required this.model});
+
+  @override
+  State<_SignUpContent> createState() => _SignUpContentState();
+}
+
+class _SignUpContentState extends State<_SignUpContent> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  // States to control password visibility for both fields
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: backgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(spacing * 8),
         child: Center(
@@ -178,7 +260,7 @@ class SignUpPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.favorite_border, color: Color(0xFFB66623), size: 80),
+                const Icon(Icons.favorite_border, color: primaryColor, size: 80),
                 const SizedBox(height: spacing * 3),
                 const Text('MindFlow',
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
@@ -186,47 +268,85 @@ class SignUpPage extends StatelessWidget {
                 const Text('Start your wellness journey today',
                     textAlign: TextAlign.center),
                 const SizedBox(height: spacing * 6),
+                // --- Email Field ---
                 TextField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.email_outlined, color: Color(0xFFB66623)),
+                    prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
                     labelText: 'Email',
                     hintText: 'Enter your email',
                   ),
                 ),
                 const SizedBox(height: spacing * 3),
+                // --- Password Field (with eye icon) ---
                 TextField(
                   controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.lock_outline, color: Color(0xFFB66623)),
+                  obscureText: !_isPasswordVisible,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
                     labelText: 'Password',
-                    hintText: 'Enter your password',
+                    hintText: 'Enter your password (min 8 characters)',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: primaryColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: spacing * 3),
+                // --- Confirm Password Field (with eye icon) ---
                 TextField(
                   controller: confirmPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.lock_outline, color: Color(0xFFB66623)),
+                  obscureText: !_isConfirmPasswordVisible,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
                     labelText: 'Confirm Password',
-                    hintText: 'Enter your password',
+                    hintText: 'Re-enter your password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: primaryColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: spacing * 6),
+                // --- Create Account Button ---
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFB66623),
+                      backgroundColor: primaryColor,
                       padding: const EdgeInsets.all(spacing * 3),
                     ),
-                    onPressed: () {
-                      model.signUp(context, emailController.text, passwordController.text, confirmPasswordController.text);
+                    onPressed: widget.model.isLoading ? null : () {
+                      if (passwordController.text != confirmPasswordController.text) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Passwords do not match!')),
+                        );
+                        return;
+                      }
+                      // *** MODIFIED: Pass context to the signUp method ***
+                      widget.model.signUp(context, emailController.text, passwordController.text);
                     },
-                    child: const Text('Create Account'),
+                    child: widget.model.isLoading
+                        ? const Center(child: SizedBox(
+                      height: 24, width: 24,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                    ))
+                        : const Text('Create Account'),
                   ),
                 ),
                 const SizedBox(height: spacing * 3),
@@ -238,7 +358,7 @@ class SignUpPage extends StatelessWidget {
                       onTap: () => context.replace('/sign-in'),
                       child: const Text(
                         'Sign In',
-                        style: TextStyle(color: Color(0xFFB66623), fontWeight: FontWeight.bold),
+                        style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -253,6 +373,6 @@ class SignUpPage extends StatelessWidget {
           ),
         ),
       ),
-    )));
+    );
   }
 }

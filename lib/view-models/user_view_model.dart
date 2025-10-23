@@ -1,18 +1,35 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:go_router/go_router.dart';
+
 import 'package:mindflow/core/locator.dart';
+
 import 'package:mindflow/models/user.dart';
+
 import 'package:mindflow/repositories/user_repository.dart';
+
 import 'package:mindflow/view-models/check_in_view_model.dart';
+
 
 class UserViewModel extends ChangeNotifier {
 
   UserModel user = UserModel(reminder: false);
-  
+
   final UserRepository _userRepository = UserRepository();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+// --- UI State Management ---
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+// --- END UI State Management ---
 
   Future<bool?> addUser(UserModel user) async {
     bool success = await _userRepository.addUser(user);
@@ -36,128 +53,197 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-  Future<User?> authRegisterUser(String email, String password) async {
+  // *** MODIFIED: Added BuildContext to show SnackBar on error ***
+  Future<User?> authRegisterUser(BuildContext context, String email, String password) async {
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
-      return userCredential.user; 
+      return userCredential.user;
     } on FirebaseAuthException catch (e) {
-      debugPrint('Error: ${e.message}');
+// Show Firebase specific errors to the user
+      String message;
+      if (e.code == 'weak-password') {
+        message = 'The password is too weak.';
+      } else if (e.code == 'email-already-in-use') {
+        message = 'An account already exists for that email.';
+      } else {
+        message = 'Registration failed: ${e.message}';
+      }
+      _showErrorSnackBar(context, message); // *** MODIFIED: Pass context ***
       return null;
     }
   }
 
-  signUp(BuildContext context, String email, String password, String confirmPassword) async {
-    // Signup validation
+// --- SIGN UP METHOD ---
+  signUp(BuildContext context, String email, String password) async {
+    _setLoading(true);
+
+// Email validation
     if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter an email address.'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      _showErrorSnackBar(context, 'Please enter an email address.'); // *** MODIFIED: Pass context ***
+      _setLoading(false);
       return;
     }
 
     final emailRegex = RegExp(r'^[\w\.\-\+]+@([\w-]+\.)+[\w-]{2,4}$');
-
     if (!emailRegex.hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter a valid email address.'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      _showErrorSnackBar(context, 'Please enter a valid email address.'); // *** MODIFIED: Pass context ***
+      _setLoading(false);
       return;
     }
 
-    // Password validation
-    String? passwordMessage = validatePassword(password, confirmPassword);
-    if (passwordMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(passwordMessage),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
-        ),
-      );
+// Password validation check
+    final passwordError = validatePassword(password);
+    if (passwordError != null) {
+      _showErrorSnackBar(context, passwordError); // *** MODIFIED: Pass context ***
+      _setLoading(false);
       return;
     }
-    
-    final createdUser = await authRegisterUser(email, password);
+
+    // *** MODIFIED: Pass context to authRegisterUser ***
+    final createdUser = await authRegisterUser(context, email, password);
+
     if (createdUser != null) {
       user.id = createdUser.uid;
+// Navigate to onboarding success, replacing the sign-up page
+      if (context.mounted) {
+        context.go('/onboarding/welcome'); // Changed to context.go
+      }
     }
 
+    _setLoading(false);
+  }
 
-    // DateTime now = DateTime.now();
+// --- NEW METHOD FOR FORGOT PASSWORD ---
+  Future<bool> sendPasswordResetEmail(BuildContext context, String email) async {
+    _setLoading(true);
 
-    // user.email = email;
-    // user.name = "Kyle";
-    // user.startTime = DateTime(now.year, now.month, now.day, 9, 0);
-    // user.endTime = DateTime(now.year, now.month, now.day, 17, 0);
-    // user.balance = true;
-    // user.productivity = true;
-    // user.reminder = true;
-    // user.reminderTime = DateTime(now.year, now.month, now.day, 18, 0);
+    if (email.isEmpty) {
+      _showErrorSnackBar(context, 'Please enter an email address.'); // *** MODIFIED: Pass context ***
+      _setLoading(false);
+      return false;
+    }
 
-    if (context.mounted) {
-      context.push('/onboarding/welcome');
+    try {
+      await _auth.sendPasswordResetEmail(email: email.trim());
+
+// Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password reset link sent to your email!'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      _setLoading(false);
+      return true;
+
+    } on FirebaseAuthException catch (e) {
+// Show error message
+      String message;
+      if (e.code == 'user-not-found') {
+        message = 'No user found for that email.';
+      } else {
+        message = 'Error sending reset email: ${e.message}';
+      }
+      _showErrorSnackBar(context, message); // *** MODIFIED: Pass context ***
+      _setLoading(false);
+      return false;
+    } catch (e) {
+      _showErrorSnackBar(context, 'An unexpected error occurred: ${e.toString()}'); // *** MODIFIED: Pass context ***
+      _setLoading(false);
+      return false;
     }
   }
 
   Future<void> onboardUser(BuildContext context) async {
+    _setLoading(true);
 
     bool? success = await addUser(user);
 
     if (success == true && context.mounted) {
-      context.push('/home');
+      context.go('/home'); // Changed to context.go
     }
+
+    _setLoading(false);
   }
 
-  Future<User?> authSignIn(String email, String password) async {
+  // *** MODIFIED: Added BuildContext to show SnackBar on error ***
+  Future<User?> authSignIn(BuildContext context, String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
       return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+// Show Firebase specific errors to the user
+      String message;
+      if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
+        message = 'Invalid email or password.';
+      } else {
+        message = 'Sign in failed: ${e.message}';
+      }
+      _showErrorSnackBar(context, message); // *** MODIFIED: Pass context ***
+      return null;
     } catch (e) {
-      print('Error: $e');
+      _showErrorSnackBar(context, 'An unexpected error occurred: ${e.toString()}'); // *** MODIFIED: Pass context ***
       return null;
     }
   }
 
+// --- SIGN IN METHOD ---
   Future<void> signIn(BuildContext context, String email, String password) async {
-   // Mock login. Needs firebase auth
-  
-    // User user = await authSignIn(email, password);
-    User? userFetched =  await authSignIn(email, password);
-    String userId = "";
-    if (userFetched != null) {
-      userId = userFetched.uid;
-    } else {
+    _setLoading(true);
+
+// Email validation
+    if (email.isEmpty) {
+      _showErrorSnackBar(context, 'Please enter an email address.'); // *** MODIFIED: Pass context ***
+      _setLoading(false);
       return;
     }
-    
+
+// Password validation check
+    final passwordError = validatePassword(password);
+    if (passwordError != null) {
+      _showErrorSnackBar(context, passwordError); // *** MODIFIED: Pass context ***
+      _setLoading(false);
+      return;
+    }
+
+    // *** MODIFIED: Pass context to authSignIn ***
+    User? userFetched = await authSignIn(context, email, password);
+
+    if (userFetched == null) {
+      _setLoading(false);
+      return; // Failed auth is handled in authSignIn
+    }
+
+    String userId = userFetched.uid;
 
     bool? success = await fetchUserDetails(userId);
 
+// Assuming CheckInViewModel is correctly set up
     locator<CheckInViewModel>().fetchAllCheckIns(userId);
 
+// User is signed in. The GoRouter redirect handles moving to /home,
+// BUT we manually check if onboarding is needed here (if name is missing)
     if (success == true && context.mounted && user.name != null && user.name!.isNotEmpty) {
+// If user details are found and onboarding seems complete, go to home
       context.go('/home');
-    } 
+    } else if (context.mounted) {
+// User signed in but details not found or name is empty, send them to onboarding!
+      context.go('/onboarding/welcome');
+    }
+
+    _setLoading(false);
   }
 
-  String? validatePassword(String password, String confirmPassword) {
+  String? validatePassword(String password) {
+// Note: If you want to use this validation across multiple UI pages,
+// you may want to return the error message instead of showing a SnackBar here.
     final hasUpperCase = RegExp(r'[A-Z]');
     final hasLowerCase = RegExp(r'[a-z]');
     final hasDigits = RegExp(r'\d');
@@ -175,11 +261,22 @@ class UserViewModel extends ChangeNotifier {
       return 'Password must contain at least one digit';
     } else if (!hasSpecialCharacters.hasMatch(password)) {
       return 'Password must contain at least one special character';
-    } else if (password != confirmPassword) {
-      return 'Passwords do not match';
     }
 
     return null;
+  }
+
+// Helper to show SnackBar (now requires a BuildContext)
+  // *** MODIFIED: This method now requires and uses BuildContext directly ***
+  void _showErrorSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
 }
