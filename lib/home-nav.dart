@@ -8,7 +8,8 @@ import 'package:mindflow/track.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
 
 class MainHomeScreen extends StatefulWidget {
-  const MainHomeScreen({super.key});
+  final int? initialIndex;
+  const MainHomeScreen({super.key, this.initialIndex});
 
   @override
   State<MainHomeScreen> createState() => _MainHomeScreenState();
@@ -19,6 +20,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   @override
   void initState() {
     locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(DateTime.now());
+    _currentIndex = widget.initialIndex ?? 0;
     super.initState();
   }
 
@@ -63,7 +65,6 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     ResourcesPage(),
     SettingsPage(),
   ];
-  
 
   @override
   Widget build(BuildContext context) {

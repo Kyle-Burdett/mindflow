@@ -44,7 +44,7 @@ class ResourcesPage extends StatefulWidget {
 }
 
 class _ResourcesPageState extends State<ResourcesPage> {
-  final Color backgroundColor = const Color(0xFFFFDBBB);
+  final Color backgroundColor = Color(0xFFFFF3E9);
   final Color primaryColor = const Color(0xFFDB863B);
 
   String activeTab = "All";
@@ -80,23 +80,11 @@ class _ResourcesPageState extends State<ResourcesPage> {
       body: SafeArea(
         child: Column(
           children: [
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.black,
-                        size: 24,
-                      ),
-                    ),
-                  ),
                   const Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -329,7 +317,6 @@ class _ResourcesPageState extends State<ResourcesPage> {
           ],
         ),
       ),
-      // bottomNavigationBar
     );
   }
 }

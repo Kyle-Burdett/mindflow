@@ -57,7 +57,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
       id: "1",
       name: "Project 1",
       color: Colors.red.shade400,
-      bgColor: Colors.orange.shade200,
+      bgColor: Color(0xFFFFF3E9),
       timeSlots: [
         TimeSlot(start: const TimeOfDay(hour: 10, minute: 0), end: const TimeOfDay(hour: 13, minute: 0))
       ],
@@ -215,7 +215,7 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
   @override
   Widget build(BuildContext context) {
 
-    const Color pageBackgroundColor = Color(0xFFFFDBBB);
+    const Color pageBackgroundColor = Color(0xFFFFF3E9);
 
     return ChangeNotifierProvider<CheckInViewModel>.value(
       value: locator<CheckInViewModel>(),

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class InsightsPage extends StatelessWidget {
   // Example data — these would come from your backend in real use.
@@ -10,8 +14,11 @@ class InsightsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFEDDC8), // light peach background
+    return ChangeNotifierProvider<CheckInViewModel>.value(
+      value: locator<CheckInViewModel>(),
+      child: Consumer<CheckInViewModel>(
+      builder: (context, model, child) => Scaffold(
+      backgroundColor: Color(0xFFFFF3E9),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -20,12 +27,6 @@ class InsightsPage extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.settings, color: Colors.black),
-          )
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -42,6 +43,7 @@ class InsightsPage extends StatelessWidget {
 
               // Productivity Card
               _buildFocusCard(
+                context: context,
                 title: "Productivity",
                 color: Colors.green,
                 percent: productivityLevel,
@@ -54,6 +56,7 @@ class InsightsPage extends StatelessWidget {
 
               // Work/Life Balance
               _buildFocusCard(
+                context: context,
                 title: "Work/Life Balance",
                 color: Colors.redAccent,
                 percent: workLifeBalanceLevel,
@@ -72,6 +75,7 @@ class InsightsPage extends StatelessWidget {
 
               // Isolation
               _buildFocusCard(
+                context: context,
                 title: "Isolation",
                 color: Colors.blueAccent,
                 percent: isolationLevel,
@@ -86,6 +90,7 @@ class InsightsPage extends StatelessWidget {
 
               // Energy
               _buildFocusCard(
+                context: context,
                 title: "Energy",
                 color: Colors.yellow.shade600,
                 percent: energyLevel,
@@ -101,10 +106,11 @@ class InsightsPage extends StatelessWidget {
           ),
         ),
       ),
-    );
+    )));
   }
 
   Widget _buildFocusCard({
+    required BuildContext context,
     required String title,
     required Color color,
     required double percent,
@@ -112,61 +118,68 @@ class InsightsPage extends StatelessWidget {
     required String footer,
     bool showArrow = false,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: title == "Productivity" ? Colors.blueAccent : Colors.transparent,
-          width: title == "Productivity" ? 2 : 0,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 4),
+    return GestureDetector(
+      onTap: () {
+        if (percent < 0.4) {
+          context.go('/home-second');
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: title == "Productivity" ? Colors.blueAccent : Colors.transparent,
+            width: title == "Productivity" ? 2 : 0,
           ),
-        ],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircularPercentIndicator(
-            radius: 30.0,
-            lineWidth: 8.0,
-            percent: percent,
-            progressColor: color,
-            backgroundColor: Colors.grey.shade200,
-            circularStrokeCap: CircularStrokeCap.round,
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(title,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                    if (showArrow)
-                      const Spacer(),
-                    if (showArrow)
-                      const Icon(Icons.arrow_forward_ios, size: 14),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(description,
-                    style:
-                        const TextStyle(fontSize: 13, color: Colors.black87)),
-                const SizedBox(height: 6),
-                Text(footer,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.15),
+              blurRadius: 6,
+              offset: const Offset(0, 4),
             ),
-          ),
-        ],
+          ],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircularPercentIndicator(
+              radius: 30.0,
+              lineWidth: 8.0,
+              percent: percent,
+              progressColor: color,
+              backgroundColor: Colors.grey.shade200,
+              circularStrokeCap: CircularStrokeCap.round,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(title,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      if (showArrow)
+                        const Spacer(),
+                      if (showArrow)
+                        const Icon(Icons.arrow_forward_ios, size: 14),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(description,
+                      style:
+                          const TextStyle(fontSize: 13, color: Colors.black87)),
+                  const SizedBox(height: 6),
+                  Text(footer,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

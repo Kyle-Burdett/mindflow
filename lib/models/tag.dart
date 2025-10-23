@@ -1,7 +1,7 @@
 class Tag {
   final String category;
   final String name;
-  final num value;
+  final int value;
 
   Tag({
     required this.category,

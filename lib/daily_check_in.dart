@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
-import 'package:mindflow/models/check-in.dart';
 import 'package:mindflow/models/tag.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:provider/provider.dart';
@@ -67,9 +66,9 @@ class _DailyCheckInState extends State<DailyCheckIn> {
       value: locator<CheckInViewModel>(),
       child: Consumer<CheckInViewModel>(
       builder: (context, model, child) => Scaffold(
-      backgroundColor: const Color(0xFFFFDBBB),
+      backgroundColor: Color(0xFFFFF3E9),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFDBBB),
+        backgroundColor: const Color(0xFFFFF3E9),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),

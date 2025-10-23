@@ -316,10 +316,7 @@ class _HomepageState extends State<Homepage> {
             width: double.infinity,
             child: FilledButton(
               onPressed: () {
-                // TODO: navigate to tips
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Open wellness tips")),
-                );
+                context.go('/home-second');
               },
               style: FilledButton.styleFrom(
                 backgroundColor: _AppColors.accent,

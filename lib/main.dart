@@ -116,7 +116,11 @@ class MyApp extends StatelessWidget {
       // --- END AUTH ROUTES ---
       GoRoute(
         path: '/home',
-        builder: (context, state) => const MainHomeScreen(),
+        builder: (context, state) => MainHomeScreen(),
+      ),
+      GoRoute(
+        path: '/home-second',
+        builder: (context, state) => MainHomeScreen(initialIndex: 3),
       ),
       GoRoute(
         path: '/check-in',

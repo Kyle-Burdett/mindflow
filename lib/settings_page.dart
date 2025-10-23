@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const Color _kPrimaryColor = Color(0xFFDB863B);
-const Color _kBackgroundColor = Color(0xFFFFDBBB);
+const Color _kBackgroundColor = Color(0xFFFFF3E9);
 
 
 class UserData {
