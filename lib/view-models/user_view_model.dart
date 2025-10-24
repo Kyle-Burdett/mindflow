@@ -21,7 +21,7 @@ class UserViewModel extends ChangeNotifier {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-// --- UI State Management ---
+//UI State Management
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -29,7 +29,7 @@ class UserViewModel extends ChangeNotifier {
     _isLoading = loading;
     notifyListeners();
   }
-// --- END UI State Management ---
+
 
   Future<bool?> addUser(UserModel user) async {
     bool success = await _userRepository.addUser(user);
@@ -53,7 +53,7 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-  // *** MODIFIED: Added BuildContext to show SnackBar on error ***
+
   Future<User?> authRegisterUser(BuildContext context, String email, String password) async {
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(
@@ -62,7 +62,7 @@ class UserViewModel extends ChangeNotifier {
       );
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-// Show Firebase specific errors to the user
+
       String message;
       if (e.code == 'weak-password') {
         message = 'The password is too weak.';
@@ -76,7 +76,7 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-// --- SIGN UP METHOD ---
+// Sign up Method
   signUp(BuildContext context, String email, String password) async {
     _setLoading(true);
 
@@ -102,21 +102,21 @@ class UserViewModel extends ChangeNotifier {
       return;
     }
 
-    // *** MODIFIED: Pass context to authRegisterUser ***
+    // Pass context to authRegisterUser
     final createdUser = await authRegisterUser(context, email, password);
 
     if (createdUser != null) {
       user.id = createdUser.uid;
-// Navigate to onboarding success, replacing the sign-up page
+
       if (context.mounted) {
-        context.go('/onboarding/welcome'); // Changed to context.go
+        context.go('/onboarding/welcome');
       }
     }
 
     _setLoading(false);
   }
 
-// --- NEW METHOD FOR FORGOT PASSWORD ---
+
   Future<bool> sendPasswordResetEmail(BuildContext context, String email) async {
     _setLoading(true);
 
@@ -129,14 +129,14 @@ class UserViewModel extends ChangeNotifier {
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());
 
-// Show success message
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Password reset link sent to your email!'),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
         ),
-      );
+        );
       _setLoading(false);
       return true;
 
@@ -170,7 +170,7 @@ class UserViewModel extends ChangeNotifier {
     _setLoading(false);
   }
 
-  // *** MODIFIED: Added BuildContext to show SnackBar on error ***
+
   Future<User?> authSignIn(BuildContext context, String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -194,7 +194,7 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-// --- SIGN IN METHOD ---
+
   Future<void> signIn(BuildContext context, String email, String password) async {
     _setLoading(true);
 
@@ -213,19 +213,19 @@ class UserViewModel extends ChangeNotifier {
       return;
     }
 
-    // *** MODIFIED: Pass context to authSignIn ***
+
     User? userFetched = await authSignIn(context, email, password);
 
     if (userFetched == null) {
       _setLoading(false);
-      return; // Failed auth is handled in authSignIn
+      return;
     }
 
     String userId = userFetched.uid;
 
     bool? success = await fetchUserDetails(userId);
 
-// Assuming CheckInViewModel is correctly set up
+
     locator<CheckInViewModel>().fetchAllCheckIns(userId);
 
 // User is signed in. The GoRouter redirect handles moving to /home,
@@ -242,8 +242,7 @@ class UserViewModel extends ChangeNotifier {
   }
 
   String? validatePassword(String password) {
-// Note: If you want to use this validation across multiple UI pages,
-// you may want to return the error message instead of showing a SnackBar here.
+
     final hasUpperCase = RegExp(r'[A-Z]');
     final hasLowerCase = RegExp(r'[a-z]');
     final hasDigits = RegExp(r'\d');
@@ -266,8 +265,7 @@ class UserViewModel extends ChangeNotifier {
     return null;
   }
 
-// Helper to show SnackBar (now requires a BuildContext)
-  // *** MODIFIED: This method now requires and uses BuildContext directly ***
+
   void _showErrorSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

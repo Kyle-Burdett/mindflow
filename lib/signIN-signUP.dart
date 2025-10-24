@@ -4,21 +4,18 @@ import 'package:go_router/go_router.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:mindflow/view-models/user_view_model.dart'; // Assumed
-
-// Note: Removed the unused 'package:mindflow/core/locator.dart' import.
+import 'package:mindflow/view-models/user_view_model.dart';
 
 const double spacing = 4.0;
-const Color primaryColor = Color(0xFFB66623); // Existing color constant
-const Color backgroundColor = Color(0xFFFFF1E6); // Existing color constant
+const Color primaryColor = Color(0xFFB66623);
+const Color backgroundColor = Color(0xFFFFF1E6);
 
-// ---------------- GET STARTED PAGE ----------------
+// Get Started Page
 class GetStartedPage extends StatelessWidget {
   const GetStartedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Content remains the same as your previous version.
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Padding(
@@ -72,13 +69,12 @@ class GetStartedPage extends StatelessWidget {
   }
 }
 
-// ---------------- SIGN IN PAGE ----------------
+// Sign-in Page
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Wrap the stateful content in the Consumer to access UserViewModel
     return Consumer<UserViewModel>(
       builder: (context, model, child) => _SignInContent(model: model),
     );
@@ -97,7 +93,7 @@ class _SignInContent extends StatefulWidget {
 class _SignInContentState extends State<_SignInContent> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  bool _isPasswordVisible = false; // State to control password visibility
+  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -130,10 +126,10 @@ class _SignInContentState extends State<_SignInContent> {
                   ),
                 ),
                 const SizedBox(height: spacing * 3),
-                // --- Password Field (with eye icon) ---
+                //Password Field (with eye icon)
                 TextField(
                   controller: passwordController,
-                  obscureText: !_isPasswordVisible, // Use the state variable
+                  obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
                     labelText: 'Password',
@@ -144,7 +140,6 @@ class _SignInContentState extends State<_SignInContent> {
                         color: primaryColor,
                       ),
                       onPressed: () {
-                        // Toggle the state
                         setState(() {
                           _isPasswordVisible = !_isPasswordVisible;
                         });
@@ -153,7 +148,7 @@ class _SignInContentState extends State<_SignInContent> {
                   ),
                 ),
                 const SizedBox(height: spacing * 1),
-                // --- FORGOT PASSWORD BUTTON ---
+                // Forgot Password button
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -170,7 +165,7 @@ class _SignInContentState extends State<_SignInContent> {
                   ),
                 ),
                 const SizedBox(height: spacing * 4),
-                // --- Sign In Button ---
+                //Sign In Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -179,7 +174,6 @@ class _SignInContentState extends State<_SignInContent> {
                       padding: const EdgeInsets.all(spacing * 3),
                     ),
                     onPressed: widget.model.isLoading ? null : () {
-                      // *** MODIFIED: Pass context to the signIn method ***
                       widget.model.signIn(context, emailController.text, passwordController.text);
                     },
                     child: widget.model.isLoading
@@ -218,13 +212,12 @@ class _SignInContentState extends State<_SignInContent> {
   }
 }
 
-// ---------------- SIGN UP PAGE ----------------
+//Sign up Page
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Wrap the stateful content in the Consumer to access UserViewModel
     return Consumer<UserViewModel>(
       builder: (context, model, child) => _SignUpContent(model: model),
     );
@@ -268,7 +261,7 @@ class _SignUpContentState extends State<_SignUpContent> {
                 const Text('Start your wellness journey today',
                     textAlign: TextAlign.center),
                 const SizedBox(height: spacing * 6),
-                // --- Email Field ---
+                //Email Field
                 TextField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -279,7 +272,7 @@ class _SignUpContentState extends State<_SignUpContent> {
                   ),
                 ),
                 const SizedBox(height: spacing * 3),
-                // --- Password Field (with eye icon) ---
+                //Password Field (with eye icon)
                 TextField(
                   controller: passwordController,
                   obscureText: !_isPasswordVisible,
@@ -301,7 +294,7 @@ class _SignUpContentState extends State<_SignUpContent> {
                   ),
                 ),
                 const SizedBox(height: spacing * 3),
-                // --- Confirm Password Field (with eye icon) ---
+                //Confirm Password Field (with eye icon)
                 TextField(
                   controller: confirmPasswordController,
                   obscureText: !_isConfirmPasswordVisible,
@@ -323,7 +316,7 @@ class _SignUpContentState extends State<_SignUpContent> {
                   ),
                 ),
                 const SizedBox(height: spacing * 6),
-                // --- Create Account Button ---
+                //Create Account Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -338,7 +331,7 @@ class _SignUpContentState extends State<_SignUpContent> {
                         );
                         return;
                       }
-                      // *** MODIFIED: Pass context to the signUp method ***
+                      //Pass context to the signUp method
                       widget.model.signUp(context, emailController.text, passwordController.text);
                     },
                     child: widget.model.isLoading

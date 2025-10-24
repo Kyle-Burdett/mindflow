@@ -6,6 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="801a42eb-f47a-4ca3-bd04-ff9887b4809e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/forgot_password.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/forgot_password.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/onboarding/welcome_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/onboarding/welcome_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/signIN-signUP.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/signIN-signUP.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/view-models/user_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view-models/user_view_model.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,5 +90,16 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
     </layout>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/view-models/user_view_model.dart</url>
+          <line>231</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
