@@ -20,7 +20,13 @@ class _TrackScreenState extends State<TrackScreen> {
 
   Map<String, Color> categoryColors = {};
 
-  final idealHours = locator<UserViewModel>().user.endTime!.difference(locator<UserViewModel>().user.startTime!).inHours;
+  // Fetching user preferences when they start and finish work.
+  final endHours = DateTime(2000, 1, 1, locator<UserViewModel>().user.endTime!.hour, locator<UserViewModel>().user.endTime!.minute);
+  final startHours = DateTime(2000, 1, 1, locator<UserViewModel>().user.startTime!.hour, locator<UserViewModel>().user.startTime!.minute);
+
+  int idealHours = 8;
+
+
 
   List<TrackData> displayingTrackData = [];
 
@@ -35,7 +41,8 @@ class _TrackScreenState extends State<TrackScreen> {
 
   @override
   void initState() {
-    displayingTrackData = filterByDays(trackDataList, 7);
+    idealHours = endHours.difference(startHours).inHours;
+    displayingTrackData = filterByDays(trackDataList, 6);
     final tasks = {
       for (var d in displayingTrackData) ...d.taskHours.keys
     }.toList();
@@ -431,7 +438,7 @@ class _TrackScreenState extends State<TrackScreen> {
                       barGroups: displayingTrackData.asMap().entries.map((trackItem) {
                         final index = trackItem.key;
                         final track = trackItem.value;
-                        
+                        print("Ideal hours: $idealHours");
                         final overtimeHours = track.taskHours.values.reduce((a, b) => a + b) - idealHours;
                         
                         return BarChartGroupData(

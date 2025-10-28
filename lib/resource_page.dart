@@ -160,7 +160,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-
+                    
                   final allResources = snapshot.data!.docs.map((doc) {
 
                     print('✅ FIRESTORE CONNECTED: Fetched document ID: ${doc.id}');
@@ -172,6 +172,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                     return const Center(child: Text('No resources found in Firestore.'));
                   }
 
+                  // Filtering fetched resources by category selected.
                   final filteredResources = allResources
                       .where((r) => r.category.contains(activeTab))
                       .toList();

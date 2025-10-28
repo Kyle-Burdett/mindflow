@@ -45,6 +45,7 @@ class DailyCheckInModel {
     required this.taskHours,
   });
 
+  // Conversion to a usable form when reading data from the backend
   factory DailyCheckInModel.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
     return DailyCheckInModel(
@@ -69,6 +70,7 @@ class DailyCheckInModel {
     );
   }
 
+  // Mapping data to be sent to the backend
   Map<String, dynamic> toMap() {
     return {
       'date': Timestamp.fromDate(date),

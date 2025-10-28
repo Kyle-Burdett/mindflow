@@ -52,6 +52,8 @@ class UserModel {
       'endTime': Timestamp.fromDate(endTime!),
       'productivity': productivity,
       'balance': balance,
+      'energy': energy,
+      'isolation': isolation,
       'reminder': reminder,
       'reminderTime': reminderTime != null ? Timestamp.fromDate(reminderTime!) : FieldValue.serverTimestamp(),
     };

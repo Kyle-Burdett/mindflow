@@ -31,8 +31,8 @@ class UserViewModel extends ChangeNotifier {
   }
 // --- END UI State Management ---
 
-  Future<bool?> addUser(UserModel user) async {
-    bool success = await _userRepository.addUser(user);
+  Future<bool?> setUser(UserModel user) async {
+    bool success = await _userRepository.setUser(user);
     if (success) {
       print("Add user success!");
       return true;
@@ -76,40 +76,41 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-// --- SIGN UP METHOD ---
+  // --- SIGN UP METHOD ---
   signUp(BuildContext context, String email, String password) async {
     _setLoading(true);
 
-// Email validation
+    // Email validation
     if (email.isEmpty) {
-      _showErrorSnackBar(context, 'Please enter an email address.'); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(context, 'Please enter an email address.');
       _setLoading(false);
       return;
     }
 
     final emailRegex = RegExp(r'^[\w\.\-\+]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(email)) {
-      _showErrorSnackBar(context, 'Please enter a valid email address.'); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(context, 'Please enter a valid email address.');
       _setLoading(false);
       return;
     }
 
-// Password validation check
+    // Password validation check
     final passwordError = validatePassword(password);
     if (passwordError != null) {
-      _showErrorSnackBar(context, passwordError); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(context, passwordError);
       _setLoading(false);
       return;
     }
 
-    // *** MODIFIED: Pass context to authRegisterUser ***
+    // Register user using firebase auth if passing validation checks
     final createdUser = await authRegisterUser(context, email, password);
 
+    // Setting the user id to the one obtained from Firebase auth
     if (createdUser != null) {
       user.id = createdUser.uid;
-// Navigate to onboarding success, replacing the sign-up page
+      // Navigate to onboarding success, replacing the sign-up page
       if (context.mounted) {
-        context.go('/onboarding/welcome'); // Changed to context.go
+        context.go('/onboarding/welcome');
       }
     }
 
@@ -158,39 +159,41 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
+  // Onboard user used after onboarding flow is complete
   Future<void> onboardUser(BuildContext context) async {
     _setLoading(true);
 
-    bool? success = await addUser(user);
+    // creating user
+    bool? success = await setUser(user);
 
     if (success == true && context.mounted) {
       await locator<CheckInViewModel>().fetchAllCheckIns(user.id!);
-      context.go('/home'); // Changed to context.go
+      context.go('/home');
     }
 
     _setLoading(false);
   }
 
-  // *** MODIFIED: Added BuildContext to show SnackBar on error ***
   Future<User?> authSignIn(BuildContext context, String email, String password) async {
     try {
+      // firebase auth sign in
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-// Show Firebase specific errors to the user
+      // Show Firebase specific errors to the user
       String message;
       if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
         message = 'Invalid email or password.';
       } else {
         message = 'Sign in failed: ${e.message}';
       }
-      _showErrorSnackBar(context, message); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(context, message);
       return null;
     } catch (e) {
-      _showErrorSnackBar(context, 'An unexpected error occurred: ${e.toString()}'); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(context, 'An unexpected error occurred: ${e.toString()}');
       return null;
     }
   }
@@ -242,9 +245,8 @@ class UserViewModel extends ChangeNotifier {
     _setLoading(false);
   }
 
+  // Password validation function
   String? validatePassword(String password) {
-// Note: If you want to use this validation across multiple UI pages,
-// you may want to return the error message instead of showing a SnackBar here.
     final hasUpperCase = RegExp(r'[A-Z]');
     final hasLowerCase = RegExp(r'[a-z]');
     final hasDigits = RegExp(r'\d');
