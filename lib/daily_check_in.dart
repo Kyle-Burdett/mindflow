@@ -48,9 +48,22 @@ class _DailyCheckInState extends State<DailyCheckIn> {
     });
   }
 
-  void _handleSubmit() {
-    locator<CheckInViewModel>().addCheckIn(locator<CheckInViewModel>().currentDailyCheckIn);
-    context.pop();
+  // Function to process saving daily check-in data
+  void _handleSubmit() async {
+    // Check to ensure necessary field is not empty
+    if (locator<CheckInViewModel>().currentDailyCheckIn.taskHours.isNotEmpty) {
+      await locator<CheckInViewModel>().setCheckIn(context, locator<CheckInViewModel>().currentDailyCheckIn);
+    } else {
+      // Error message
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Add working hours to save the check-in."),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+    }
   }
 
   @override

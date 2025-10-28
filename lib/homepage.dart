@@ -293,9 +293,9 @@ class _HomepageState extends State<Homepage> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                if (locator<CheckInViewModel>().weeklyInsights?.avgProductivity == 0)
+                if (locator<CheckInViewModel>().weeklyInsights?.avgProductivity == 0 || locator<CheckInViewModel>().weeklyInsights == null)
                 Center(child: Text("More data needed before we can provide insights", style: TextStyle(fontWeight: FontWeight.w700)),),
-                if (locator<CheckInViewModel>().weeklyInsights?.avgProductivity != 0)
+                if (locator<CheckInViewModel>().weeklyInsights != null && locator<CheckInViewModel>().weeklyInsights?.avgProductivity != 0)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [

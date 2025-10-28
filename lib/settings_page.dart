@@ -157,7 +157,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _handleUpdatePlannedHours() {
-    locator<UserViewModel>().addUser(locator<UserViewModel>().user);
+    locator<UserViewModel>().setUser(locator<UserViewModel>().user);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('User updated successfully!'),

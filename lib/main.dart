@@ -21,7 +21,6 @@ import 'package:mindflow/view-models/user_view_model.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling background message: ${message.messageId}");
 }
 
 void main() async {
@@ -30,14 +29,15 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Handling firebase messages obtained when app is in a background state
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
+  // Initializing firebase messaging and requesting permission to use send notifications from the user
   final messaging = FirebaseMessaging.instance;
   await messaging.requestPermission();
-  print("FCM: ${await messaging.getToken()}");
+
 
   setupLocator();
-  // Wrap MyApp with ChangeNotifierProvider to make UserViewModel available
   runApp(
     ChangeNotifierProvider<UserViewModel>(
       create: (_) => locator<UserViewModel>(),
@@ -80,15 +80,14 @@ class MyApp extends StatelessWidget {
       if (isAuthenticated && unauthenticatedPaths.contains(state.matchedLocation) && state.matchedLocation != '/') {
         await locator<UserViewModel>().fetchUserDetails(auth.currentUser!.uid);
         await locator<CheckInViewModel>().fetchAllCheckIns(locator<UserViewModel>().user.id!);
-        // You would ideally check here if onboarding is complete (e.g., via UserViewModel.isOnboarded)
-        // For now, we assume if they hit sign-in/up while authenticated, they should go home.
+        // When opening the app while authenticated, we route them to the home screen
         return '/home';
       }
 
       // No redirect needed
       return null;
     },
-    // Use the auth state stream to automatically trigger a router refresh
+    // We use the auth state stream to automatically trigger a router refresh
     refreshListenable: ValueNotifier<User?>(FirebaseAuth.instance.currentUser),
 
     routes: [
@@ -108,12 +107,10 @@ class MyApp extends StatelessWidget {
         path: '/sign-up',
         builder: (context, state) => const SignUpPage(),
       ),
-      // --- ADDED FORGOT PASSWORD ROUTE ---
       GoRoute(
         path: '/forgot-password',
         builder: (context, state) => const ForgotPasswordPage(),
       ),
-      // --- END AUTH ROUTES ---
       GoRoute(
         path: '/home',
         builder: (context, state) => MainHomeScreen(),
@@ -133,19 +130,19 @@ class MyApp extends StatelessWidget {
       // --- ONBOARDING ROUTES ---
       GoRoute(
         path: '/onboarding/welcome',
-        builder: (context, state) => WelcomeScreen(), // Assuming this is the correct class name for Welcome
+        builder: (context, state) => WelcomeScreen(),
       ),
       GoRoute(
         path: '/onboarding/tell-us',
-        builder: (context, state) => TellUsScreen(), // Assuming this is the correct class name for AboutYouPage
+        builder: (context, state) => TellUsScreen(),
       ),
       GoRoute(
         path: '/onboarding/goals',
-        builder: (context, state) => WellnessGoalsScreen(), // Assuming this is the correct class name for WellnessGoalsPage
+        builder: (context, state) => WellnessGoalsScreen(),
       ),
       GoRoute(
         path: '/onboarding/planning',
-        builder: (context, state) => PlanningScreen(), // Assuming this is the correct class name for PlanningPage
+        builder: (context, state) => PlanningScreen(),
       ),
     ],
   );

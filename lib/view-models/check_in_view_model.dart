@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/models/check-in.dart';
 import 'package:mindflow/models/tag.dart';
@@ -24,21 +25,25 @@ class CheckInViewModel extends ChangeNotifier {
   
   final CheckInRepository _checkInRepository = CheckInRepository();
 
-  Future<void> addCheckIn(DailyCheckInModel checkIn) async {
+  Future<void> setCheckIn(BuildContext context, DailyCheckInModel checkIn) async {
     loading = true;
     notifyListeners();
     String userId = locator<UserViewModel>().user.id!;
-    bool success = await _checkInRepository.addCheckIn(userId, checkIn);
+    bool success = await _checkInRepository.setCheckIn(userId, checkIn);
     if (success) {
       dailyCheckInList.add(checkIn);
       trackData = dailyCheckInList.map((checkIn) => mapDailyCheckInToTrackData(checkIn)).toList();
       weeklyInsights = getWeeklyAverages(dailyCheckInList);
       print("Add check In success!");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Check in set successfully!')),
+      );
     } else {
       print("Add check in Failed.");
     }
     loading = false;
     notifyListeners();
+    context.pop();
   }
 
   Future<void> fetchCheckInDetails(String userId, String checkInId) async {
@@ -50,16 +55,19 @@ class CheckInViewModel extends ChangeNotifier {
     }
   }
 
+  // Function to fetch all user check-in data
   Future<void> fetchAllCheckIns(String userId) async {
     List<DailyCheckInModel>? dailyCheckIns = await _checkInRepository.fetchAllCheckInDetails(userId);
 
     if (dailyCheckIns != null) {
       dailyCheckInList.addAll(dailyCheckIns);
+      // Once we retrieve check-in data from the database we can convert that data to a usable format for the Track screen,
       trackData = dailyCheckInList.map((checkIn) => mapDailyCheckInToTrackData(checkIn)).toList();
+      trackData.sort((a, b) => a.date.compareTo(b.date));
       weeklyInsights = getWeeklyAverages(dailyCheckIns);
       
     } else {
-      print("Fetch users Failed!");
+      print("Fetch check-ins Failed!");
     }
   }
 
@@ -104,6 +112,7 @@ class CheckInViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Function to calculate the total hours the user worked in a single day
   double getTotalWorkHours(DailyCheckInModel checkIn) {
     double totalHours = 0;
 
@@ -116,17 +125,22 @@ class CheckInViewModel extends ChangeNotifier {
     return totalHours;
   }
 
+  // Overtime calculation by day
   double getOvertimeHours(DailyCheckInModel checkIn) {
+    // Fetches user preference data and compares the two to get their planned working hours
     final standardHours = locator<UserViewModel>().user.endTime!.difference(locator<UserViewModel>().user.startTime!).inHours;
     final total = getTotalWorkHours(checkIn);
+    // We return 0 if the user has no overtime
     return total > standardHours ? total - standardHours : 0;
   }
 
   Map<String, double> getDailyScores(DailyCheckInModel checkIn) {
  
+    // We fetch the tags that are selected by the user that are mapped to a category
     final productivityTags = checkIn.tags.where((t) => t.category == "productivity");
     final energyTags = checkIn.tags.where((t) => t.category == "energy");
 
+    // Here we calcuate the contribution tags make on our insight percentage scores
     double scoreFromTags(Iterable<Tag> tags) {
       if (tags.isEmpty) return 50;
       final total = tags.length;
@@ -134,11 +148,16 @@ class CheckInViewModel extends ChangeNotifier {
       return ((sum / total) * 50) + 50;
     }
 
-    final productivity = scoreFromTags(productivityTags);
-    final energy = scoreFromTags(energyTags);
+    // We calcuate the daily scores by combining our check-in data with the user rated scores and the tags they select
+    final productivity = scoreFromTags(productivityTags) * 25 / 100 + checkIn.productivityScore * 75 / 100;
+    final energy = scoreFromTags(energyTags) * 25 / 100 + checkIn.energyScore * 75 / 100;
 
     final overtime = getOvertimeHours(checkIn);
-    final workLifeBalance = ((100 - (overtime.clamp(0, 4) / 4) * 100).clamp(0, 100)).toDouble();
+
+    // W calculate work/life balance by how many overtime hours are worked from a range of 0-4. Since this is per day the small number is suitable.
+    double overtimeLimited = overtime.clamp(0, 4);
+    double overtimePercent = (overtimeLimited / 4) * 100;
+    double workLifeBalance = (100 - overtimePercent).clamp(0, 100).toDouble();
 
     final collaborativeCount = checkIn.tags.where((t) => t.name == "Collaborative").length;
     final blockedCount = checkIn.tags.where((t) => t.name == "Blocked").length;
@@ -155,29 +174,40 @@ class CheckInViewModel extends ChangeNotifier {
   }
 
   WeeklySummary getWeeklyAverages(List<DailyCheckInModel> checkIns) {
+    // Making sure we have enough data to provide relevant insights
     if (checkIns.isEmpty || checkIns.length < 7) {
       return  WeeklySummary(avgEnergy: 0, avgIsolation: 0, avgProductivity: 0, avgTotalHours: 0, avgWorkLifeBalance: 0, totalOvertimeHours: 0);
     }
 
-    // Sort descending by date
+    // Sortd dates in descending order
     checkIns.sort((a, b) => b.date.compareTo(a.date));
+
+    // We only use the last 7 days when measuring insights
     final recent = checkIns.take(7).toList();
 
     double sumProd = 0, sumEnergy = 0, sumWLB = 0, sumIso = 0, sumHours = 0, sumOvertime = 0;
 
-    for (var c in recent) {
-      final scores = getDailyScores(c);
+    // Calulating and fetching data for each check in for the week.
+    for (var checkin in recent) {
+      final scores = getDailyScores(checkin);
       
       sumProd += scores["productivity"]!;
       sumEnergy += scores["energy"]!;
       sumWLB += scores["workLifeBalance"]!;
       sumIso += scores["isolation"]!;
 
-      sumHours += getTotalWorkHours(c);
-      sumOvertime += getOvertimeHours(c);
+      // Sum hours and overtime are used to display to the user rather than in calculations
+      sumHours += getTotalWorkHours(checkin);
+      sumOvertime += getOvertimeHours(checkin);
     }
 
     final count = recent.length;
-    return WeeklySummary(avgProductivity: sumProd / count / 100, avgEnergy: sumEnergy / count / 100, avgWorkLifeBalance: sumWLB / count / 100, avgIsolation: sumIso / count / 100, avgTotalHours: sumHours, totalOvertimeHours: sumOvertime);
+    return WeeklySummary(
+      avgProductivity: sumProd / count / 100,
+      avgEnergy: sumEnergy / count / 100,
+      avgWorkLifeBalance: sumWLB / count / 100,
+      avgIsolation: sumIso / count / 100,
+      avgTotalHours: sumHours,
+      totalOvertimeHours: sumOvertime);
   }
 }
