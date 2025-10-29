@@ -26,7 +26,15 @@ class _TrackScreenState extends State<TrackScreen> {
 
   int idealHours = 8;
 
-
+  final graphColors = [
+      Colors.blue,
+      Colors.green,
+      Colors.purple,
+      Colors.red,
+      Colors.pink,
+      Colors.indigo,
+      Colors.orange,
+    ];
 
   List<TrackData> displayingTrackData = [];
 
@@ -39,6 +47,39 @@ class _TrackScreenState extends State<TrackScreen> {
     return data.where((item) => item.date.isAfter(filterLimit)).toList();
   }
 
+  List<TrackData> averageForMonth(List<TrackData> data) {
+  if (data.isEmpty) return [];
+
+  data.sort((a, b) => a.date.compareTo(b.date));
+
+  final int daysPerGroup = 7;
+  final List<TrackData> monthAverages = [];
+
+  for (int i = 0; i < data.length; i += daysPerGroup) {
+    final group = data.sublist(i, (i + daysPerGroup).clamp(0, data.length));
+
+    final Map<String, double> avgTaskHours = {};
+    for (final d in group) {
+      d.taskHours.forEach((task, hours) {
+        avgTaskHours[task] = (avgTaskHours[task] ?? 0) + hours;
+      });
+    }
+
+    final avgDate = group[group.length ~/ 2].date;
+
+    monthAverages.add(TrackData(
+      avgDate,
+      avgTaskHours,
+      [],
+      group.map((e) => e.moodScore).reduce((a, b) => a + b) / group.length,
+      group.map((e) => e.productivityScore).reduce((a, b) => a + b) / group.length,
+     (group.map((e) => e.taskSwitches).reduce((a, b) => a + b) / group.length).round(),
+    ));
+  }
+
+  return monthAverages;
+}
+
   @override
   void initState() {
     idealHours = endHours.difference(startHours).inHours;
@@ -46,16 +87,6 @@ class _TrackScreenState extends State<TrackScreen> {
     final tasks = {
       for (var d in displayingTrackData) ...d.taskHours.keys
     }.toList();
-
-    final graphColors = [
-      Colors.blue,
-      Colors.green,
-      Colors.purple,
-      Colors.red,
-      Colors.pink,
-      Colors.indigo,
-      Colors.orange,
-    ];
 
     // Mapping colors to different tasks to ensure consistency in Graph data.
     categoryColors = {
@@ -89,6 +120,7 @@ class _TrackScreenState extends State<TrackScreen> {
                       GestureDetector(
                         onTap: () => setState(() {
                           trackView = 'lastWeek';
+                          idealHours = endHours.difference(startHours).inHours;
                           displayingTrackData = filterByDays(trackDataList, 7);
                         }),
                         child: Container(
@@ -110,7 +142,10 @@ class _TrackScreenState extends State<TrackScreen> {
                       GestureDetector(
                         onTap: () => setState(() {
                           trackView = 'lastMonth';
-                          displayingTrackData = filterByDays(trackDataList, 30);
+                          setState(() {
+                            idealHours = endHours.difference(startHours).inHours * 5;
+                            displayingTrackData = averageForMonth(trackDataList);
+                          });
                         }),
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -131,6 +166,7 @@ class _TrackScreenState extends State<TrackScreen> {
                       GestureDetector(
                         onTap: () => setState(() {
                           trackView = 'lastThreeMonths';
+                          idealHours = endHours.difference(startHours).inHours * 20;
                           displayingTrackData = filterByDays(trackDataList, 90);
                         }),
                         child: Container(
@@ -216,7 +252,7 @@ class _TrackScreenState extends State<TrackScreen> {
                                   BarChartRodStackItem(
                                     fromY,
                                     toY,
-                                    categoryColors[name],
+                                    categoryColors[name] ?? graphColors[categoryColors.length + 1 % graphColors.length],
                                   ),
                                 );
                                 fromY = toY;
@@ -439,7 +475,11 @@ class _TrackScreenState extends State<TrackScreen> {
                         final index = trackItem.key;
                         final track = trackItem.value;
                         print("Ideal hours: $idealHours");
-                        final overtimeHours = track.taskHours.values.reduce((a, b) => a + b) - idealHours;
+                        double overtimeHours = track.taskHours.values.reduce((a, b) => a + b) - idealHours;
+                        if (overtimeHours < 0) {
+                          overtimeHours = 0;
+                        }
+
                         
                         return BarChartGroupData(
                           x: index,
