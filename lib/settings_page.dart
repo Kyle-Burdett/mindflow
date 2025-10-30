@@ -327,6 +327,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 _settings =
                     _settings.copyWith(dailyCheckInReminder: newValue);
               });
+              locator<UserViewModel>().user.reminder = newValue;
             },
           ),
 
@@ -341,40 +342,40 @@ class _SettingsPageState extends State<SettingsPage> {
                 const Spacer(),
                 InkWell(
                   onTap: () async {
-                    final TimeOfDay? picked = await showTimePicker(
-                      context: context,
-                      initialTime: _settings.reminderTime,
-                      builder: (BuildContext context, Widget? child) {
-                        return Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: ColorScheme.light(
-                              primary: _kPrimaryColor,
-                              onPrimary: Colors.white,
-                              surface: Colors.white,
-                              onSurface: Colors.black,
-                            ),
-                            timePickerTheme: _getTimePickerThemeData(),
-                          ),
-                          child: child!,
-                        );
-                      },
-                    );
-                    if (picked != null) {
-                      setState(
-                              () => _settings = _settings.copyWith(reminderTime: picked));
-                    }
+                    // final TimeOfDay? picked = await showTimePicker(
+                    //   context: context,
+                    //   initialTime: _settings.reminderTime,
+                    //   builder: (BuildContext context, Widget? child) {
+                    //     return Theme(
+                    //       data: Theme.of(context).copyWith(
+                    //         colorScheme: ColorScheme.light(
+                    //           primary: _kPrimaryColor,
+                    //           onPrimary: Colors.white,
+                    //           surface: Colors.white,
+                    //           onSurface: Colors.black,
+                    //         ),
+                    //         timePickerTheme: _getTimePickerThemeData(),
+                    //       ),
+                    //       child: child!,
+                    //     );
+                    //   },
+                    // );
+                    // if (picked != null) {
+                    //   setState(
+                    //           () => _settings = _settings.copyWith(reminderTime: picked));
+                    // }
                   },
                   child: Container(
                     padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: _kPrimaryColor,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       _settings.reminderTime.format(context),
                       style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                          color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
