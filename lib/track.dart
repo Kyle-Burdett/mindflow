@@ -185,79 +185,82 @@ class _TrackScreenState extends State<TrackScreen> {
                 // Filter for different track views. (Will be last 7 days, last month, and last 3 months)
                 SafeArea(
                   top: true,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () => setState(() {
-                          trackView = 'lastWeek';
-                          idealHours = endHours.difference(startHours).inHours;
-                          displayingTrackData = filterByDays(trackDataList, 7);
-                        }),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: trackView == 'lastWeek' ? Color(0xFFDB863B) : Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            'Last Week',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: trackView == 'lastWeek' ? Colors.white : Color(0xFF2E2E2E),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () => setState(() {
+                            trackView = 'lastWeek';
+                            idealHours = endHours.difference(startHours).inHours;
+                            displayingTrackData = filterByDays(trackDataList, 7);
+                          }),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: trackView == 'lastWeek' ? Color(0xFFDB863B) : Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              'Last Week',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: trackView == 'lastWeek' ? Colors.white : Color(0xFF2E2E2E),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () => setState(() {
-                          trackView = 'lastMonth';
-                          setState(() {
-                            idealHours = endHours.difference(startHours).inHours * 5;
-                            displayingTrackData = averageForMonth(trackDataList);
-                          });
-                        }),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: trackView == 'lastMonth' ? Color(0xFFDB863B) : Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            'Last Month',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: trackView == 'lastMonth' ? Colors.white : Color(0xFF2E2E2E),
+                        GestureDetector(
+                          onTap: () => setState(() {
+                            trackView = 'lastMonth';
+                            setState(() {
+                              idealHours = endHours.difference(startHours).inHours * 5;
+                              displayingTrackData = averageForMonth(trackDataList);
+                            });
+                          }),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: trackView == 'lastMonth' ? Color(0xFFDB863B) : Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              'Last Month',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: trackView == 'lastMonth' ? Colors.white : Color(0xFF2E2E2E),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () => setState(() {
-                          trackView = 'lastThreeMonths';
-                          idealHours = endHours.difference(startHours).inHours * 20;
-                          displayingTrackData = groupByMonth(trackDataList);
-                        }),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: trackView == 'lastThreeMonths' ? Color(0xFFDB863B) : Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            'Last 3 Months',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: trackView == 'lastThreeMonths' ? Colors.white : Color(0xFF2E2E2E),
+                        GestureDetector(
+                          onTap: () => setState(() {
+                            trackView = 'lastThreeMonths';
+                            idealHours = endHours.difference(startHours).inHours * 20;
+                            displayingTrackData = groupByMonth(trackDataList);
+                          }),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: trackView == 'lastThreeMonths' ? Color(0xFFDB863B) : Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              'Last 3 Months',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: trackView == 'lastThreeMonths' ? Colors.white : Color(0xFF2E2E2E),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: 32),
