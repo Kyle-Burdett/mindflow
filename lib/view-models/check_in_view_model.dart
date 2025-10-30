@@ -84,16 +84,11 @@ class CheckInViewModel extends ChangeNotifier {
 }
 
   void setCurrentCheckIn() {
-    loading = true;
-    notifyListeners();
     try {
       currentDailyCheckIn = dailyCheckInList.firstWhere((checkIn) => checkIn.id == currentCheckInDate, orElse: () => DailyCheckInModel(id: currentCheckInDate, date: currentDate, energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {}));
       print("Current Check In: ${currentDailyCheckIn.id}");
-      loading = false;
-      notifyListeners();
     } catch (e) {
-      loading = false;
-      notifyListeners();
+      print("Error settings check-in: $e");
       return;
     }
   }
@@ -139,6 +134,8 @@ class CheckInViewModel extends ChangeNotifier {
     // We fetch the tags that are selected by the user that are mapped to a category
     final productivityTags = checkIn.tags.where((t) => t.category == "productivity");
     final energyTags = checkIn.tags.where((t) => t.category == "energy");
+    final balanceTags = checkIn.tags.where((t) => t.category == "work_life_balance");
+    final isolationTags = checkIn.tags.where((t) => t.category == "isolation");
 
     // Here we calcuate the contribution tags make on our insight percentage scores
     double scoreFromTags(Iterable<Tag> tags) {
@@ -154,16 +151,16 @@ class CheckInViewModel extends ChangeNotifier {
 
     final overtime = getOvertimeHours(checkIn);
 
-    // W calculate work/life balance by how many overtime hours are worked from a range of 0-4. Since this is per day the small number is suitable.
+    // We calculate work/life balance by how many overtime hours are worked from a range of 0-4. Since this is per day the small number is suitable.
     double overtimeLimited = overtime.clamp(0, 4);
     double overtimePercent = (overtimeLimited / 4) * 100;
     double workLifeBalance = (100 - overtimePercent).clamp(0, 100).toDouble();
 
-    final collaborativeCount = checkIn.tags.where((t) => t.name == "Collaborative").length;
-    final blockedCount = checkIn.tags.where((t) => t.name == "Blocked").length;
-    final isolationScore = (100 - ((blockedCount - collaborativeCount) * 10))
-        .clamp(0, 100)
-        .toDouble();
+    final balanceTagScore = scoreFromTags(balanceTags);
+    workLifeBalance = (workLifeBalance * 0.8 + balanceTagScore * 0.2).clamp(0, 100);
+
+    final isolationTagScore = scoreFromTags(isolationTags);
+    final isolationScore = isolationTagScore;
 
     return {
       "productivity": productivity,
@@ -172,6 +169,7 @@ class CheckInViewModel extends ChangeNotifier {
       "isolation": isolationScore,
     };
   }
+
 
   WeeklySummary getWeeklyAverages(List<DailyCheckInModel> checkIns) {
     // Making sure we have enough data to provide relevant insights

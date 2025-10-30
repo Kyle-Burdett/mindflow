@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
 class _AppColors {
   static const card = Colors.white;
@@ -164,7 +165,10 @@ class _HomepageState extends State<Homepage> {
     final start = _startOfWeek(today.add(Duration(days: 7 * weekOffset)));
     final weekDays = List.generate(7, (i) => start.add(Duration(days: i)));
 
-    return Scaffold(
+    return ChangeNotifierProvider<CheckInViewModel>.value(
+      value: locator<CheckInViewModel>(),
+      child: Consumer<CheckInViewModel>(
+      builder: (context, model, child) => Scaffold(
     body: SafeArea(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -329,6 +333,6 @@ class _HomepageState extends State<Homepage> {
         ],
       ),
     ),
-        );
+        )));
   }
 }
