@@ -48,37 +48,109 @@ class _TrackScreenState extends State<TrackScreen> {
   }
 
   List<TrackData> averageForMonth(List<TrackData> data) {
-  if (data.isEmpty) return [];
+    if (data.isEmpty) return [];
 
-  data.sort((a, b) => a.date.compareTo(b.date));
+    data.sort((a, b) => a.date.compareTo(b.date));
 
-  final int daysPerGroup = 7;
-  final List<TrackData> monthAverages = [];
+    final int daysPerGroup = 7;
+    final List<TrackData> monthAverages = [];
 
-  for (int i = 0; i < data.length; i += daysPerGroup) {
-    final group = data.sublist(i, (i + daysPerGroup).clamp(0, data.length));
+    for (int i = 0; i < data.length; i += daysPerGroup) {
+      final group = data.sublist(i, (i + daysPerGroup).clamp(0, data.length));
 
-    final Map<String, double> avgTaskHours = {};
-    for (final d in group) {
-      d.taskHours.forEach((task, hours) {
-        avgTaskHours[task] = (avgTaskHours[task] ?? 0) + hours;
-      });
+      final Map<String, double> avgTaskHours = {};
+      for (final d in group) {
+        d.taskHours.forEach((task, hours) {
+          avgTaskHours[task] = (avgTaskHours[task] ?? 0) + hours;
+        });
+      }
+
+      final avgDate = group[group.length ~/ 2].date;
+
+      monthAverages.add(TrackData(
+        avgDate,
+        avgTaskHours,
+        [],
+        group.map((e) => e.moodScore).reduce((a, b) => a + b) / group.length,
+        group.map((e) => e.productivityScore).reduce((a, b) => a + b) / group.length,
+      (group.map((e) => e.taskSwitches).reduce((a, b) => a + b) / group.length).round(),
+      ));
     }
 
-    final avgDate = group[group.length ~/ 2].date;
-
-    monthAverages.add(TrackData(
-      avgDate,
-      avgTaskHours,
-      [],
-      group.map((e) => e.moodScore).reduce((a, b) => a + b) / group.length,
-      group.map((e) => e.productivityScore).reduce((a, b) => a + b) / group.length,
-     (group.map((e) => e.taskSwitches).reduce((a, b) => a + b) / group.length).round(),
-    ));
+    return monthAverages;
   }
 
-  return monthAverages;
-}
+  List<TrackData> groupByMonth(List<TrackData> data) {
+    if (data.isEmpty) return [];
+
+    // Sort data by date
+    data.sort((a, b) => a.date.compareTo(b.date));
+
+    // Group entries by year-month key
+    final Map<String, List<TrackData>> groupedByMonth = {};
+    for (final d in data) {
+      final key = '${d.date.year}-${d.date.month.toString().padLeft(2, '0')}';
+      groupedByMonth.putIfAbsent(key, () => []).add(d);
+    }
+
+    final List<TrackData> monthlyData = [];
+
+    for (final entry in groupedByMonth.entries) {
+      final group = entry.value;
+
+      // Sum up total task hours for that month
+      final Map<String, double> totalTaskHours = {};
+      for (final d in group) {
+        d.taskHours.forEach((task, hours) {
+          totalTaskHours[task] = (totalTaskHours[task] ?? 0) + hours;
+        });
+      }
+
+      // Average the other scores
+      final avgMood = group.map((e) => e.moodScore).reduce((a, b) => a + b) / group.length;
+      final avgProductivity = group.map((e) => e.productivityScore).reduce((a, b) => a + b) / group.length;
+      final avgSwitches = (group.map((e) => e.taskSwitches).reduce((a, b) => a + b) / group.length).round();
+
+      // Representative date for labeling (middle of month)
+      final firstDate = group.first.date;
+      final midMonthDate = DateTime(firstDate.year, firstDate.month, 15);
+
+      monthlyData.add(TrackData(
+        midMonthDate,
+        totalTaskHours,
+        [],
+        avgMood,
+        avgProductivity,
+        avgSwitches,
+      ));
+    }
+
+    // Ensure chronological order in the result
+    monthlyData.sort((a, b) => a.date.compareTo(b.date));
+    return monthlyData;
+  }
+
+  String getDateLabel(DateTime date, int index, List<TrackData> data, String trackView) {
+    if (trackView == 'lastMonth') {
+      final start = data[index == 0 ? 0 : index - 0].date;
+      final end = start.add(const Duration(days: 6));
+
+      final sameMonth = start.month == end.month;
+      final monthLabel = DateFormat('MMM').format(start);
+      final startDay = DateFormat('d').format(start);
+      final endDay = DateFormat('d').format(end);
+
+      return sameMonth
+          ? '$monthLabel $startDay–$endDay'
+          : '${DateFormat('MMM d').format(start)}–${DateFormat('MMM d').format(end)}';
+    }
+
+    if (trackView == 'lastThreeMonths') {
+      return DateFormat('MMM').format(date);
+    }
+
+    return DateFormat('MMM d').format(date);
+  }
 
   @override
   void initState() {
@@ -167,7 +239,7 @@ class _TrackScreenState extends State<TrackScreen> {
                         onTap: () => setState(() {
                           trackView = 'lastThreeMonths';
                           idealHours = endHours.difference(startHours).inHours * 20;
-                          displayingTrackData = filterByDays(trackDataList, 90);
+                          displayingTrackData = groupByMonth(trackDataList);
                         }),
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -217,12 +289,13 @@ class _TrackScreenState extends State<TrackScreen> {
                               bottomTitles: AxisTitles(
                                 sideTitles: SideTitles(
                                   showTitles: true,
-                                  getTitlesWidget: (value, meta) {
+                                  getTitlesWidget: (value, meta) { 
                                     final index = value.toInt();
                                     if (index < 0 || index >= displayingTrackData.length) return const SizedBox.shrink();
                                     final date = displayingTrackData[index].date;
+
                                     return Text(
-                                      DateFormat("MMM d").format(date),
+                                      getDateLabel(date, index, displayingTrackData, trackView),
                                       style: const TextStyle(fontSize: 12),
                                     );
                                   },
@@ -326,7 +399,7 @@ class _TrackScreenState extends State<TrackScreen> {
                     spacing: 16,
                     runSpacing: 16,
                     children: displayingTrackData.map((trackItem) {
-                    return UserStat(date: trackItem.date, statValue: trackItem.moodScore);
+                    return UserStat(date: trackItem.date, statValue: trackItem.moodScore, data: trackItem, trackView: trackView,);
                   }).toList(),
                   ),
                 ),
@@ -350,7 +423,7 @@ class _TrackScreenState extends State<TrackScreen> {
                     spacing: 16,
                     runSpacing: 16,
                     children: displayingTrackData.map((trackItem) {
-                    return UserStat(date: trackItem.date, statValue: trackItem.productivityScore);
+                    return UserStat(date: trackItem.date, statValue: trackItem.productivityScore, data: trackItem, trackView: trackView,);
                   }).toList(),
                   ),
                 ),
@@ -454,7 +527,7 @@ class _TrackScreenState extends State<TrackScreen> {
                               }
                               final date = displayingTrackData[index].date;
                               return Text(
-                                DateFormat("MMM d").format(date),
+                                getDateLabel(date, index, displayingTrackData, trackView),
                                 style: const TextStyle(fontSize: 12),
                               );
                             },
@@ -509,9 +582,33 @@ class _TrackScreenState extends State<TrackScreen> {
 
 class UserStat extends StatelessWidget {
   final DateTime date;
+  final TrackData data;
+  final String trackView;
   final double statValue;
   
-  const UserStat({super.key, required this.statValue, required this.date});
+  const UserStat({super.key, required this.statValue, required this.date, required this.data, required this.trackView});
+
+  String getDateLabel(DateTime date, TrackData data, String trackView) {
+    if (trackView == 'lastMonth') {
+      final start = data.date;
+      final end =  start.add(const Duration(days: 6));
+
+      final sameMonth = start.month == end.month;
+      final monthLabel = DateFormat('MMM').format(start);
+      final startDay = DateFormat('d').format(start);
+      final endDay = DateFormat('d').format(end);
+
+      return sameMonth
+          ? '$monthLabel $startDay–$endDay'
+          : '${DateFormat('MMM d').format(start)}–${DateFormat('MMM d').format(end)}';
+    }
+
+    if (trackView == 'lastThreeMonths') {
+      return DateFormat('MMM').format(date);
+    }
+
+    return DateFormat('MMM d').format(date);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -596,7 +693,7 @@ class UserStat extends StatelessWidget {
         ),
         SizedBox(height: 8),
         Text(
-          DateFormat('MMM d').format(date),
+          getDateLabel(date, data, trackView),
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.normal,
