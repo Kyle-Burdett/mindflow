@@ -29,11 +29,24 @@ class _TrackScreenState extends State<TrackScreen> {
   final graphColors = [
       Colors.blue,
       Colors.green,
-      Colors.purple,
+      Colors.deepPurple,
       Colors.red,
       Colors.pink,
       Colors.indigo,
       Colors.orange,
+      Colors.amber,
+      Colors.cyan,
+      Colors.brown,
+      Colors.teal,
+      Colors.yellow,
+      Colors.lime,
+      Colors.blueAccent,
+      Colors.greenAccent,
+      Colors.redAccent,
+      Colors.deepPurpleAccent,
+      Colors.tealAccent,
+      Colors.pinkAccent,
+      Colors.orangeAccent,
     ];
 
   List<TrackData> displayingTrackData = [];
@@ -299,7 +312,7 @@ class _TrackScreenState extends State<TrackScreen> {
 
                                     return Text(
                                       getDateLabel(date, index, displayingTrackData, trackView),
-                                      style: const TextStyle(fontSize: 12),
+                                      style: const TextStyle(fontSize: 10),
                                     );
                                   },
                                 ),
@@ -328,7 +341,7 @@ class _TrackScreenState extends State<TrackScreen> {
                                   BarChartRodStackItem(
                                     fromY,
                                     toY,
-                                    categoryColors[name] ?? graphColors[categoryColors.length + 1 % graphColors.length],
+                                    categoryColors[name] ?? graphColors[categoryColors.length >= 20 ? 0 : categoryColors.length + 1 % graphColors.length],
                                   ),
                                 );
                                 fromY = toY;
