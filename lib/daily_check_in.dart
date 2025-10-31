@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/models/tag.dart';
@@ -230,12 +231,16 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                 content: TextField(
                   controller: notesController,
                   maxLines: 4,
-
                   cursorColor: customAccentColor,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r"[a-zA-Z0-9\s.,!?'\-:;()\/@#\$%&*+=_]+"),
+                      )
+                  ],
+                  maxLength: 500,
                   decoration: InputDecoration(
                     hintText: 'How did your day go? Any challenges or wins?',
                     border: const OutlineInputBorder(),
-
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: customAccentColor, width: 2.0),
                       borderRadius: BorderRadius.circular(12),

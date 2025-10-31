@@ -121,7 +121,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                   final tab = tabs[index];
                   final bool isActive = activeTab == tab;
                   return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
+                    padding: const EdgeInsets.only(right: 8.0, bottom: 8),
                     child: ElevatedButton(
                       onPressed: () => setState(() => activeTab = tab),
                       style: ElevatedButton.styleFrom(
