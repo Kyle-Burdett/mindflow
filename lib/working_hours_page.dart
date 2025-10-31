@@ -42,13 +42,49 @@ class WorkingHoursPage extends StatefulWidget {
 class _WorkingHoursPageState extends State<WorkingHoursPage> {
   // Colors to differentiate between tasks
   final colors = [
-    Colors.blue,
-    Colors.green,
-    Colors.purple,
-    Colors.red,
-    Colors.pink,
-    Colors.indigo,
-    Colors.orange,
+    Colors.blue.shade400,
+      Colors.green.shade400,
+      Colors.deepPurple.shade400,
+      Colors.red.shade400,
+      Colors.pink.shade400,
+      Colors.indigo.shade400,
+      Colors.orange.shade400,
+      Colors.amber.shade400,
+      Colors.cyan.shade400,
+      Colors.brown.shade400,
+      Colors.teal.shade400,
+      Colors.yellow.shade400,
+      Colors.lime.shade400,
+      Colors.blueAccent.shade400,
+      Colors.greenAccent.shade400,
+      Colors.redAccent.shade400,
+      Colors.deepPurpleAccent.shade400,
+      Colors.tealAccent.shade400,
+      Colors.pinkAccent.shade400,
+      Colors.orangeAccent.shade400,
+  ];
+
+  final bgColors = [
+    Colors.blue.shade200,
+      Colors.green.shade200,
+      Colors.deepPurple.shade200,
+      Colors.red.shade200,
+      Colors.pink.shade200,
+      Colors.indigo.shade200,
+      Colors.orange.shade200,
+      Colors.amber.shade200,
+      Colors.cyan.shade200,
+      Colors.brown.shade200,
+      Colors.teal.shade200,
+      Colors.yellow.shade200,
+      Colors.lime.shade200,
+      Colors.blueAccent.shade200,
+      Colors.greenAccent.shade200,
+      Colors.redAccent.shade200,
+      Colors.deepPurpleAccent.shade200,
+      Colors.tealAccent.shade200,
+      Colors.pinkAccent.shade200,
+      Colors.orangeAccent.shade200,
   ];
 
   // Default tasks when no activities have been added yet.
@@ -57,7 +93,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
       id: "1",
       name: "Project 1",
       color: Colors.red.shade400,
-      bgColor: Color(0xFFFFF3E9),
+      bgColor: Colors.red.shade200,
       timeSlots: [
         TimeSlot(start: const TimeOfDay(hour: 10, minute: 0), end: const TimeOfDay(hour: 13, minute: 0))
       ],
@@ -117,8 +153,8 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
         Activity(
           id: DateTime.now().toString(),
           name: "New Task",
-          color: Colors.purple.shade400,
-          bgColor: Colors.purple.shade200,
+          color: activities.length >= 20 ? colors[0] : colors[activities.length],
+          bgColor: activities.length >= 20 ? bgColors[0] : bgColors[activities.length],
           timeSlots: [TimeSlot(start: const TimeOfDay(hour: 9, minute: 0), end: const TimeOfDay(hour: 10, minute: 0))],
         ),
       );
