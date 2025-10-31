@@ -56,7 +56,7 @@ class GetStartedPage extends StatelessWidget {
                     padding: const EdgeInsets.all(spacing * 3),
                   ),
                   onPressed: () => context.push('/sign-up'),
-                  child: const Text('Create Account', style: TextStyle(color: Colors.white)),
+                  child: const Text('Create Account'),
                 ),
               ),
               const SizedBox(height: spacing * 5),
