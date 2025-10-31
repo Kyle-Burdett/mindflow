@@ -29,7 +29,6 @@ class _DailyCheckInState extends State<DailyCheckIn> {
     Tag(name: "Tired", category: "energy", value: -1),
     Tag(name: "Rested", category: "energy", value: 1),
     Tag(name: "Lethargic", category: "energy", value: -1),
-    Tag(name: "Energetic", category: "energy", value: 1),
     Tag(name: "Motivated", category: "work_life_balance", value: 1),
     Tag(name: "Overwhelmed", category: "work_life_balance", value: -1),
     Tag(name: "Calm", category: "work_life_balance", value: 1),
