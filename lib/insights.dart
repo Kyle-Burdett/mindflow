@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:mindflow/view-models/home_nav_view_model.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -200,7 +201,7 @@ class _InsightsPageState extends State<InsightsPage> {
     return GestureDetector(
       onTap: () {
         if (percent < 0.7) {
-          context.go('/home-second');
+          locator<HomeNavViewModel>().setCurrentIndex(3);
         }
       },
       child: Container(
