@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:mindflow/view-models/home_nav_view_model.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -318,7 +319,7 @@ class _HomepageState extends State<Homepage> {
             width: double.infinity,
             child: FilledButton(
               onPressed: () {
-                context.go('/home-second');
+                locator<HomeNavViewModel>().setCurrentIndex(3);
               },
               style: FilledButton.styleFrom(
                 backgroundColor: _AppColors.accent,

@@ -42,13 +42,49 @@ class WorkingHoursPage extends StatefulWidget {
 class _WorkingHoursPageState extends State<WorkingHoursPage> {
   // Colors to differentiate between tasks
   final colors = [
-    Colors.blue,
-    Colors.green,
-    Colors.purple,
-    Colors.red,
-    Colors.pink,
-    Colors.indigo,
-    Colors.orange,
+    Colors.blue.shade400,
+      Colors.green.shade400,
+      Colors.deepPurple.shade400,
+      Colors.red.shade400,
+      Colors.pink.shade400,
+      Colors.indigo.shade400,
+      Colors.orange.shade400,
+      Colors.amber.shade400,
+      Colors.cyan.shade400,
+      Colors.brown.shade400,
+      Colors.teal.shade400,
+      Colors.yellow.shade400,
+      Colors.lime.shade400,
+      Colors.blueAccent.shade400,
+      Colors.greenAccent.shade400,
+      Colors.redAccent.shade400,
+      Colors.deepPurpleAccent.shade400,
+      Colors.tealAccent.shade400,
+      Colors.pinkAccent.shade400,
+      Colors.orangeAccent.shade400,
+  ];
+
+  final bgColors = [
+    Colors.blue.shade200,
+      Colors.green.shade200,
+      Colors.deepPurple.shade200,
+      Colors.red.shade200,
+      Colors.pink.shade200,
+      Colors.indigo.shade200,
+      Colors.orange.shade200,
+      Colors.amber.shade200,
+      Colors.cyan.shade200,
+      Colors.brown.shade200,
+      Colors.teal.shade200,
+      Colors.yellow.shade200,
+      Colors.lime.shade200,
+      Colors.blueAccent.shade200,
+      Colors.greenAccent.shade200,
+      Colors.redAccent.shade200,
+      Colors.deepPurpleAccent.shade200,
+      Colors.tealAccent.shade200,
+      Colors.pinkAccent.shade200,
+      Colors.orangeAccent.shade200,
   ];
 
   // Default tasks when no activities have been added yet.
@@ -57,7 +93,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
       id: "1",
       name: "Project 1",
       color: Colors.red.shade400,
-      bgColor: Color(0xFFFFF3E9),
+      bgColor: Colors.red.shade200,
       timeSlots: [
         TimeSlot(start: const TimeOfDay(hour: 10, minute: 0), end: const TimeOfDay(hour: 13, minute: 0))
       ],
@@ -117,8 +153,8 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
         Activity(
           id: DateTime.now().toString(),
           name: "New Task",
-          color: Colors.purple.shade400,
-          bgColor: Colors.purple.shade200,
+          color: activities.length >= 20 ? colors[0] : colors[activities.length],
+          bgColor: activities.length >= 20 ? bgColors[0] : bgColors[activities.length],
           timeSlots: [TimeSlot(start: const TimeOfDay(hour: 9, minute: 0), end: const TimeOfDay(hour: 10, minute: 0))],
         ),
       );
@@ -197,7 +233,29 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
     const double hourHeight = 60.0;
     final startHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!);
     final endHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!);
-    final totalHoursToDisplay = (endHour.hour - startHour.hour);
+
+    TimeOfDay earliestTime = startHour;
+    TimeOfDay latestTime = endHour;
+
+    final allRanges = activities.expand((a) => a.timeSlots).toList();
+
+    if (allRanges.isNotEmpty) {
+      final earliest = allRanges.map((r) => r.start).reduce((a, b) => a.isBefore(b) ? a : b);
+      final latest = allRanges.map((r) => r.end).reduce((a, b) => a.isAfter(b) ? a : b);
+
+      final mockEarliestTime = earliest;
+      final mockLatestTime = latest;
+
+      if (startHour.isAfter(mockEarliestTime)) {
+        earliestTime = mockEarliestTime;
+      }
+
+      if (endHour.isBefore(mockLatestTime)) {
+        latestTime = mockLatestTime;
+      }
+    }
+    
+    final totalHoursToDisplay = (latestTime.hour - earliestTime.hour);
 
     return (totalHoursToDisplay + 1) * hourHeight + 32;
   }
@@ -249,9 +307,7 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
 
 
                   SizedBox(
-
                     height: _getTimelineHeight(),
-
                     child: TimelineView(activities: activities),
                   ),
                   Padding(
@@ -314,10 +370,32 @@ class TimelineView extends StatelessWidget {
     const double hourHeight = 60.0;
     final startHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!);
     final endHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!);
-    final totalHoursToDisplay = (endHour.hour - startHour.hour);
+
+    TimeOfDay earliestTime = startHour;
+    TimeOfDay latestTime = endHour;
+
+    final allRanges = activities.expand((a) => a.timeSlots).toList();
+
+    if (allRanges.isNotEmpty) {
+      final earliest = allRanges.map((r) => r.start).reduce((a, b) => a.isBefore(b) ? a : b);
+      final latest = allRanges.map((r) => r.end).reduce((a, b) => a.isAfter(b) ? a : b);
+
+      final mockEarliestTime = earliest;
+      final mockLatestTime = latest;
+
+      if (startHour.isAfter(mockEarliestTime)) {
+        earliestTime = mockEarliestTime;
+      }
+
+      if (endHour.isBefore(mockLatestTime)) {
+        latestTime = mockLatestTime;
+      }
+    }
+
+    final totalHoursToDisplay = (latestTime.hour - earliestTime.hour);
 
     final hoursToDisplay = List.generate(totalHoursToDisplay + 1, (index) {
-      return TimeOfDay(hour: startHour.hour + index, minute: 0);
+      return TimeOfDay(hour: earliestTime.hour + index, minute: 0);
     });
 
     return Container(
@@ -374,8 +452,8 @@ class TimelineView extends StatelessWidget {
 
                 Positioned(
                   left: 30,
-                  top: ((_timeToMinutes(startHour) - _timeToMinutes(startHour)) / 60) * hourHeight,
-                  height: ((_timeToMinutes(endHour) - _timeToMinutes(startHour)) / 60) * hourHeight,
+                  top: ((_timeToMinutes(earliestTime) - _timeToMinutes(earliestTime)) / 60) * hourHeight,
+                  height: ((_timeToMinutes(latestTime) - _timeToMinutes(earliestTime)) / 60) * hourHeight,
                   child: Container(
                     width: 16,
                     decoration: BoxDecoration(
@@ -388,7 +466,7 @@ class TimelineView extends StatelessWidget {
 
                 Positioned(
                   left: 55,
-                  top: ((_timeToMinutes(const TimeOfDay(hour: 11, minute: 30)) - _timeToMinutes(startHour)) / 60) * hourHeight,
+                  top: ((_timeToMinutes(const TimeOfDay(hour: 11, minute: 30)) - _timeToMinutes(earliestTime)) / 60) * hourHeight,
                   child: const Text(
                     'Planned\nworking hours',
                     style: TextStyle(
@@ -404,7 +482,7 @@ class TimelineView extends StatelessWidget {
                   return activity.timeSlots.map((slot) {
                     final startMinutes = _timeToMinutes(slot.start);
                     final endMinutes = _timeToMinutes(slot.end);
-                    final baseMinutes = _timeToMinutes(startHour);
+                    final baseMinutes = _timeToMinutes(earliestTime);
 
                     final top = ((startMinutes - baseMinutes) / 60) * hourHeight;
                     final height = ((endMinutes - startMinutes) / 60) * hourHeight;
@@ -552,6 +630,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             isDense: true,
                             contentPadding: EdgeInsets.zero,
                             border: InputBorder.none,
+                            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 1))
                           ),
                           onSubmitted: (value) => handleNameEdit(),
                         ),

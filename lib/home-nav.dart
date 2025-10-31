@@ -6,6 +6,8 @@ import 'package:mindflow/resource_page.dart';
 import 'package:mindflow/settings_page.dart';
 import 'package:mindflow/track.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:mindflow/view-models/home_nav_view_model.dart';
+import 'package:provider/provider.dart';
 
 class MainHomeScreen extends StatefulWidget {
   final int? initialIndex;
@@ -20,12 +22,9 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   @override
   void initState() {
     locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(DateTime.now());
-    _currentIndex = widget.initialIndex ?? 0;
+    locator<HomeNavViewModel>().currentIndex = widget.initialIndex ?? 0;
     super.initState();
   }
-
-  // Index defines what tab we're on from the bottom navigation bar.
-  int _currentIndex = 0;
 
   // Bottom navigation bar icons/items. Defines the icons they use in selected/unselected states.
   final List<BottomNavigationBarItem> bottomNavItems = [
@@ -68,14 +67,17 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: screens[_currentIndex],
+    return ChangeNotifierProvider<HomeNavViewModel>.value(
+      value: locator<HomeNavViewModel>(),
+      child: Consumer<HomeNavViewModel>(
+      builder: (context, model, child) => Scaffold(
+      body: screens[model.currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: bottomNavItems,
-        currentIndex: _currentIndex,
+        currentIndex: model.currentIndex,
         onTap: (value) {
           setState(() {
-            _currentIndex = value;
+            model.currentIndex = value;
           });
         },
         // Bottom nav bar Styling
@@ -94,6 +96,6 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         ),
         type: BottomNavigationBarType.fixed,
       ),
-    );
+    )));
   }
 }

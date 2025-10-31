@@ -122,7 +122,7 @@ class _SettingsPageState extends State<SettingsPage> {
       email: user.email ?? "",
       plannedStartTime: TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!),
       plannedEndTime: TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!),
-      dailyCheckInReminder: true,
+      dailyCheckInReminder: locator<UserViewModel>().user.reminder ?? true,
       weeklyProgressReport: true,
       achievementNotifications: true,
       reminderTime: const TimeOfDay(hour: 17, minute: 0),

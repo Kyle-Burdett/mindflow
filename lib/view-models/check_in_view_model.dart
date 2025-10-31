@@ -18,6 +18,7 @@ class CheckInViewModel extends ChangeNotifier {
   DateTime currentDate = DateTime.now();
   List<TrackData> trackData = [];
   WeeklySummary? weeklyInsights; 
+  bool editingCheckIn = false;
 
   int checkInLimit = 7;
   bool loading = false;
@@ -31,8 +32,11 @@ class CheckInViewModel extends ChangeNotifier {
     String userId = locator<UserViewModel>().user.id!;
     bool success = await _checkInRepository.setCheckIn(userId, checkIn);
     if (success) {
-      dailyCheckInList.add(checkIn);
+      if (editingCheckIn == false) {
+        dailyCheckInList.add(checkIn);
+      }
       trackData = dailyCheckInList.map((checkIn) => mapDailyCheckInToTrackData(checkIn)).toList();
+      trackData.sort((a, b) => a.date.compareTo(b.date));
       weeklyInsights = getWeeklyAverages(dailyCheckInList);
       print("Add check In success!");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -96,8 +100,10 @@ class CheckInViewModel extends ChangeNotifier {
   String setCheckInText() {
     final checkIn = dailyCheckInList.firstWhere((checkIn) => checkIn.id == currentCheckInDate, orElse: () => DailyCheckInModel(id: "", date: currentDate, energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {}));
     if (checkIn.id.isEmpty) {
+      editingCheckIn = false;
       return "Add Check-in";
     } else {
+      editingCheckIn = true;
       return "Edit Check-in";
     }
   }

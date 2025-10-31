@@ -28,7 +28,7 @@ TrackData mapDailyCheckInToTrackData(DailyCheckInModel dailyCheckIn) {
 
   // this sums up the number of tasks the user has in a day
   final taskSwitches = dailyCheckIn.taskHours.values.fold<int>(
-    0,
+    -1,
     (sum, ranges) => sum + ranges.length,
   );
 
