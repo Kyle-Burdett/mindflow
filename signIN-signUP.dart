@@ -253,7 +253,7 @@ class SignUpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Wrap the stateful content in the Consumer to access UserViewModel
+    // Wrapped the stateful content in the Consumer to access UserViewModel
     return Consumer<UserViewModel>(
       builder: (context, model, child) => _SignUpContent(model: model),
     );
@@ -270,6 +270,9 @@ class _SignUpContent extends StatefulWidget {
 }
 
 class _SignUpContentState extends State<_SignUpContent> {
+  // form state for validation
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -277,6 +280,45 @@ class _SignUpContentState extends State<_SignUpContent> {
   // States to control password visibility for both fields
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+
+  // Utility regex for email format
+  final RegExp _emailRegex = RegExp(
+    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$',
+  );
+
+  // Validator function for Email and required fields
+  String? _emailValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required.';
+    }
+    if (!_emailRegex.hasMatch(value)) {
+      return 'Please enter a valid email address.';
+    }
+    return null;
+  }
+
+  String? _passwordValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required.';
+    }
+
+    // if (value.length < 8) {
+    //   return 'Password must be at least 8 characters.';
+    // }
+    return null;
+  }
+
+  // Validator function for Confirm Password (checks required and match)
+  String? _confirmPasswordValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Confirm Password is required.';
+    }
+    if (value != passwordController.text) {
+      return 'Passwords do not match.';
+    }
+    return null;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -286,118 +328,123 @@ class _SignUpContentState extends State<_SignUpContent> {
         padding: const EdgeInsets.all(spacing * 8),
         child: Center(
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.favorite_border, color: primaryColor, size: 80),
-                const SizedBox(height: spacing * 3),
-                const Text('MindFlow',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                const SizedBox(height: spacing * 2),
-                const Text('Start your wellness journey today',
-                    textAlign: TextAlign.center),
-                const SizedBox(height: spacing * 6),
-                // --- Email Field ---
-                TextField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
+            //  WRAPPED: Column in Form
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.favorite_border, color: primaryColor, size: 80),
+                  const SizedBox(height: spacing * 3),
+                  const Text('MindFlow',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: spacing * 2),
+                  const Text('Start your wellness journey today',
+                      textAlign: TextAlign.center),
+                  const SizedBox(height: spacing * 6),
+                  // --- Email Field ---
+                  TextFormField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: _emailValidator,
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
+                      labelText: 'Email',
+                      hintText: 'Enter your email',
+                    ),
                   ),
-                ),
-                const SizedBox(height: spacing * 3),
-                // --- Password Field (with eye icon) ---
-                TextField(
-                  controller: passwordController,
-                  obscureText: !_isPasswordVisible,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
-                    labelText: 'Password',
-                    hintText: 'Enter your password (min 8 characters)',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                        color: primaryColor,
+                  const SizedBox(height: spacing * 3),
+                  // --- Password Field (with eye icon) ---
+                  TextFormField(
+                    controller: passwordController,
+                    obscureText: !_isPasswordVisible,
+                    validator: _passwordValidator,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
+                      labelText: 'Password',
+                      hintText: 'Enter your password (min 8 characters)',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: primaryColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
+                    ),
+                  ),
+                  const SizedBox(height: spacing * 3),
+                  // --- Confirm Password Field (with eye icon) ---
+                  TextFormField(
+                    controller: confirmPasswordController,
+                    obscureText: !_isConfirmPasswordVisible,
+                    validator: _confirmPasswordValidator,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
+                      labelText: 'Confirm Password',
+                      hintText: 'Re-enter your password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: primaryColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: spacing * 6),
+                  // --- Create Account Button ---
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        padding: const EdgeInsets.all(spacing * 3),
+                      ),
+                      onPressed: widget.model.isLoading ? null : () {
+                        // Checks full form validation first
+                        if (_formKey.currentState!.validate()) {
+                          // The password match is now handled by the _confirmPasswordValidator
+                          widget.model.signUp(context, emailController.text, passwordController.text);
+                        }
+                        // Note: If validation fails, the TextFormField shows the inline error and blocks the execution here.
                       },
+                      child: widget.model.isLoading
+                          ? const Center(child: SizedBox(
+                        height: 24, width: 24,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                      ))
+                          : const Text('Create Account'),
                     ),
                   ),
-                ),
-                const SizedBox(height: spacing * 3),
-                // --- Confirm Password Field (with eye icon) ---
-                TextField(
-                  controller: confirmPasswordController,
-                  obscureText: !_isConfirmPasswordVisible,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
-                    labelText: 'Confirm Password',
-                    hintText: 'Re-enter your password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                        color: primaryColor,
+                  const SizedBox(height: spacing * 3),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Already have an account? "),
+                      GestureDetector(
+                        onTap: () => context.replace('/sign-in'),
+                        child: const Text(
+                          'Sign In',
+                          style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                        });
-                      },
-                    ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: spacing * 6),
-                // --- Create Account Button ---
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      padding: const EdgeInsets.all(spacing * 3),
-                    ),
-                    onPressed: widget.model.isLoading ? null : () {
-                      if (passwordController.text != confirmPasswordController.text) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Passwords do not match!')),
-                        );
-                        return;
-                      }
-                      // *** MODIFIED: Pass context to the signUp method ***
-                      widget.model.signUp(context, emailController.text, passwordController.text);
-                    },
-                    child: widget.model.isLoading
-                        ? const Center(child: SizedBox(
-                      height: 24, width: 24,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
-                    ))
-                        : const Text('Create Account'),
+                  const SizedBox(height: spacing * 3),
+                  TextButton(
+                    onPressed: () => context.pop(),
+                    child: const Text('← Back to welcome'),
                   ),
-                ),
-                const SizedBox(height: spacing * 3),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Already have an account? "),
-                    GestureDetector(
-                      onTap: () => context.replace('/sign-in'),
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: spacing * 3),
-                TextButton(
-                  onPressed: () => context.pop(),
-                  child: const Text('← Back to welcome'),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
