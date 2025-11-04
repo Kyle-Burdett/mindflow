@@ -452,8 +452,8 @@ class TimelineView extends StatelessWidget {
 
                 Positioned(
                   left: 30,
-                  top: ((_timeToMinutes(earliestTime) - _timeToMinutes(earliestTime)) / 60) * hourHeight,
-                  height: ((_timeToMinutes(latestTime) - _timeToMinutes(earliestTime)) / 60) * hourHeight,
+                  top: ((_timeToMinutes(startHour) - _timeToMinutes(startHour)) / 60) * hourHeight,
+                  height: ((_timeToMinutes(endHour) - _timeToMinutes(startHour)) / 60) * hourHeight,
                   child: Container(
                     width: 16,
                     decoration: BoxDecoration(

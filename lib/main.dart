@@ -34,6 +34,8 @@ void main() async {
 
   // Initializing firebase messaging and requesting permission to use send notifications from the user
   final messaging = FirebaseMessaging.instance;
+
+  print("FCM Token: ${await messaging.getToken()}");
   await messaging.requestPermission();
 
 

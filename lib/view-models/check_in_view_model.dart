@@ -152,8 +152,8 @@ class CheckInViewModel extends ChangeNotifier {
     }
 
     // We calcuate the daily scores by combining our check-in data with the user rated scores and the tags they select
-    final productivity = scoreFromTags(productivityTags) * 25 / 100 + checkIn.productivityScore * 75 / 100;
-    final energy = scoreFromTags(energyTags) * 25 / 100 + checkIn.energyScore * 75 / 100;
+    final productivity = scoreFromTags(productivityTags) * 25 / 100 + checkIn.productivityScore * 10 * 75 / 100;
+    final energy = scoreFromTags(energyTags) * 25 / 100 + checkIn.energyScore * 10 * 75 / 100;
 
     final overtime = getOvertimeHours(checkIn);
 
