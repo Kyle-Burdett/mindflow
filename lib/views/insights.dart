@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:mindflow/view-models/home_nav_view_model.dart';

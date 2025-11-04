@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mindflow/core/locator.dart';
-import 'package:mindflow/homepage.dart';
-import 'package:mindflow/insights.dart';
-import 'package:mindflow/resource_page.dart';
-import 'package:mindflow/settings_page.dart';
-import 'package:mindflow/track.dart';
+import 'package:mindflow/views/homepage.dart';
+import 'package:mindflow/views/insights.dart';
+import 'package:mindflow/views/resource_page.dart';
+import 'package:mindflow/views/settings_page.dart';
+import 'package:mindflow/views/track.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
 import 'package:mindflow/view-models/home_nav_view_model.dart';
 import 'package:provider/provider.dart';
