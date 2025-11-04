@@ -3,18 +3,18 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
-import 'package:mindflow/daily_check_in.dart';
+import 'package:mindflow/views/daily_check_in.dart';
 import 'package:mindflow/firebase_options.dart';
-import 'package:mindflow/forgot_password.dart';
-import 'package:mindflow/home-nav.dart';
+import 'package:mindflow/views/forgot_password.dart';
+import 'package:mindflow/views/home_nav.dart';
 import 'package:mindflow/onboarding/about_you_page.dart';
 import 'package:mindflow/onboarding/planning_page.dart';
 import 'package:mindflow/onboarding/welcome_page.dart';
 import 'package:mindflow/onboarding/wellness_goals_page.dart';
-import 'package:mindflow/signIN-signUP.dart';
-import 'package:mindflow/splash.dart';
+import 'package:mindflow/views/signIn_signUp.dart';
+import 'package:mindflow/views/splash.dart';
 import 'package:mindflow/view-models/check_in_view_model.dart';
-import 'package:mindflow/working_hours_page.dart';
+import 'package:mindflow/views/working_hours_page.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
@@ -34,6 +34,8 @@ void main() async {
 
   // Initializing firebase messaging and requesting permission to use send notifications from the user
   final messaging = FirebaseMessaging.instance;
+
+  print("FCM Token: ${await messaging.getToken()}");
   await messaging.requestPermission();
 
 
