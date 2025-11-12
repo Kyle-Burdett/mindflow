@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/core/notification_service.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
 
 const Color _kPrimaryColor = Color(0xFFDB863B);
@@ -102,6 +103,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   late AppSettings _settings;
   UserData user = UserData(name: "Kyle", email: "BE.2023.F1Y5D3");
+  NotificationService notificationService = NotificationService();
 
   final List<Map<String, String>> _focusAreaOptions = const [
     {"id": "productivity", "label": "Improving Productivity"},
@@ -125,7 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
       dailyCheckInReminder: locator<UserViewModel>().user.reminder ?? true,
       weeklyProgressReport: true,
       achievementNotifications: true,
-      reminderTime: const TimeOfDay(hour: 17, minute: 0),
+      reminderTime: TimeOfDay.fromDateTime(locator<UserViewModel>().user.reminderTime!),
       targetMoodScore: 7.0,
       targetProductivityScore: 8.0,
       maxStressLevel: 4.0,
@@ -146,17 +148,13 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  void _handleSave() {
-    print("Settings saved: ${_settings.name}, ${_settings.email}");
-
-  }
-
-  void _handleBack() {
-    print('Back button pressed');
-
-  }
-
   void _handleUpdatePlannedHours() {
+    DateTime now = DateTime.now();
+    locator<UserViewModel>().user.reminder = _settings.dailyCheckInReminder;
+    locator<UserViewModel>().user.reminderTime =  DateTime(now.year, now.month, now.day, _settings.reminderTime.hour, _settings.reminderTime.minute);
+    locator<UserViewModel>().user.startTime = DateTime(2000, 1, 1, _settings.plannedStartTime.hour, _settings.plannedStartTime.minute);
+    locator<UserViewModel>().user.endTime = DateTime(2000, 1, 1, _settings.plannedEndTime.hour, _settings.plannedEndTime.minute);
+    notificationService.scheduleReminder(locator<UserViewModel>().user.reminderTime!);
     locator<UserViewModel>().setUser(locator<UserViewModel>().user);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -324,10 +322,9 @@ class _SettingsPageState extends State<SettingsPage> {
             value: _settings.dailyCheckInReminder,
             onChanged: (bool newValue) {
               setState(() {
-                _settings =
-                    _settings.copyWith(dailyCheckInReminder: newValue);
+                _settings.dailyCheckInReminder = newValue;
               });
-              locator<UserViewModel>().user.reminder = newValue;
+              
             },
           ),
 
@@ -342,40 +339,40 @@ class _SettingsPageState extends State<SettingsPage> {
                 const Spacer(),
                 InkWell(
                   onTap: () async {
-                    // final TimeOfDay? picked = await showTimePicker(
-                    //   context: context,
-                    //   initialTime: _settings.reminderTime,
-                    //   builder: (BuildContext context, Widget? child) {
-                    //     return Theme(
-                    //       data: Theme.of(context).copyWith(
-                    //         colorScheme: ColorScheme.light(
-                    //           primary: _kPrimaryColor,
-                    //           onPrimary: Colors.white,
-                    //           surface: Colors.white,
-                    //           onSurface: Colors.black,
-                    //         ),
-                    //         timePickerTheme: _getTimePickerThemeData(),
-                    //       ),
-                    //       child: child!,
-                    //     );
-                    //   },
-                    // );
-                    // if (picked != null) {
-                    //   setState(
-                    //           () => _settings = _settings.copyWith(reminderTime: picked));
-                    // }
+                    final TimeOfDay? picked = await showTimePicker(
+                      context: context,
+                      initialTime: _settings.reminderTime,
+                      builder: (BuildContext context, Widget? child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ColorScheme.light(
+                              primary: _kPrimaryColor,
+                              onPrimary: Colors.white,
+                              surface: Colors.white,
+                              onSurface: Colors.black,
+                            ),
+                            timePickerTheme: _getTimePickerThemeData(),
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
+                    if (picked != null) {
+                      setState(
+                              () => _settings.reminderTime = picked);
+                    }
                   },
                   child: Container(
                     padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFFDB863B),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       _settings.reminderTime.format(context),
                       style: const TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold),
+                          color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -461,8 +458,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   _settings.plannedStartTime,
                       (time) => setState(
                           () {
-                            _settings = _settings.copyWith(plannedStartTime: time);
-                            locator<UserViewModel>().user.startTime = DateTime(2000, 1, 1, time.hour, time.minute);
+                            _settings.plannedStartTime = time;
                           }),
                 ),
               ),
@@ -474,8 +470,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   _settings.plannedEndTime,
                       (time) => setState(
                           () { 
-                            _settings = _settings.copyWith(plannedEndTime: time);
-                            locator<UserViewModel>().user.endTime = DateTime(2000, 1, 1, time.hour, time.minute);
+                            _settings.plannedEndTime = time;
                           }),
                 ),
               ),
