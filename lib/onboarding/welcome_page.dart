@@ -16,7 +16,7 @@ class WelcomeScreen extends StatelessWidget {
                 // 🟡 Title
                 Center(
                   child: Text(
-                    "Welcome to Mindflow",
+                    "Welcome to ClarityDesk",
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -69,7 +69,7 @@ class WelcomeScreen extends StatelessWidget {
                 // 🟢 Description text
                 Center(
                 child: Text(
-                  "Mindflow helps remote workers to monitor their mental health cycles, energy levels, and productivity to prevent burnout and maintain sustainable work practices.",
+                  "ClarityDesk helps remote workers to monitor their mental health cycles, energy levels, and productivity to prevent burnout and maintain sustainable work practices.",
                   style: TextStyle(fontSize: 16, color: Colors.black),
                 ),
                 ),

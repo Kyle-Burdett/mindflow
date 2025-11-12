@@ -4,9 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:mindflow/view-models/user_view_model.dart'; // Assumed
-
-// Note: Removed the unused 'package:mindflow/core/locator.dart' import.
+import 'package:mindflow/view-models/user_view_model.dart';
 
 const double spacing = 4.0;
 const Color primaryColor = Color(0xFFB66623); // Existing color constant
@@ -29,7 +27,7 @@ class GetStartedPage extends StatelessWidget {
             children: [
               const Icon(Icons.favorite_border, color: primaryColor, size: 80),
               const SizedBox(height: spacing * 3),
-              const Text('MindFlow',
+              const Text('ClarityDesk',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
               const SizedBox(height: spacing * 2),
               const Text(
@@ -336,7 +334,7 @@ class _SignUpContentState extends State<_SignUpContent> {
                 children: [
                   const Icon(Icons.favorite_border, color: primaryColor, size: 80),
                   const SizedBox(height: spacing * 3),
-                  const Text('MindFlow',
+                  const Text('ClarityDesk',
                       style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                   const SizedBox(height: spacing * 2),
                   const Text('Start your wellness journey today',
