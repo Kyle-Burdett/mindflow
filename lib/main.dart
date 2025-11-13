@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
 import 'package:mindflow/core/notification_service.dart';
@@ -45,6 +44,8 @@ void main() async {
 
   // Local notifications for dynamic notifications
   await NotificationService().initNotifications();
+
+  await NotificationService().printScheduledNotifications();
   NotificationService().checkExactAlarmsPermission();
 
   runApp(
