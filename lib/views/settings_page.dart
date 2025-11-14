@@ -627,6 +627,7 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: const Text(
             'Confirm Logout',
             style: TextStyle(
@@ -642,7 +643,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 199, 199, 199),
-                  foregroundColor: Colors.black,
+                  foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 48),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
