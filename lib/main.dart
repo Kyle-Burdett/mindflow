@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/core/notification_service.dart';
 import 'package:mindflow/views/daily_check_in.dart';
 import 'package:mindflow/firebase_options.dart';
 import 'package:mindflow/views/forgot_password.dart';
@@ -40,6 +41,13 @@ void main() async {
 
 
   setupLocator();
+
+  // Local notifications for dynamic notifications
+  await NotificationService().initNotifications();
+
+  await NotificationService().printScheduledNotifications();
+  NotificationService().checkExactAlarmsPermission();
+
   runApp(
     ChangeNotifierProvider<UserViewModel>(
       create: (_) => locator<UserViewModel>(),
