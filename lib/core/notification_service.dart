@@ -7,7 +7,7 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   Future<void> initNotifications() async {
-    await initializeTimeZones();
+    await initializeLocalTime();
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -19,9 +19,22 @@ class NotificationService {
     );
 
     await flutterLocalNotificationsPlugin.initialize(settings);
+
+    final android =
+      flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+
+    await android?.createNotificationChannel(
+      const AndroidNotificationChannel(
+        'reminder_channel',
+        'Reminders',
+        description: 'Check-in reminder notifications',
+        importance: Importance.max,
+      ),
+    );
   }
 
-  Future<void> initializeTimeZones() async {
+  Future<void> initializeLocalTime() async {
     tz.initializeTimeZones();
     final TimezoneInfo? timeZoneInfo = await FlutterTimezone.getLocalTimezone();
     final String? timeZoneName = timeZoneInfo!.identifier;
@@ -64,7 +77,7 @@ class NotificationService {
       ),
       payload: "",
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.dateAndTime
+      matchDateTimeComponents: DateTimeComponents.time
     );
     print('Scheduling notification for: $scheduledDate');
   }
