@@ -444,7 +444,7 @@ class _TrackScreenState extends State<TrackScreen> {
                 ),
                 SizedBox(height: 32),
                 Text(
-                  'Context Switching',
+                  'Task Switching',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
