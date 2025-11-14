@@ -271,7 +271,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         color: Colors.black),
                   ),
                   Text(
-                    'Customize your MindFlow wellness experience',
+                    'Customize your ClarityDesk wellness experience',
                     style: TextStyle(color: Colors.grey, fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
