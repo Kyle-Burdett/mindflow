@@ -270,6 +270,16 @@ class UserViewModel extends ChangeNotifier {
     return null;
   }
 
+  void logout(BuildContext context) async {
+    await _auth.signOut();
+    if (context.mounted) {
+      context.go('/get-started');
+    }
+    user = UserModel(reminder: true);
+    locator<CheckInViewModel>().resetCheckins();
+    notifyListeners();
+  }
+
 // Helper to show SnackBar (now requires a BuildContext)
   // *** MODIFIED: This method now requires and uses BuildContext directly ***
   void _showErrorSnackBar(BuildContext context, String message) {

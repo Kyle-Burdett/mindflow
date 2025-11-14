@@ -214,4 +214,15 @@ class CheckInViewModel extends ChangeNotifier {
       avgTotalHours: sumHours,
       totalOvertimeHours: sumOvertime);
   }
+
+  void resetCheckins() {
+    dailyCheckInList = [];
+    currentDailyCheckIn = DailyCheckInModel(id: '', date: DateTime.now(), energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {});
+    currentCheckInDate = "";
+    currentDate = DateTime.now();
+    trackData = [];
+    weeklyInsights; 
+    editingCheckIn = false;
+    notifyListeners();
+  }
 }
