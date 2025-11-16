@@ -56,7 +56,7 @@ class _InsightsPageState extends State<InsightsPage> {
                 color: productivityLevel > 0.7 ? Colors.green : productivityLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: productivityLevel,
                 description:
-                    "Over the past 7 days, you have had a productivity score of %${(productivityLevel * 100).toStringAsFixed(0)}",
+                    "Over the past 7 days, you have had a productivity score of ${(productivityLevel * 100).toStringAsFixed(0)}%",
                 footer: productivityLevel >= 0.5 || productivityLevel == 0 ? "No actions recommended" : "Check out these resources to improve your productivity",
               ),
 
@@ -72,7 +72,7 @@ class _InsightsPageState extends State<InsightsPage> {
                 description:
                   locator<CheckInViewModel>().weeklyInsights!.totalOvertimeHours > 0 
                   ? "Over the past 7 days, you’ve worked ${locator<CheckInViewModel>().weeklyInsights?.totalOvertimeHours} hours overtime"
-                  : "Over the past 7 days, you have had a Work/Life Balance score of %${(workLifeBalanceLevel * 100).toStringAsFixed(0)}",
+                  : "Over the past 7 days, you have had a Work/Life Balance score of ${(workLifeBalanceLevel * 100).toStringAsFixed(0)}%",
                 footer: workLifeBalanceLevel >= 0.5 || workLifeBalanceLevel == 0 ? "No actions recommended" : "Check out these tricks for managing working hours",
                 showArrow: true,
               ),
@@ -87,7 +87,7 @@ class _InsightsPageState extends State<InsightsPage> {
                 color: isolationLevel > 0.7 ? Colors.green : isolationLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: isolationLevel,
                 description:
-                    "Over the past 7 days, you have had an Isolation score of %${(isolationLevel * 100).toStringAsFixed(0)}",
+                    "Over the past 7 days, you have had an Isolation score of ${(isolationLevel * 100).toStringAsFixed(0)}%",
                 footer:
                    isolationLevel >= 0.5 || isolationLevel == 0 ? "No actions recommended" : "Read about how to improve that when working from home.",
                 showArrow: true,
@@ -103,7 +103,7 @@ class _InsightsPageState extends State<InsightsPage> {
                 color: energyLevel > 0.7 ? Colors.green : energyLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: energyLevel,
                 description:
-                    "Over the past 7 days, you have had an energy score of %${(energyLevel * 100).toStringAsFixed(0)}",
+                    "Over the past 7 days, you have had an energy score of ${(energyLevel * 100).toStringAsFixed(0)}%",
                 footer:
                     energyLevel >= 0.5 || energyLevel == 0 ? "No actions recommended" : "If you feel you need to, check out some additional resources on how you can improve this",
                 showArrow: false,
@@ -124,7 +124,7 @@ class _InsightsPageState extends State<InsightsPage> {
                 color: productivityLevel > 0.7 ? Colors.green : productivityLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: productivityLevel,
                 description:
-                    "Over the past 7 days, you have had a productivity score of %${(productivityLevel * 100).toStringAsFixed(0)}",
+                    "Over the past 7 days, you have had a productivity score of ${(productivityLevel * 100).toStringAsFixed(0)}%",
                 footer: productivityLevel >= 0.7 || productivityLevel == 0 ? "No actions recommended" : productivityLevel >= 0.5 ? "No actions recommended. Resources are available" : "Check out these resources to improve your productivity",
               ),
 
@@ -140,7 +140,7 @@ class _InsightsPageState extends State<InsightsPage> {
                 description:
                   locator<CheckInViewModel>().weeklyInsights!.totalOvertimeHours > 0 
                   ? "Over the past 7 days, you’ve worked ${locator<CheckInViewModel>().weeklyInsights?.totalOvertimeHours} hours overtime"
-                  : "Over the past 7 days, you have had a Work/Life Balance score of %${(workLifeBalanceLevel * 100).toStringAsFixed(0)}",
+                  : "Over the past 7 days, you have had a Work/Life Balance score of ${(workLifeBalanceLevel * 100).toStringAsFixed(0)}%",
                 footer: workLifeBalanceLevel >= 0.7 || workLifeBalanceLevel == 0 ? "No actions recommended" : workLifeBalanceLevel >= 0.5 ? "No actions recommended. Resources are available" : "Check out these tricks for managing working hours",
                 showArrow: true,
               ),
@@ -155,7 +155,7 @@ class _InsightsPageState extends State<InsightsPage> {
                 color: isolationLevel > 0.7 ? Colors.green : isolationLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: isolationLevel,
                 description:
-                    "Over the past 7 days, you have had an Isolation score of %${(isolationLevel * 100).toStringAsFixed(0)}",
+                    "Over the past 7 days, you have had an Isolation score of ${(isolationLevel * 100).toStringAsFixed(0)}%",
                 footer:
                    isolationLevel >= 0.7 || isolationLevel == 0 ? "No actions recommended" : isolationLevel >= 0.5 ? "No actions recommended. Resources are available" : "Read about how to improve that when working from home.",
                 showArrow: true,
@@ -171,7 +171,7 @@ class _InsightsPageState extends State<InsightsPage> {
                 color: energyLevel > 0.7 ? Colors.green : energyLevel > 0.4 ? Colors.yellow : Colors.redAccent,
                 percent: energyLevel,
                 description:
-                    "Over the past 7 days, you have had an energy score of %${(energyLevel * 100).toStringAsFixed(0)}",
+                    "Over the past 7 days, you have had an energy score of ${(energyLevel * 100).toStringAsFixed(0)}%",
                 footer:
                     energyLevel >= 0.7 || energyLevel == 0 ? "No actions recommended" : energyLevel >= 0.5 ? "No actions recommended. Resources are available" : "If you feel you need to, check out some additional resources on how you can improve this",
                 showArrow: false,

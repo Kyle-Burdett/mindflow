@@ -42,10 +42,10 @@ class WorkingHoursPage extends StatefulWidget {
 class _WorkingHoursPageState extends State<WorkingHoursPage> {
   // Colors to differentiate between tasks
   final colors = [
+    Colors.red.shade400,
     Colors.blue.shade400,
       Colors.green.shade400,
       Colors.deepPurple.shade400,
-      Colors.red.shade400,
       Colors.pink.shade400,
       Colors.indigo.shade400,
       Colors.orange.shade400,
@@ -65,10 +65,10 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
   ];
 
   final bgColors = [
+    Colors.red.shade200,
     Colors.blue.shade200,
       Colors.green.shade200,
       Colors.deepPurple.shade200,
-      Colors.red.shade200,
       Colors.pink.shade200,
       Colors.indigo.shade200,
       Colors.orange.shade200,
@@ -458,7 +458,7 @@ class TimelineView extends StatelessWidget {
 
                 Positioned(
                   left: 30,
-                  top: ((_timeToMinutes(startHour) - _timeToMinutes(startHour)) / 60) * hourHeight,
+                  top: ((_timeToMinutes(startHour) - _timeToMinutes(earliestTime)) / 60) * hourHeight,
                   height: ((_timeToMinutes(endHour) - _timeToMinutes(startHour)) / 60) * hourHeight,
                   child: Container(
                     width: 16,
