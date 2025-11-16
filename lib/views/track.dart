@@ -55,10 +55,11 @@ class _TrackScreenState extends State<TrackScreen> {
 
 
   List<TrackData> filterByDays(List<TrackData> data, int days) {
-    final now = DateTime.now();
-    final filterLimit = now.subtract(Duration(days: days));
-    return data.where((item) => item.date.isAfter(filterLimit)).toList();
+    if (days <= 0) return [];
+
+    return data.length <= days ? List.from(data) : data.sublist(data.length - days);
   }
+
 
   List<TrackData> averageForMonth(List<TrackData> data) {
     if (data.isEmpty) return [];
@@ -78,6 +79,13 @@ class _TrackScreenState extends State<TrackScreen> {
         });
       }
 
+      double weeklyOvertime = 0;
+      for (final day in group) {
+        final dailyHours = day.taskHours.values.fold(0.0, (a, b) => a + b);
+        final dailyOvertime = (dailyHours - idealHours).clamp(0, double.infinity);
+        weeklyOvertime += dailyOvertime;
+      }
+
       final avgDate = group[group.length ~/ 2].date;
 
       monthAverages.add(TrackData(
@@ -87,6 +95,7 @@ class _TrackScreenState extends State<TrackScreen> {
         group.map((e) => e.moodScore).reduce((a, b) => a + b) / group.length,
         group.map((e) => e.productivityScore).reduce((a, b) => a + b) / group.length,
       (group.map((e) => e.taskSwitches).reduce((a, b) => a + b) / group.length).round(),
+       weeklyOvertime,
       ));
     }
 
@@ -110,6 +119,13 @@ class _TrackScreenState extends State<TrackScreen> {
 
     for (final entry in groupedByMonth.entries) {
       final group = entry.value;
+
+      double monthlyOvertime = 0;
+      for (final day in group) {
+        final dailyHours = day.taskHours.values.fold(0.0, (a, b) => a + b);
+        final dailyOvertime = (dailyHours - idealHours).clamp(0, double.infinity);
+        monthlyOvertime += dailyOvertime;
+      }
 
       // Sum up total task hours for that month
       final Map<String, double> totalTaskHours = {};
@@ -135,6 +151,7 @@ class _TrackScreenState extends State<TrackScreen> {
         avgMood,
         avgProductivity,
         avgSwitches,
+        monthlyOvertime
       ));
     }
 
@@ -168,7 +185,7 @@ class _TrackScreenState extends State<TrackScreen> {
   @override
   void initState() {
     idealHours = endHours.difference(startHours).inHours;
-    displayingTrackData = filterByDays(trackDataList, 6);
+    displayingTrackData = filterByDays(trackDataList, 7);
     final tasks = {
       for (var d in displayingTrackData) ...d.taskHours.keys
     }.toList();
@@ -207,7 +224,6 @@ class _TrackScreenState extends State<TrackScreen> {
                       GestureDetector(
                         onTap: () => setState(() {
                           trackView = 'lastWeek';
-                          idealHours = endHours.difference(startHours).inHours;
                           displayingTrackData = filterByDays(trackDataList, 7);
                         }),
                         child: Container(
@@ -230,7 +246,6 @@ class _TrackScreenState extends State<TrackScreen> {
                         onTap: () => setState(() {
                           trackView = 'lastMonth';
                           setState(() {
-                            idealHours = endHours.difference(startHours).inHours * 5;
                             displayingTrackData = averageForMonth(trackDataList);
                           });
                         }),
@@ -253,7 +268,6 @@ class _TrackScreenState extends State<TrackScreen> {
                       GestureDetector(
                         onTap: () => setState(() {
                           trackView = 'lastThreeMonths';
-                          idealHours = endHours.difference(startHours).inHours * 20;
                           displayingTrackData = groupByMonth(trackDataList);
                         }),
                         child: Container(
@@ -563,7 +577,7 @@ class _TrackScreenState extends State<TrackScreen> {
                         final index = trackItem.key;
                         final track = trackItem.value;
                         print("Ideal hours: $idealHours");
-                        double overtimeHours = track.taskHours.values.reduce((a, b) => a + b) - idealHours;
+                        double overtimeHours = track.overtime == null || trackView == "lastWeek" ? track.taskHours.values.reduce((a, b) => a + b) - idealHours : track.overtime!;
                         if (overtimeHours < 0) {
                           overtimeHours = 0;
                         }

@@ -43,7 +43,7 @@ class GetStartedPage extends StatelessWidget {
                     padding: const EdgeInsets.all(spacing * 3),
                   ),
                   onPressed: () => context.push('/sign-in'),
-                  child: const Text('Sign In'),
+                  child: const Text('Sign In', style: TextStyle(color: Colors.white),),
                 ),
               ),
               const SizedBox(height: spacing * 3),
@@ -214,7 +214,7 @@ class _SignInContentState extends State<_SignInContent> {
                         height: 24, width: 24,
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                       ))
-                          : const Text('Sign In'),
+                          : const Text('Sign In', style: TextStyle(color: Colors.white)),
                     ),
                   ),
                   const SizedBox(height: spacing * 3),
@@ -419,7 +419,7 @@ class _SignUpContentState extends State<_SignUpContent> {
                         height: 24, width: 24,
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                       ))
-                          : const Text('Create Account'),
+                          : const Text('Create Account', style: TextStyle(color: Colors.white)),
                     ),
                   ),
                   const SizedBox(height: spacing * 3),

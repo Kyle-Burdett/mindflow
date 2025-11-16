@@ -124,8 +124,14 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
       final activity = activities.firstWhere((a) => a.id == activityId);
       if (field == 'start') {
         activity.timeSlots[slotIndex].start = value;
+        if (activity.timeSlots[slotIndex].end.isBefore(value)) {
+          activity.timeSlots[slotIndex].end = value;
+        }
       } else {
         activity.timeSlots[slotIndex].end = value;
+        if (activity.timeSlots[slotIndex].start.isAfter(value)) {
+          activity.timeSlots[slotIndex].start = value;
+        }
       }
     });
   }
@@ -141,8 +147,8 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
     setState(() {
       final activity = activities.firstWhere((a) => a.id == activityId);
       activity.timeSlots.add(TimeSlot(
-        start: const TimeOfDay(hour: 9, minute: 0),
-        end: const TimeOfDay(hour: 10, minute: 0),
+        start: const TimeOfDay(hour: 6, minute: 0),
+        end: const TimeOfDay(hour: 7, minute: 0),
       ));
     });
   }
