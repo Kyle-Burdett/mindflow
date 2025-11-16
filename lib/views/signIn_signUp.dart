@@ -233,7 +233,7 @@ class _SignInContentState extends State<_SignInContent> {
                   ),
                   const SizedBox(height: spacing * 3),
                   TextButton(
-                    onPressed: () => context.pop(),
+                    onPressed: () => context.replace('/get-started'),
                     child: const Text('← Back to welcome'),
                   ),
                 ],
@@ -438,7 +438,7 @@ class _SignUpContentState extends State<_SignUpContent> {
                   ),
                   const SizedBox(height: spacing * 3),
                   TextButton(
-                    onPressed: () => context.pop(),
+                    onPressed: () => context.replace('/get-started'),
                     child: const Text('← Back to welcome'),
                   ),
                 ],
