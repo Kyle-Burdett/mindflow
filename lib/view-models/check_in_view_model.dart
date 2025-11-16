@@ -16,6 +16,7 @@ class CheckInViewModel extends ChangeNotifier {
 
   String currentCheckInDate = "";
   DateTime currentDate = DateTime.now();
+  String todayStringDate = '${DateTime.now().year.toString().padLeft(4, '0')}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
   List<TrackData> trackData = [];
   WeeklySummary? weeklyInsights; 
   bool editingCheckIn = false;
@@ -69,7 +70,7 @@ class CheckInViewModel extends ChangeNotifier {
       trackData = dailyCheckInList.map((checkIn) => mapDailyCheckInToTrackData(checkIn)).toList();
       trackData.sort((a, b) => a.date.compareTo(b.date));
       weeklyInsights = getWeeklyAverages(dailyCheckIns);
-      
+      notifyListeners();
     } else {
       print("Fetch check-ins Failed!");
     }
@@ -224,5 +225,14 @@ class CheckInViewModel extends ChangeNotifier {
     weeklyInsights; 
     editingCheckIn = false;
     notifyListeners();
+  }
+
+  bool todaysCheckInComplete() {
+    DailyCheckInModel checkIn = dailyCheckInList.firstWhere((checkIn) => checkIn.id == todayStringDate, orElse: () => DailyCheckInModel(id: currentCheckInDate, date: currentDate, energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {}));
+    if (checkIn.taskHours.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

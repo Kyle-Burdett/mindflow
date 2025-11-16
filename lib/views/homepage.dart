@@ -371,21 +371,25 @@ class _HomepageState extends State<Homepage> {
                             ],
                           ),
                           const SizedBox(height: 6),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: weekDays.map((d) {
-                              final isSelected = _isSameDay(d, selected);
-                              return _DayPill(
-                                labelTop: _weekdayNameShort(d.weekday),
-                                labelBottom: '${d.day}',
-                                selected: isSelected,
-                                onTap: () => setState(() {
-                                  selected = d;
-                                  locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(d);
-                                  locator<CheckInViewModel>().currentDate = d;
-                                }),
-                              );
-                            }).toList(),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              spacing: 6,
+                              children: weekDays.map((d) {
+                                final isSelected = _isSameDay(d, selected);
+                                return _DayPill(
+                                  labelTop: _weekdayNameShort(d.weekday),
+                                  labelBottom: '${d.day}',
+                                  selected: isSelected,
+                                  onTap: () => setState(() {
+                                    selected = d;
+                                    locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(d);
+                                    locator<CheckInViewModel>().currentDate = d;
+                                  }),
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ],
                       ),
@@ -485,13 +489,19 @@ class _HomepageState extends State<Homepage> {
                               _DashboardCard(
                                 icon: Icons.track_changes,
                                 title: 'Daily Check-In',
-                                subtitle: locator<CheckInViewModel>().currentDailyCheckIn.taskHours.isNotEmpty
+                                subtitle: locator<CheckInViewModel>().todaysCheckInComplete()
                                     ? 'Completed Today'
                                     : 'Pending',
-                                iconColor: locator<CheckInViewModel>().currentDailyCheckIn.taskHours.isNotEmpty
+                                iconColor: locator<CheckInViewModel>().todaysCheckInComplete()
                                     ? Colors.green
                                     : Colors.orange,
                                 onTap: () {
+                                  setState(() {
+                                    selected = DateTime.now();
+                                    weekOffset = 0;
+                                  });
+                                  locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(selected);
+                                  locator<CheckInViewModel>().currentDate = selected;
                                   context.push('/check-in');
                                 },
                               ),
