@@ -82,6 +82,10 @@ class NotificationService {
     print('Scheduling notification for: $scheduledDate');
   }
 
+  void cancelReminder() {
+    flutterLocalNotificationsPlugin.cancel(2);
+  }
+
   Future<bool?> checkExactAlarmsPermission() async {
   final canScheduleExactAlarms =
       await flutterLocalNotificationsPlugin

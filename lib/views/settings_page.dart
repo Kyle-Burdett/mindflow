@@ -158,7 +158,11 @@ class _SettingsPageState extends State<SettingsPage> {
     locator<UserViewModel>().user.reminderTime =  DateTime(now.year, now.month, now.day, _settings.reminderTime.hour, _settings.reminderTime.minute);
     locator<UserViewModel>().user.startTime = DateTime(2000, 1, 1, _settings.plannedStartTime.hour, _settings.plannedStartTime.minute);
     locator<UserViewModel>().user.endTime = DateTime(2000, 1, 1, _settings.plannedEndTime.hour, _settings.plannedEndTime.minute);
-    notificationService.scheduleReminder(locator<UserViewModel>().user.reminderTime!);
+    if (_settings.dailyCheckInReminder) {
+      notificationService.scheduleReminder(locator<UserViewModel>().user.reminderTime!);
+    } else {
+      notificationService.cancelReminder();
+    }
     locator<UserViewModel>().setUser(locator<UserViewModel>().user);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -598,7 +602,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const SizedBox(height: 16),
           _buildAboutInfoRow('Version', '1.0.0'),
-          _buildAboutInfoRow('Last Updated', 'September 2025'),
+          _buildAboutInfoRow('Last Updated', 'November 2025'),
           const SizedBox(height: 16),
           const Text('Contact Support',
               style: TextStyle(fontWeight: FontWeight.w500)),
