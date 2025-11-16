@@ -9,7 +9,8 @@ class TrackData {
   final double productivityScore;
   final double moodScore;
   final int taskSwitches;
-  TrackData(this.date, this.taskHours, this.tags, this.productivityScore, this.moodScore, this.taskSwitches);
+  double? overtime;
+  TrackData(this.date, this.taskHours, this.tags, this.productivityScore, this.moodScore, this.taskSwitches, this.overtime);
 }
 
 // We map the daily check-in data fetched from firestore to be usable in our check-in
@@ -32,6 +33,8 @@ TrackData mapDailyCheckInToTrackData(DailyCheckInModel dailyCheckIn) {
     (sum, ranges) => sum + ranges.length,
   );
 
+  final double overtime = 0;
+
   return TrackData(
     dailyCheckIn.date,
     taskHours,
@@ -39,5 +42,6 @@ TrackData mapDailyCheckInToTrackData(DailyCheckInModel dailyCheckIn) {
     dailyCheckIn.productivityScore,
     dailyCheckIn.moodScore,
     taskSwitches,
+    overtime
   );
 }

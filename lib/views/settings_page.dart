@@ -127,7 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
       dailyCheckInReminder: locator<UserViewModel>().user.reminder ?? true,
       weeklyProgressReport: true,
       achievementNotifications: true,
-      reminderTime: TimeOfDay.fromDateTime(locator<UserViewModel>().user.reminderTime!),
+      reminderTime: locator<UserViewModel>().user.reminderTime != null ? TimeOfDay.fromDateTime(locator<UserViewModel>().user.reminderTime!) : TimeOfDay(hour: 17, minute: 0),
       targetMoodScore: 7.0,
       targetProductivityScore: 8.0,
       maxStressLevel: 4.0,
@@ -484,6 +484,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       (time) => setState(
                           () {
                             _settings.plannedStartTime = time;
+                            if (_settings.plannedEndTime.isBefore(time)) {
+                              _settings.plannedEndTime = time;
+                            }
                           }),
                 ),
               ),
@@ -496,6 +499,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       (time) => setState(
                           () { 
                             _settings.plannedEndTime = time;
+                            if (_settings.plannedStartTime.isAfter(time)) {
+                              _settings.plannedStartTime = time;
+                            }
                           }),
                 ),
               ),
