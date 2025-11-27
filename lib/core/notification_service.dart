@@ -6,14 +6,42 @@ import 'package:timezone/timezone.dart' as tz;
 class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
+  DarwinInitializationSettings initializationSettingsDarwin = DarwinInitializationSettings(
+    notificationCategories: [
+      DarwinNotificationCategory(
+        'demoCategory',
+        actions: <DarwinNotificationAction>[
+            DarwinNotificationAction.plain('id_1', 'Action 1'),
+            DarwinNotificationAction.plain(
+            'id_2',
+            'Action 2',
+            options: <DarwinNotificationActionOption>{
+                DarwinNotificationActionOption.destructive,
+            },
+            ),
+            DarwinNotificationAction.plain(
+            'id_3',
+            'Action 3',
+            options: <DarwinNotificationActionOption>{
+                DarwinNotificationActionOption.foreground,
+            },
+            ),
+        ],
+        options: <DarwinNotificationCategoryOption>{
+            DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
+        },
+      )
+    ],
+  );
+
   Future<void> initNotifications() async {
     await initializeLocalTime();
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const DarwinInitializationSettings iosSettings = DarwinInitializationSettings();
+    final DarwinInitializationSettings iosSettings = initializationSettingsDarwin;
 
-    const InitializationSettings settings = InitializationSettings(
+    InitializationSettings settings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings
     );
@@ -73,6 +101,15 @@ class NotificationService {
           importance: Importance.max,
           playSound: true,
           visibility: NotificationVisibility.public,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentSound: true,
+          presentBadge: true,
+          sound: 'default',
+          badgeNumber: 1,
+          threadIdentifier: 'reminder_thread',
+          categoryIdentifier: 'reminder',
         ),
       ),
       payload: "",
