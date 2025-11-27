@@ -230,7 +230,47 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
   return activities;
 }
 
+  bool hasOverlappingTimeSlots(List<Activity> activities) {
+    List<TimeSlot> allSlots = [];
+    for (var activity in activities) {
+      allSlots.addAll(activity.timeSlots);
+    }
+
+    allSlots.sort((a, b) {
+      if (a.start.hour != b.start.hour) {
+        return a.start.hour.compareTo(b.start.hour);
+      }
+      return a.start.minute.compareTo(b.start.minute);
+    });
+
+    for (int i = 0; i < allSlots.length - 1; i++) {
+      TimeSlot current = allSlots[i];
+      TimeSlot next = allSlots[i + 1];
+
+      if (_timeOfDayToMinutes(next.start) < _timeOfDayToMinutes(current.end)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  int _timeOfDayToMinutes(TimeOfDay time) {
+    return time.hour * 60 + time.minute;
+  }
+
   void _saveAndExit() {
+    if (hasOverlappingTimeSlots(activities)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Task hours cannot be overlapped. Please adjust the times to be continuous."),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
     locator<CheckInViewModel>().setCheckInHours(mapActivitiesToTaskHours(activities));
     context.pop();
   }
