@@ -123,3 +123,4 @@ app.*.symbols
 mindflow.iml
 mindflow.iml
 android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
