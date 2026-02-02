@@ -29,10 +29,7 @@ class Activity {
   });
 }
 
-
-
 class WorkingHoursPage extends StatefulWidget {
-
   const WorkingHoursPage({super.key});
 
   @override
@@ -44,47 +41,47 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
   final colors = [
     Colors.red.shade400,
     Colors.blue.shade400,
-      Colors.green.shade400,
-      Colors.deepPurple.shade400,
-      Colors.pink.shade400,
-      Colors.indigo.shade400,
-      Colors.orange.shade400,
-      Colors.amber.shade400,
-      Colors.cyan.shade400,
-      Colors.brown.shade400,
-      Colors.teal.shade400,
-      Colors.yellow.shade400,
-      Colors.lime.shade400,
-      Colors.blueAccent.shade400,
-      Colors.greenAccent.shade400,
-      Colors.redAccent.shade400,
-      Colors.deepPurpleAccent.shade400,
-      Colors.tealAccent.shade400,
-      Colors.pinkAccent.shade400,
-      Colors.orangeAccent.shade400,
+    Colors.green.shade400,
+    Colors.deepPurple.shade400,
+    Colors.pink.shade400,
+    Colors.indigo.shade400,
+    Colors.orange.shade400,
+    Colors.amber.shade400,
+    Colors.cyan.shade400,
+    Colors.brown.shade400,
+    Colors.teal.shade400,
+    Colors.yellow.shade400,
+    Colors.lime.shade400,
+    Colors.blueAccent.shade400,
+    Colors.greenAccent.shade400,
+    Colors.redAccent.shade400,
+    Colors.deepPurpleAccent.shade400,
+    Colors.tealAccent.shade400,
+    Colors.pinkAccent.shade400,
+    Colors.orangeAccent.shade400,
   ];
 
   final bgColors = [
     Colors.red.shade200,
     Colors.blue.shade200,
-      Colors.green.shade200,
-      Colors.deepPurple.shade200,
-      Colors.pink.shade200,
-      Colors.indigo.shade200,
-      Colors.orange.shade200,
-      Colors.amber.shade200,
-      Colors.cyan.shade200,
-      Colors.brown.shade200,
-      Colors.teal.shade200,
-      Colors.yellow.shade200,
-      Colors.lime.shade200,
-      Colors.blueAccent.shade200,
-      Colors.greenAccent.shade200,
-      Colors.redAccent.shade200,
-      Colors.deepPurpleAccent.shade200,
-      Colors.tealAccent.shade200,
-      Colors.pinkAccent.shade200,
-      Colors.orangeAccent.shade200,
+    Colors.green.shade200,
+    Colors.deepPurple.shade200,
+    Colors.pink.shade200,
+    Colors.indigo.shade200,
+    Colors.orange.shade200,
+    Colors.amber.shade200,
+    Colors.cyan.shade200,
+    Colors.brown.shade200,
+    Colors.teal.shade200,
+    Colors.yellow.shade200,
+    Colors.lime.shade200,
+    Colors.blueAccent.shade200,
+    Colors.greenAccent.shade200,
+    Colors.redAccent.shade200,
+    Colors.deepPurpleAccent.shade200,
+    Colors.tealAccent.shade200,
+    Colors.pinkAccent.shade200,
+    Colors.orangeAccent.shade200,
   ];
 
   // Default tasks when no activities have been added yet.
@@ -95,7 +92,10 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
       color: Colors.red.shade400,
       bgColor: Colors.red.shade200,
       timeSlots: [
-        TimeSlot(start: const TimeOfDay(hour: 10, minute: 0), end: const TimeOfDay(hour: 13, minute: 0))
+        TimeSlot(
+          start: const TimeOfDay(hour: 10, minute: 0),
+          end: const TimeOfDay(hour: 13, minute: 0),
+        ),
       ],
     ),
     Activity(
@@ -104,8 +104,14 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
       color: Colors.green.shade400,
       bgColor: Colors.green.shade200,
       timeSlots: [
-        TimeSlot(start: const TimeOfDay(hour: 13, minute: 0), end: const TimeOfDay(hour: 14, minute: 0)),
-        TimeSlot(start: const TimeOfDay(hour: 16, minute: 0), end: const TimeOfDay(hour: 18, minute: 0)),
+        TimeSlot(
+          start: const TimeOfDay(hour: 13, minute: 0),
+          end: const TimeOfDay(hour: 14, minute: 0),
+        ),
+        TimeSlot(
+          start: const TimeOfDay(hour: 16, minute: 0),
+          end: const TimeOfDay(hour: 18, minute: 0),
+        ),
       ],
     ),
     Activity(
@@ -114,12 +120,20 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
       color: Colors.blue.shade400,
       bgColor: Colors.blue.shade200,
       timeSlots: [
-        TimeSlot(start: const TimeOfDay(hour: 14, minute: 0), end: const TimeOfDay(hour: 16, minute: 0))
+        TimeSlot(
+          start: const TimeOfDay(hour: 14, minute: 0),
+          end: const TimeOfDay(hour: 16, minute: 0),
+        ),
       ],
     ),
   ];
 
-  void _updateActivityTimeSlot(String activityId, int slotIndex, String field, TimeOfDay value) {
+  void _updateActivityTimeSlot(
+    String activityId,
+    int slotIndex,
+    String field,
+    TimeOfDay value,
+  ) {
     setState(() {
       final activity = activities.firstWhere((a) => a.id == activityId);
       if (field == 'start') {
@@ -146,10 +160,12 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
   void _addTimeSlot(String activityId) {
     setState(() {
       final activity = activities.firstWhere((a) => a.id == activityId);
-      activity.timeSlots.add(TimeSlot(
-        start: const TimeOfDay(hour: 6, minute: 0),
-        end: const TimeOfDay(hour: 7, minute: 0),
-      ));
+      activity.timeSlots.add(
+        TimeSlot(
+          start: const TimeOfDay(hour: 6, minute: 0),
+          end: const TimeOfDay(hour: 7, minute: 0),
+        ),
+      );
     });
   }
 
@@ -159,9 +175,18 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
         Activity(
           id: DateTime.now().toString(),
           name: "New Task",
-          color: activities.length >= 20 ? colors[0] : colors[activities.length],
-          bgColor: activities.length >= 20 ? bgColors[0] : bgColors[activities.length],
-          timeSlots: [TimeSlot(start: const TimeOfDay(hour: 9, minute: 0), end: const TimeOfDay(hour: 10, minute: 0))],
+          color: activities.length >= 20
+              ? colors[0]
+              : colors[activities.length],
+          bgColor: activities.length >= 20
+              ? bgColors[0]
+              : bgColors[activities.length],
+          timeSlots: [
+            TimeSlot(
+              start: const TimeOfDay(hour: 9, minute: 0),
+              end: const TimeOfDay(hour: 10, minute: 0),
+            ),
+          ],
         ),
       );
     });
@@ -185,50 +210,54 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
   }
 
   Map<String, List<TimeRange>> mapActivitiesToTaskHours(
-    List<Activity> activities) {
-  Map<String, List<TimeRange>> taskHours = {};
+    List<Activity> activities,
+  ) {
+    Map<String, List<TimeRange>> taskHours = {};
 
-  for (var activity in activities) {
-    taskHours[activity.name] = activity.timeSlots.map((slot) {
-      DateTime start = getStandardTime(slot.start);
-      DateTime end = getStandardTime(slot.end);
-      return TimeRange(start: start, end: end);
-    }).toList();
+    for (var activity in activities) {
+      taskHours[activity.name] = activity.timeSlots.map((slot) {
+        DateTime start = getStandardTime(slot.start);
+        DateTime end = getStandardTime(slot.end);
+        return TimeRange(start: start, end: end);
+      }).toList();
+    }
+
+    return taskHours;
   }
 
-  return taskHours;
-}
+  List<Activity> mapTaskHoursToActivities(
+    Map<String, List<TimeRange>> taskHours,
+    List<Color> colors,
+  ) {
+    List<Activity> activities = [];
+    int counter = 1;
 
-List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, List<Color> colors) {
-  List<Activity> activities = [];
-  int counter = 1;
+    taskHours.forEach((taskName, ranges) {
+      List<TimeSlot> timeSlots = ranges.map((range) {
+        return TimeSlot(
+          start: TimeOfDay(hour: range.start.hour, minute: range.start.minute),
+          end: TimeOfDay(hour: range.end.hour, minute: range.end.minute),
+        );
+      }).toList();
 
-  taskHours.forEach((taskName, ranges) {
-    List<TimeSlot> timeSlots = ranges.map((range) {
-      return TimeSlot(
-        start: TimeOfDay(hour: range.start.hour, minute: range.start.minute),
-        end: TimeOfDay(hour: range.end.hour, minute: range.end.minute),
+      final color = colors[(counter - 1) % colors.length];
+      final bgColor = color.withValues(alpha: 0.2);
+
+      activities.add(
+        Activity(
+          id: counter.toString(),
+          name: taskName,
+          color: color,
+          bgColor: bgColor,
+          timeSlots: timeSlots,
+        ),
       );
-    }).toList();
 
-    final color = colors[(counter - 1) % colors.length];
-    final bgColor = color.withValues(alpha: 0.2);
+      counter++;
+    });
 
-    activities.add(
-      Activity(
-        id: counter.toString(),
-        name: taskName,
-        color: color,
-        bgColor: bgColor,
-        timeSlots: timeSlots,
-      ),
-    );
-
-    counter++;
-  });
-
-  return activities;
-}
+    return activities;
+  }
 
   bool hasOverlappingTimeSlots(List<Activity> activities) {
     List<TimeSlot> allSlots = [];
@@ -263,7 +292,9 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
     if (hasOverlappingTimeSlots(activities)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Task hours cannot be overlapped. Please adjust the times to be continuous."),
+          content: Text(
+            "Task hours cannot be overlapped. Please adjust the times to be continuous.",
+          ),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
@@ -271,14 +302,20 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
       );
       return;
     }
-    locator<CheckInViewModel>().setCheckInHours(mapActivitiesToTaskHours(activities));
+    locator<CheckInViewModel>().setCheckInHours(
+      mapActivitiesToTaskHours(activities),
+    );
     context.pop();
   }
 
   double _getTimelineHeight() {
     const double hourHeight = 60.0;
-    final startHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!);
-    final endHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!);
+    final startHour = TimeOfDay.fromDateTime(
+      locator<UserViewModel>().user.startTime!,
+    );
+    final endHour = TimeOfDay.fromDateTime(
+      locator<UserViewModel>().user.endTime!,
+    );
 
     TimeOfDay earliestTime = startHour;
     TimeOfDay latestTime = endHour;
@@ -286,8 +323,12 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
     final allRanges = activities.expand((a) => a.timeSlots).toList();
 
     if (allRanges.isNotEmpty) {
-      final earliest = allRanges.map((r) => r.start).reduce((a, b) => a.isBefore(b) ? a : b);
-      final latest = allRanges.map((r) => r.end).reduce((a, b) => a.isAfter(b) ? a : b);
+      final earliest = allRanges
+          .map((r) => r.start)
+          .reduce((a, b) => a.isBefore(b) ? a : b);
+      final latest = allRanges
+          .map((r) => r.end)
+          .reduce((a, b) => a.isAfter(b) ? a : b);
 
       final mockEarliestTime = earliest;
       final mockLatestTime = latest;
@@ -300,7 +341,7 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
         latestTime = mockLatestTime;
       }
     }
-    
+
     final totalHoursToDisplay = (latestTime.hour - earliestTime.hour);
 
     return (totalHoursToDisplay + 1) * hourHeight + 32;
@@ -309,94 +350,93 @@ List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, 
   @override
   void initState() {
     if (locator<CheckInViewModel>().currentDailyCheckIn.taskHours.isNotEmpty) {
-      activities = mapTaskHoursToActivities(locator<CheckInViewModel>().currentDailyCheckIn.taskHours, colors);
+      activities = mapTaskHoursToActivities(
+        locator<CheckInViewModel>().currentDailyCheckIn.taskHours,
+        colors,
+      );
     }
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     const Color pageBackgroundColor = Color(0xFFFFF3E9);
 
     return ChangeNotifierProvider<CheckInViewModel>.value(
       value: locator<CheckInViewModel>(),
       child: Consumer<CheckInViewModel>(
-      builder: (context, model, child) => Scaffold(
-      backgroundColor: pageBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: pageBackgroundColor,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+        builder: (context, model, child) => Scaffold(
+          backgroundColor: pageBackgroundColor,
+          appBar: AppBar(
+            backgroundColor: pageBackgroundColor,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
 
-          onPressed: _saveAndExit,
-        ),
-        title: const Text('Update your hours'),
-        elevation: 0,
-      ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+              onPressed: _saveAndExit,
+            ),
+            title: const Text('Update your hours'),
+            elevation: 0,
+          ),
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 8),
+                      const Text(
+                        'How did your day go compared to your planned working hours?',
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
+                      ),
+                      const SizedBox(height: 24),
 
-                  const SizedBox(height: 8),
-                  const Text(
-                    'How did your day go compared to your planned working hours?',
-                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                      SizedBox(
+                        height: _getTimelineHeight(),
+                        child: TimelineView(activities: activities),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: activities.map((activity) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: ActivityCard(
+                                activity: activity,
+                                onUpdateTimeSlot: _updateActivityTimeSlot,
+                                onRemoveTimeSlot: _removeTimeSlot,
+                                onAddTimeSlot: _addTimeSlot,
+                                onDeleteActivity: _deleteActivity,
+                                onUpdateActivityName: _updateActivityName,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 100),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-
-
-                  SizedBox(
-                    height: _getTimelineHeight(),
-                    child: TimelineView(activities: activities),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: activities.map((activity) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: ActivityCard(
-                            activity: activity,
-                            onUpdateTimeSlot: _updateActivityTimeSlot,
-                            onRemoveTimeSlot: _removeTimeSlot,
-                            onAddTimeSlot: _addTimeSlot,
-                            onDeleteActivity: _deleteActivity,
-                            onUpdateActivityName: _updateActivityName,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  const SizedBox(height: 100),
-                ],
+                ),
               ),
-            ),
+              Positioned(
+                bottom: 80,
+                right: 24,
+                child: FloatingActionButton(
+                  onPressed: _addNewActivity,
+                  backgroundColor: Colors.orange.shade300,
+                  foregroundColor: Colors.black,
+                  child: const Icon(Icons.add),
+                ),
+              ),
+            ],
           ),
-          Positioned(
-            bottom: 80,
-            right: 24,
-            child: FloatingActionButton(
-              onPressed: _addNewActivity,
-              backgroundColor: Colors.orange.shade300,
-              foregroundColor: Colors.black,
-              child: const Icon(Icons.add),
-            ),
-          ),
-        ],
+        ),
       ),
-    )));
+    );
   }
 }
-
-
 
 class TimelineView extends StatelessWidget {
   final List<Activity> activities;
@@ -414,8 +454,12 @@ class TimelineView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const double hourHeight = 60.0;
-    final startHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!);
-    final endHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!);
+    final startHour = TimeOfDay.fromDateTime(
+      locator<UserViewModel>().user.startTime!,
+    );
+    final endHour = TimeOfDay.fromDateTime(
+      locator<UserViewModel>().user.endTime!,
+    );
 
     TimeOfDay earliestTime = startHour;
     TimeOfDay latestTime = endHour;
@@ -423,8 +467,12 @@ class TimelineView extends StatelessWidget {
     final allRanges = activities.expand((a) => a.timeSlots).toList();
 
     if (allRanges.isNotEmpty) {
-      final earliest = allRanges.map((r) => r.start).reduce((a, b) => a.isBefore(b) ? a : b);
-      final latest = allRanges.map((r) => r.end).reduce((a, b) => a.isAfter(b) ? a : b);
+      final earliest = allRanges
+          .map((r) => r.start)
+          .reduce((a, b) => a.isBefore(b) ? a : b);
+      final latest = allRanges
+          .map((r) => r.end)
+          .reduce((a, b) => a.isAfter(b) ? a : b);
 
       final mockEarliestTime = earliest;
       final mockLatestTime = latest;
@@ -450,10 +498,10 @@ class TimelineView extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Row( // Use Row to separate the time labels and the timeline content
+      child: Row(
+        // Use Row to separate the time labels and the timeline content
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           SizedBox(
             width: 80, // Fixed width for the time column
             child: Column(
@@ -478,28 +526,35 @@ class TimelineView extends StatelessWidget {
             ),
           ),
 
-
           Expanded(
             child: Stack(
               children: [
-
                 Column(
                   children: hoursToDisplay.map((_) {
                     return SizedBox(
                       height: hourHeight,
                       child: Align(
                         alignment: Alignment.topCenter,
-                        child: Divider(color: Colors.grey.shade300, thickness: 1),
+                        child: Divider(
+                          color: Colors.grey.shade300,
+                          thickness: 1,
+                        ),
                       ),
                     );
                   }).toList(),
                 ),
 
-
                 Positioned(
                   left: 30,
-                  top: ((_timeToMinutes(startHour) - _timeToMinutes(earliestTime)) / 60) * hourHeight,
-                  height: ((_timeToMinutes(endHour) - _timeToMinutes(startHour)) / 60) * hourHeight,
+                  top:
+                      ((_timeToMinutes(startHour) -
+                              _timeToMinutes(earliestTime)) /
+                          60) *
+                      hourHeight,
+                  height:
+                      ((_timeToMinutes(endHour) - _timeToMinutes(startHour)) /
+                          60) *
+                      hourHeight,
                   child: Container(
                     width: 16,
                     decoration: BoxDecoration(
@@ -509,10 +564,13 @@ class TimelineView extends StatelessWidget {
                   ),
                 ),
 
-
                 Positioned(
                   left: 55,
-                  top: ((_timeToMinutes(const TimeOfDay(hour: 11, minute: 30)) - _timeToMinutes(earliestTime)) / 60) * hourHeight,
+                  top:
+                      ((_timeToMinutes(const TimeOfDay(hour: 11, minute: 30)) -
+                              _timeToMinutes(earliestTime)) /
+                          60) *
+                      hourHeight,
                   child: const Text(
                     'Planned\nworking hours',
                     style: TextStyle(
@@ -523,63 +581,63 @@ class TimelineView extends StatelessWidget {
                   ),
                 ),
 
-
                 ...activities.expand((activity) {
                   return activity.timeSlots.map((slot) {
                     final startMinutes = _timeToMinutes(slot.start);
                     final endMinutes = _timeToMinutes(slot.end);
                     final baseMinutes = _timeToMinutes(earliestTime);
 
-                    final top = ((startMinutes - baseMinutes) / 60) * hourHeight;
-                    final height = ((endMinutes - startMinutes) / 60) * hourHeight;
-
+                    final top =
+                        ((startMinutes - baseMinutes) / 60) * hourHeight;
+                    final height =
+                        ((endMinutes - startMinutes) / 60) * hourHeight;
 
                     if (height <= 0) return Container();
-
-
 
                     const double barWidth = 16.0;
                     const double rightPadding = 16.0;
 
                     return Positioned.fill(
                       top: top,
-                      bottom: (totalHoursToDisplay * hourHeight) - (top + height),
+                      bottom:
+                          (totalHoursToDisplay * hourHeight) - (top + height),
                       child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final barLeft = constraints.maxWidth - barWidth - rightPadding;
-                            final labelRight = barLeft - 8;
+                        builder: (context, constraints) {
+                          final barLeft =
+                              constraints.maxWidth - barWidth - rightPadding;
+                          final labelRight = barLeft - 8;
 
-                            return Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                // Activity Bar
-                                Positioned(
-                                  left: barLeft,
-                                  top: 0,
-                                  height: height,
-                                  child: Container(
-                                    width: barWidth,
-                                    decoration: BoxDecoration(
-                                      color: activity.color,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
+                          return Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              // Activity Bar
+                              Positioned(
+                                left: barLeft,
+                                top: 0,
+                                height: height,
+                                child: Container(
+                                  width: barWidth,
+                                  decoration: BoxDecoration(
+                                    color: activity.color,
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                // Activity Label
-                                Positioned(
-                                  right: constraints.maxWidth - labelRight,
-                                  top: (height / 2) - (10), // Center vertically
-                                  child: Text(
-                                    activity.name,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                              ),
+                              // Activity Label
+                              Positioned(
+                                right: constraints.maxWidth - labelRight,
+                                top: (height / 2) - (10), // Center vertically
+                                child: Text(
+                                  activity.name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ],
-                            );
-                          }
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     );
                   });
@@ -592,8 +650,6 @@ class TimelineView extends StatelessWidget {
     );
   }
 }
-
-
 
 class ActivityCard extends StatefulWidget {
   final Activity activity;
@@ -676,25 +732,39 @@ class _ActivityCardState extends State<ActivityCard> {
                             isDense: true,
                             contentPadding: EdgeInsets.zero,
                             border: InputBorder.none,
-                            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 1))
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 1,
+                              ),
+                            ),
                           ),
                           onSubmitted: (value) => handleNameEdit(),
                         ),
                       )
                     else
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: widget.activity.color,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           widget.activity.name,
-                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     IconButton(
-                      icon: Icon(isEditingName ? Icons.check : Icons.edit, size: 16),
+                      icon: Icon(
+                        isEditingName ? Icons.check : Icons.edit,
+                        size: 16,
+                      ),
                       onPressed: handleNameEdit,
                     ),
                   ],
@@ -703,10 +773,13 @@ class _ActivityCardState extends State<ActivityCard> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => widget.onDeleteActivity(widget.activity.id),
+                      onPressed: () =>
+                          widget.onDeleteActivity(widget.activity.id),
                     ),
                     IconButton(
-                      icon: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                      icon: Icon(
+                        isExpanded ? Icons.expand_less : Icons.expand_more,
+                      ),
                       onPressed: () => setState(() => isExpanded = !isExpanded),
                     ),
                   ],
@@ -730,10 +803,22 @@ class _ActivityCardState extends State<ActivityCard> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('Start', style: TextStyle(fontSize: 12, color: Colors.black54)),
+                                  const Text(
+                                    'Start',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
                                   TimePicker(
                                     initialTime: slot.start,
-                                    onTimeSelected: (time) => widget.onUpdateTimeSlot(widget.activity.id, index, 'start', time),
+                                    onTimeSelected: (time) =>
+                                        widget.onUpdateTimeSlot(
+                                          widget.activity.id,
+                                          index,
+                                          'start',
+                                          time,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -743,17 +828,32 @@ class _ActivityCardState extends State<ActivityCard> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('End', style: TextStyle(fontSize: 12, color: Colors.black54)),
+                                  const Text(
+                                    'End',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
                                   TimePicker(
                                     initialTime: slot.end,
-                                    onTimeSelected: (time) => widget.onUpdateTimeSlot(widget.activity.id, index, 'end', time),
+                                    onTimeSelected: (time) =>
+                                        widget.onUpdateTimeSlot(
+                                          widget.activity.id,
+                                          index,
+                                          'end',
+                                          time,
+                                        ),
                                   ),
                                 ],
                               ),
                             ),
                             IconButton(
                               icon: const Icon(Icons.remove_circle_outline),
-                              onPressed: () => widget.onRemoveTimeSlot(widget.activity.id, index),
+                              onPressed: () => widget.onRemoveTimeSlot(
+                                widget.activity.id,
+                                index,
+                              ),
                             ),
                           ],
                         ),
@@ -773,7 +873,6 @@ class _ActivityCardState extends State<ActivityCard> {
     );
   }
 }
-
 
 class TimePicker extends StatelessWidget {
   final TimeOfDay initialTime;
@@ -799,7 +898,11 @@ class TimePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton(
       onPressed: () => _showTimePicker(context),
-      child: Text(MaterialLocalizations.of(context).formatTimeOfDay(initialTime, alwaysUse24HourFormat: false)),
+      child: Text(
+        MaterialLocalizations.of(
+          context,
+        ).formatTimeOfDay(initialTime, alwaysUse24HourFormat: false),
+      ),
     );
   }
 }

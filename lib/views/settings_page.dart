@@ -6,7 +6,6 @@ import 'package:mindflow/view-models/user_view_model.dart';
 const Color _kPrimaryColor = Color(0xFFDB863B);
 const Color _kBackgroundColor = Color(0xFFFFF3E9);
 
-
 class UserData {
   final String? name;
   final String? email;
@@ -14,10 +13,7 @@ class UserData {
   UserData({this.name, this.email});
 
   factory UserData.fromJson(Map<String, dynamic> json) {
-    return UserData(
-      name: json['name'],
-      email: json['email'],
-    );
+    return UserData(name: json['name'], email: json['email']);
   }
 }
 
@@ -79,11 +75,11 @@ class AppSettings {
       dailyCheckInReminder: dailyCheckInReminder ?? this.dailyCheckInReminder,
       weeklyProgressReport: weeklyProgressReport ?? this.weeklyProgressReport,
       achievementNotifications:
-      achievementNotifications ?? this.achievementNotifications,
+          achievementNotifications ?? this.achievementNotifications,
       reminderTime: reminderTime ?? this.reminderTime,
       targetMoodScore: targetMoodScore ?? this.targetMoodScore,
       targetProductivityScore:
-      targetProductivityScore ?? this.targetProductivityScore,
+          targetProductivityScore ?? this.targetProductivityScore,
       maxStressLevel: maxStressLevel ?? this.maxStressLevel,
       targetWorkHours: targetWorkHours ?? this.targetWorkHours,
       focusAreas: focusAreas ?? this.focusAreas,
@@ -91,9 +87,7 @@ class AppSettings {
   }
 }
 
-
 class SettingsPage extends StatefulWidget {
-
   const SettingsPage({super.key});
 
   @override
@@ -118,16 +112,21 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
 
-
     _settings = AppSettings(
       name: user.name ?? "",
       email: user.email ?? "",
-      plannedStartTime: TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!),
-      plannedEndTime: TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!),
+      plannedStartTime: TimeOfDay.fromDateTime(
+        locator<UserViewModel>().user.startTime!,
+      ),
+      plannedEndTime: TimeOfDay.fromDateTime(
+        locator<UserViewModel>().user.endTime!,
+      ),
       dailyCheckInReminder: locator<UserViewModel>().user.reminder ?? true,
       weeklyProgressReport: true,
       achievementNotifications: true,
-      reminderTime: locator<UserViewModel>().user.reminderTime != null ? TimeOfDay.fromDateTime(locator<UserViewModel>().user.reminderTime!) : TimeOfDay(hour: 17, minute: 0),
+      reminderTime: locator<UserViewModel>().user.reminderTime != null
+          ? TimeOfDay.fromDateTime(locator<UserViewModel>().user.reminderTime!)
+          : TimeOfDay(hour: 17, minute: 0),
       targetMoodScore: 7.0,
       targetProductivityScore: 8.0,
       maxStressLevel: 4.0,
@@ -147,19 +146,40 @@ class _SettingsPageState extends State<SettingsPage> {
       } else {
         _settings.focusAreas.add(areaId);
       }
-      _settings =
-          _settings.copyWith(focusAreas: List.from(_settings.focusAreas));
+      _settings = _settings.copyWith(
+        focusAreas: List.from(_settings.focusAreas),
+      );
     });
   }
 
   void _handleUpdatePlannedHours() {
     DateTime now = DateTime.now();
     locator<UserViewModel>().user.reminder = _settings.dailyCheckInReminder;
-    locator<UserViewModel>().user.reminderTime =  DateTime(now.year, now.month, now.day, _settings.reminderTime.hour, _settings.reminderTime.minute);
-    locator<UserViewModel>().user.startTime = DateTime(2000, 1, 1, _settings.plannedStartTime.hour, _settings.plannedStartTime.minute);
-    locator<UserViewModel>().user.endTime = DateTime(2000, 1, 1, _settings.plannedEndTime.hour, _settings.plannedEndTime.minute);
+    locator<UserViewModel>().user.reminderTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      _settings.reminderTime.hour,
+      _settings.reminderTime.minute,
+    );
+    locator<UserViewModel>().user.startTime = DateTime(
+      2000,
+      1,
+      1,
+      _settings.plannedStartTime.hour,
+      _settings.plannedStartTime.minute,
+    );
+    locator<UserViewModel>().user.endTime = DateTime(
+      2000,
+      1,
+      1,
+      _settings.plannedEndTime.hour,
+      _settings.plannedEndTime.minute,
+    );
     if (_settings.dailyCheckInReminder) {
-      notificationService.scheduleReminder(locator<UserViewModel>().user.reminderTime!);
+      notificationService.scheduleReminder(
+        locator<UserViewModel>().user.reminderTime!,
+      );
     } else {
       notificationService.cancelReminder();
     }
@@ -171,16 +191,17 @@ class _SettingsPageState extends State<SettingsPage> {
         behavior: SnackBarBehavior.floating,
       ),
     );
-    print('Update button pressed. Planned Start: ${_settings.plannedStartTime.format(context)}, Planned End: ${_settings.plannedEndTime.format(context)}');
+    print(
+      'Update button pressed. Planned Start: ${_settings.plannedStartTime.format(context)}, Planned End: ${_settings.plannedEndTime.format(context)}',
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final customTheme = Theme.of(context).copyWith(
-      colorScheme: Theme.of(context).colorScheme.copyWith(
-        primary: _kPrimaryColor,
-        onPrimary: Colors.white,
-      ),
+      colorScheme: Theme.of(
+        context,
+      ).colorScheme.copyWith(primary: _kPrimaryColor, onPrimary: Colors.white),
       textSelectionTheme: TextSelectionThemeData(
         cursorColor: _kPrimaryColor,
         selectionColor: _kPrimaryColor.withOpacity(0.4),
@@ -195,9 +216,7 @@ class _SettingsPageState extends State<SettingsPage> {
         body: SafeArea(
           child: Column(
             children: [
-
               _buildCustomHeader(),
-
 
               Expanded(
                 child: SingleChildScrollView(
@@ -208,10 +227,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
                           _buildNotificationsAndRemindersSection(context),
                           const SizedBox(height: 16),
-
 
                           _buildPlannedWorkingHoursSection(context),
 
@@ -220,7 +237,6 @@ class _SettingsPageState extends State<SettingsPage> {
                             child: ElevatedButton(
                               onPressed: _handleUpdatePlannedHours,
                               style: ElevatedButton.styleFrom(
-
                                 backgroundColor: _kPrimaryColor,
                                 foregroundColor: Colors.white,
                                 minimumSize: const Size(double.infinity, 48),
@@ -245,7 +261,12 @@ class _SettingsPageState extends State<SettingsPage> {
                             child: ElevatedButton(
                               onPressed: () => _showLogoutConfirmation(context),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 156, 29, 20),
+                                backgroundColor: const Color.fromARGB(
+                                  255,
+                                  156,
+                                  29,
+                                  20,
+                                ),
                                 foregroundColor: Colors.white,
                                 minimumSize: const Size(double.infinity, 48),
                                 shape: RoundedRectangleBorder(
@@ -275,29 +296,30 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-
-
   Widget _buildCustomHeader() {
     return Container(
       color: _kBackgroundColor,
-      padding:
-      const EdgeInsets.only(top: 8.0, left: 4.0, right: 16.0, bottom: 8.0),
+      padding: const EdgeInsets.only(
+        top: 8.0,
+        left: 4.0,
+        right: 16.0,
+        bottom: 8.0,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-
           Expanded(
             child: const Center(
               child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     'Settings',
                     style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                   Text(
                     'Customize your ClarityDesk wellness experience',
@@ -308,7 +330,6 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
           ),
-
         ],
       ),
     );
@@ -346,14 +367,13 @@ class _SettingsPageState extends State<SettingsPage> {
             context,
             title: 'Daily Check-in Reminders',
             description:
-            'Get reminded to complete your daily wellness check-in or finish working.',
+                'Get reminded to complete your daily wellness check-in or finish working.',
             showDivider: true,
             value: _settings.dailyCheckInReminder,
             onChanged: (bool newValue) {
               setState(() {
                 _settings.dailyCheckInReminder = newValue;
               });
-              
             },
           ),
 
@@ -361,10 +381,16 @@ class _SettingsPageState extends State<SettingsPage> {
             padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
             child: Row(
               children: [
-                const Icon(Icons.notifications, size: 24, color: _kPrimaryColor),
+                const Icon(
+                  Icons.notifications,
+                  size: 24,
+                  color: _kPrimaryColor,
+                ),
                 const SizedBox(width: 12),
-                const Text('Reminder Time',
-                    style: TextStyle(fontWeight: FontWeight.w500)),
+                const Text(
+                  'Reminder Time',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
                 const Spacer(),
                 InkWell(
                   onTap: () async {
@@ -387,13 +413,14 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                     );
                     if (picked != null) {
-                      setState(
-                              () => _settings.reminderTime = picked);
+                      setState(() => _settings.reminderTime = picked);
                     }
                   },
                   child: Container(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Color(0xFFDB863B),
                       borderRadius: BorderRadius.circular(8),
@@ -401,7 +428,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     child: Text(
                       _settings.reminderTime.format(context),
                       style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -413,15 +442,14 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-
   Widget _buildReminderRow(
-      BuildContext context, {
-        required String title,
-        required String description,
-        required bool showDivider,
-        required bool value,
-        required ValueChanged<bool> onChanged,
-      }) {
+    BuildContext context, {
+    required String title,
+    required String description,
+    required bool showDivider,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -432,11 +460,14 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text(description,
-                      style:
-                      const TextStyle(color: Colors.grey, fontSize: 13)),
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    description,
+                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  ),
                 ],
               ),
             ),
@@ -485,13 +516,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   context,
                   'Start Time',
                   _settings.plannedStartTime,
-                      (time) => setState(
-                          () {
-                            _settings.plannedStartTime = time;
-                            if (_settings.plannedEndTime.isBefore(time)) {
-                              _settings.plannedEndTime = time;
-                            }
-                          }),
+                  (time) => setState(() {
+                    _settings.plannedStartTime = time;
+                    if (_settings.plannedEndTime.isBefore(time)) {
+                      _settings.plannedEndTime = time;
+                    }
+                  }),
                 ),
               ),
               const SizedBox(width: 16),
@@ -500,13 +530,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   context,
                   'End Time',
                   _settings.plannedEndTime,
-                      (time) => setState(
-                          () { 
-                            _settings.plannedEndTime = time;
-                            if (_settings.plannedStartTime.isAfter(time)) {
-                              _settings.plannedStartTime = time;
-                            }
-                          }),
+                  (time) => setState(() {
+                    _settings.plannedEndTime = time;
+                    if (_settings.plannedStartTime.isAfter(time)) {
+                      _settings.plannedStartTime = time;
+                    }
+                  }),
                 ),
               ),
             ],
@@ -517,17 +546,18 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildTimePickerBox(
-      BuildContext context,
-      String label,
-      TimeOfDay currentTime,
-      Function(TimeOfDay) onTimeSelected,
-      ) {
+    BuildContext context,
+    String label,
+    TimeOfDay currentTime,
+    Function(TimeOfDay) onTimeSelected,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontSize: 12, color: Colors.black54)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, color: Colors.black54),
+        ),
         const SizedBox(height: 4),
         InkWell(
           onTap: () async {
@@ -563,8 +593,10 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(currentTime.format(context),
-                    style: const TextStyle(fontSize: 16)),
+                Text(
+                  currentTime.format(context),
+                  style: const TextStyle(fontSize: 16),
+                ),
                 const Icon(Icons.arrow_drop_down, color: Colors.grey),
               ],
             ),
@@ -604,15 +636,18 @@ class _SettingsPageState extends State<SettingsPage> {
           _buildAboutInfoRow('Version', '1.0.0'),
           _buildAboutInfoRow('Last Updated', 'November 2025'),
           const SizedBox(height: 16),
-          const Text('Contact Support',
-              style: TextStyle(fontWeight: FontWeight.w500)),
+          const Text(
+            'Contact Support',
+            style: TextStyle(fontWeight: FontWeight.w500),
+          ),
           const SizedBox(height: 4),
           const Text(
             'BE.2023.F1Y5D3@VOSSIE.NET',
             style: TextStyle(
-                color: _kPrimaryColor,
-                decoration: TextDecoration.underline,
-                fontWeight: FontWeight.w500),
+              color: _kPrimaryColor,
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -640,10 +675,7 @@ class _SettingsPageState extends State<SettingsPage> {
           backgroundColor: Colors.white,
           title: const Text(
             'Confirm Logout',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
           ),
           content: const Text('Are you sure you want to log out?'),
           actions: [
@@ -661,10 +693,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 child: const Text(
                   'Cancel',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -685,10 +714,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 child: const Text(
                   'Log out',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -700,25 +726,34 @@ class _SettingsPageState extends State<SettingsPage> {
 
   TimePickerThemeData _getTimePickerThemeData() {
     return TimePickerThemeData(
-      hourMinuteColor: MaterialStateColor.resolveWith((states) =>
-      states.contains(MaterialState.selected)
-          ? _kPrimaryColor
-          : Colors.black.withOpacity(0.1)),
-      hourMinuteTextColor: MaterialStateColor.resolveWith((states) =>
-      states.contains(MaterialState.selected) ? Colors.white : Colors.black),
-      dialHandColor: _kPrimaryColor,
-      dayPeriodColor: MaterialStateColor.resolveWith((states) =>
-      states.contains(MaterialState.selected) ? _kPrimaryColor : Colors.white),
-      dayPeriodBorderSide: BorderSide(
-        color: MaterialStateColor.resolveWith((states) =>
-        states.contains(MaterialState.selected)
+      hourMinuteColor: MaterialStateColor.resolveWith(
+        (states) => states.contains(MaterialState.selected)
             ? _kPrimaryColor
-            : Colors.grey.shade400),
+            : Colors.black.withOpacity(0.1),
       ),
-      dayPeriodTextColor: MaterialStateColor.resolveWith((states) =>
-      states.contains(MaterialState.selected) ? Colors.white : _kPrimaryColor),
+      hourMinuteTextColor: MaterialStateColor.resolveWith(
+        (states) => states.contains(MaterialState.selected)
+            ? Colors.white
+            : Colors.black,
+      ),
+      dialHandColor: _kPrimaryColor,
+      dayPeriodColor: MaterialStateColor.resolveWith(
+        (states) => states.contains(MaterialState.selected)
+            ? _kPrimaryColor
+            : Colors.white,
+      ),
+      dayPeriodBorderSide: BorderSide(
+        color: MaterialStateColor.resolveWith(
+          (states) => states.contains(MaterialState.selected)
+              ? _kPrimaryColor
+              : Colors.grey.shade400,
+        ),
+      ),
+      dayPeriodTextColor: MaterialStateColor.resolveWith(
+        (states) => states.contains(MaterialState.selected)
+            ? Colors.white
+            : _kPrimaryColor,
+      ),
     );
   }
-
-
 }

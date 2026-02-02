@@ -13,16 +13,14 @@ import 'package:mindflow/repositories/user_repository.dart';
 
 import 'package:mindflow/view-models/check_in_view_model.dart';
 
-
 class UserViewModel extends ChangeNotifier {
-
   UserModel user = UserModel(reminder: false);
 
   final UserRepository _userRepository = UserRepository();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-//UI State Management
+  //UI State Management
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -30,7 +28,6 @@ class UserViewModel extends ChangeNotifier {
     _isLoading = loading;
     notifyListeners();
   }
-
 
   Future<bool?> setUser(UserModel user) async {
     bool success = await _userRepository.setUser(user);
@@ -54,8 +51,11 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-
-  Future<User?> authRegisterUser(BuildContext context, String email, String password) async {
+  Future<User?> authRegisterUser(
+    BuildContext context,
+    String email,
+    String password,
+  ) async {
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
@@ -63,7 +63,6 @@ class UserViewModel extends ChangeNotifier {
       );
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-
       String message;
       if (e.code == 'weak-password') {
         message = 'The password is too weak.';
@@ -72,12 +71,12 @@ class UserViewModel extends ChangeNotifier {
       } else {
         message = 'Registration failed: ${e.message}';
       }
-      _showErrorSnackBar(context, message); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(context, message);
       return null;
     }
   }
 
-// Sign up Method
+  // Sign up Method
   signUp(BuildContext context, String email, String password) async {
     _setLoading(true);
 
@@ -117,12 +116,17 @@ class UserViewModel extends ChangeNotifier {
     _setLoading(false);
   }
 
-
-  Future<bool> sendPasswordResetEmail(BuildContext context, String email) async {
+  Future<bool> sendPasswordResetEmail(
+    BuildContext context,
+    String email,
+  ) async {
     _setLoading(true);
 
     if (email.isEmpty) {
-      _showErrorSnackBar(context, 'Please enter an email address.'); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(
+        context,
+        'Please enter an email address.',
+      );
       _setLoading(false);
       return false;
     }
@@ -130,30 +134,31 @@ class UserViewModel extends ChangeNotifier {
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());
 
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Password reset link sent to your email!'),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
         ),
-        );
+      );
       _setLoading(false);
       return true;
-
     } on FirebaseAuthException catch (e) {
-// Show error message
+      // Show error message
       String message;
       if (e.code == 'user-not-found') {
         message = 'No user found for that email.';
       } else {
         message = 'Error sending reset email: ${e.message}';
       }
-      _showErrorSnackBar(context, message); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(context, message);
       _setLoading(false);
       return false;
     } catch (e) {
-      _showErrorSnackBar(context, 'An unexpected error occurred: ${e.toString()}'); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(
+        context,
+        'An unexpected error occurred: ${e.toString()}',
+      );
       _setLoading(false);
       return false;
     }
@@ -174,7 +179,11 @@ class UserViewModel extends ChangeNotifier {
     _setLoading(false);
   }
 
-  Future<User?> authSignIn(BuildContext context, String email, String password) async {
+  Future<User?> authSignIn(
+    BuildContext context,
+    String email,
+    String password,
+  ) async {
     try {
       // firebase auth sign in
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -185,7 +194,9 @@ class UserViewModel extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       // Show Firebase specific errors to the user
       String message;
-      if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
+      if (e.code == 'user-not-found' ||
+          e.code == 'wrong-password' ||
+          e.code == 'invalid-credential') {
         message = 'Invalid email or password.';
       } else {
         message = 'Sign in failed: ${e.message}';
@@ -193,30 +204,41 @@ class UserViewModel extends ChangeNotifier {
       _showErrorSnackBar(context, message);
       return null;
     } catch (e) {
-      _showErrorSnackBar(context, 'An unexpected error occurred: ${e.toString()}');
+      _showErrorSnackBar(
+        context,
+        'An unexpected error occurred: ${e.toString()}',
+      );
       return null;
     }
   }
 
-
-  Future<void> signIn(BuildContext context, String email, String password) async {
+  Future<void> signIn(
+    BuildContext context,
+    String email,
+    String password,
+  ) async {
     _setLoading(true);
 
-// Email validation
+    // Email validation
     if (email.isEmpty) {
-      _showErrorSnackBar(context, 'Please enter an email address.'); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(
+        context,
+        'Please enter an email address.',
+      );
       _setLoading(false);
       return;
     }
 
-// Password validation check
+    // Password validation check
     final passwordError = validatePassword(password);
     if (passwordError != null) {
-      _showErrorSnackBar(context, passwordError); // *** MODIFIED: Pass context ***
+      _showErrorSnackBar(
+        context,
+        passwordError,
+      );
       _setLoading(false);
       return;
     }
-
 
     User? userFetched = await authSignIn(context, email, password);
 
@@ -229,16 +251,18 @@ class UserViewModel extends ChangeNotifier {
 
     bool? success = await fetchUserDetails(userId);
 
-
     locator<CheckInViewModel>().fetchAllCheckIns(userId);
 
-// User is signed in. The GoRouter redirect handles moving to /home,
-// BUT we manually check if onboarding is needed here (if name is missing)
-    if (success == true && context.mounted && user.name != null && user.name!.isNotEmpty) {
-// If user details are found and onboarding seems complete, go to home
+    // User is signed in. The GoRouter redirect handles moving to /home,
+    // We manually check if onboarding is needed here (if name is missing)
+    if (success == true &&
+        context.mounted &&
+        user.name != null &&
+        user.name!.isNotEmpty) {
+      // If user details are found and onboarding seems complete, go to home
       context.go('/home');
     } else if (context.mounted) {
-// User signed in but details not found or name is empty, send them to onboarding!
+      // User signed in but details not found or name is empty, send them to onboarding
       context.go('/onboarding/welcome');
     }
 
@@ -269,7 +293,6 @@ class UserViewModel extends ChangeNotifier {
     return null;
   }
 
-
   void logout(BuildContext context) async {
     await _auth.signOut();
     if (context.mounted) {
@@ -280,7 +303,7 @@ class UserViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Helper to show SnackBar (now requires a BuildContext)
+  // Helper to show SnackBar
   void _showErrorSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -291,5 +314,4 @@ class UserViewModel extends ChangeNotifier {
       ),
     );
   }
-
 }

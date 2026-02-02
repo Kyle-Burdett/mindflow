@@ -33,7 +33,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: primaryColor),
-              onPressed: () => context.pop(), // Pop back to the previous screen (Sign In)
+              onPressed: () =>
+                  context.pop(), // Pop back to the previous screen (Sign In)
             ),
           ),
           body: Padding(
@@ -46,7 +47,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   children: [
                     const Text(
                       'Forgot password',
-                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: spacing * 2),
                     const Text(
@@ -55,14 +59,20 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                     const SizedBox(height: spacing * 8),
 
-                   //Email Input
-                    const Text('Email', style: TextStyle(fontWeight: FontWeight.bold)),
+                    //Email Input
+                    const Text(
+                      'Email',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: spacing * 2),
                     TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.mail_outline, color: primaryColor),
+                        prefixIcon: const Icon(
+                          Icons.mail_outline,
+                          color: primaryColor,
+                        ),
                         hintText: 'Type here...',
                         filled: true,
                         fillColor: Colors.white,
@@ -81,33 +91,44 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: primaryColor.withOpacity(0.8),
-                            padding: const EdgeInsets.symmetric(vertical: spacing * 3),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: spacing * 3,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
-                          onPressed: model.isLoading ? null : () async {
-
-                            bool success = await model.sendPasswordResetEmail(context, _emailController.text);
-                            if (success) {
-                              setState(() {
-                                _isCodeSent = true;
-                              });
-                            }
-                          },
+                          onPressed: model.isLoading
+                              ? null
+                              : () async {
+                                  bool success = await model
+                                      .sendPasswordResetEmail(
+                                        context,
+                                        _emailController.text,
+                                      );
+                                  if (success) {
+                                    setState(() {
+                                      _isCodeSent = true;
+                                    });
+                                  }
+                                },
                           child: model.isLoading
-                              ? const Center(child: SizedBox(
-                            height: 20, width: 20,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
-                          ))
+                              ? const Center(
+                                  child: SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  ),
+                                )
                               : const Text(
-                            'Send Code',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                                  'Send Code',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                         ),
                       ),
-
-                    
 
                     const SizedBox(height: spacing * 8),
 
@@ -123,21 +144,26 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           ),
                           elevation: 3,
                         ),
-                        onPressed: model.isLoading ? null : () {
-
-                          if (_isCodeSent) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Password reset email sent. Please check your inbox!')),
-                            );
-                            context.go('/sign-in');
-                          } else {
-                            context.go('/sign-in');
-                          }
-                        },
+                        onPressed: model.isLoading
+                            ? null
+                            : () {
+                                if (_isCodeSent) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Password reset email sent. Please check your inbox!',
+                                      ),
+                                    ),
+                                  );
+                                  context.go('/sign-in');
+                                } else {
+                                  context.go('/sign-in');
+                                }
+                              },
                         child: const Text(
                           'Sign In',
 
-                            style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
@@ -149,10 +175,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         onTap: () => context.go('/sign-in'),
                         child: const Text(
                           '←Back to Sign In',
-                          style: TextStyle(
-                            color: primaryColor,
-
-                          ),
+                          style: TextStyle(color: primaryColor),
                         ),
                       ),
                     ),

@@ -12,22 +12,23 @@ class UserModel {
   bool? energy;
   bool? reminder;
   DateTime? reminderTime;
-  
+
   int? totalHoursWorked;
 
-  UserModel(
-      {this.id,
-      this.balance,
-      this.endTime,
-      this.name,
-      this.password,
-      this.productivity,
-      this.energy,
-      this.isolation,
-      this.reminder,
-      this.reminderTime,
-      this.startTime,
-      this.totalHoursWorked});
+  UserModel({
+    this.id,
+    this.balance,
+    this.endTime,
+    this.name,
+    this.password,
+    this.productivity,
+    this.energy,
+    this.isolation,
+    this.reminder,
+    this.reminderTime,
+    this.startTime,
+    this.totalHoursWorked,
+  });
 
   factory UserModel.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
@@ -55,7 +56,9 @@ class UserModel {
       'energy': energy,
       'isolation': isolation,
       'reminder': reminder,
-      'reminderTime': reminderTime != null ? Timestamp.fromDate(reminderTime!) : FieldValue.serverTimestamp(),
+      'reminderTime': reminderTime != null
+          ? Timestamp.fromDate(reminderTime!)
+          : FieldValue.serverTimestamp(),
     };
   }
 }
