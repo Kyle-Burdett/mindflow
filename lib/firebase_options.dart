@@ -85,5 +85,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'mindflow-a55fe.firebasestorage.app',
     measurementId: 'G-BY58SL0F6B',
   );
-
 }

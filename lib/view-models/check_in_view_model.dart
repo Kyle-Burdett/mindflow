@@ -9,25 +9,36 @@ import 'package:mindflow/repositories/check_in_repository.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
 
 class CheckInViewModel extends ChangeNotifier {
-
   List<DailyCheckInModel> dailyCheckInList = [];
-  DailyCheckInModel currentDailyCheckIn = DailyCheckInModel(id: '', date: DateTime.now(), energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {});
-
+  DailyCheckInModel currentDailyCheckIn = DailyCheckInModel(
+    id: '',
+    date: DateTime.now(),
+    energyScore: 5,
+    moodScore: 5,
+    productivityScore: 5,
+    stressScore: 5,
+    notes: '',
+    tags: [],
+    taskHours: {},
+  );
 
   String currentCheckInDate = "";
   DateTime currentDate = DateTime.now();
-  String todayStringDate = '${DateTime.now().year.toString().padLeft(4, '0')}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
+  String todayStringDate =
+      '${DateTime.now().year.toString().padLeft(4, '0')}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
   List<TrackData> trackData = [];
-  WeeklySummary? weeklyInsights; 
+  WeeklySummary? weeklyInsights;
   bool editingCheckIn = false;
 
   int checkInLimit = 7;
   bool loading = false;
 
-  
   final CheckInRepository _checkInRepository = CheckInRepository();
 
-  Future<void> setCheckIn(BuildContext context, DailyCheckInModel checkIn) async {
+  Future<void> setCheckIn(
+    BuildContext context,
+    DailyCheckInModel checkIn,
+  ) async {
     loading = true;
     notifyListeners();
     String userId = locator<UserViewModel>().user.id!;
@@ -36,7 +47,9 @@ class CheckInViewModel extends ChangeNotifier {
       if (editingCheckIn == false) {
         dailyCheckInList.add(checkIn);
       }
-      trackData = dailyCheckInList.map((checkIn) => mapDailyCheckInToTrackData(checkIn)).toList();
+      trackData = dailyCheckInList
+          .map((checkIn) => mapDailyCheckInToTrackData(checkIn))
+          .toList();
       trackData.sort((a, b) => a.date.compareTo(b.date));
       weeklyInsights = getWeeklyAverages(dailyCheckInList);
       print("Add check In success!");
@@ -52,7 +65,8 @@ class CheckInViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchCheckInDetails(String userId, String checkInId) async {
-    DailyCheckInModel? dailyCheckIn = await _checkInRepository.fetchCheckInDetails(userId, checkInId);
+    DailyCheckInModel? dailyCheckIn = await _checkInRepository
+        .fetchCheckInDetails(userId, checkInId);
     if (dailyCheckIn != null) {
       currentDailyCheckIn = dailyCheckIn;
     } else {
@@ -62,12 +76,15 @@ class CheckInViewModel extends ChangeNotifier {
 
   // Function to fetch all user check-in data
   Future<void> fetchAllCheckIns(String userId) async {
-    List<DailyCheckInModel>? dailyCheckIns = await _checkInRepository.fetchAllCheckInDetails(userId);
+    List<DailyCheckInModel>? dailyCheckIns = await _checkInRepository
+        .fetchAllCheckInDetails(userId);
 
     if (dailyCheckIns != null) {
       dailyCheckInList.addAll(dailyCheckIns);
       // Once we retrieve check-in data from the database we can convert that data to a usable format for the Track screen,
-      trackData = dailyCheckInList.map((checkIn) => mapDailyCheckInToTrackData(checkIn)).toList();
+      trackData = dailyCheckInList
+          .map((checkIn) => mapDailyCheckInToTrackData(checkIn))
+          .toList();
       trackData.sort((a, b) => a.date.compareTo(b.date));
       weeklyInsights = getWeeklyAverages(dailyCheckIns);
       notifyListeners();
@@ -81,16 +98,29 @@ class CheckInViewModel extends ChangeNotifier {
   }
 
   DailyCheckInModel? findCheckInById(List<DailyCheckInModel> list, String id) {
-  try {
-    return list.firstWhere((item) => item.id == id);
-  } catch (e) {
-    return null;
+    try {
+      return list.firstWhere((item) => item.id == id);
+    } catch (e) {
+      return null;
+    }
   }
-}
 
   void setCurrentCheckIn() {
     try {
-      currentDailyCheckIn = dailyCheckInList.firstWhere((checkIn) => checkIn.id == currentCheckInDate, orElse: () => DailyCheckInModel(id: currentCheckInDate, date: currentDate, energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {}));
+      currentDailyCheckIn = dailyCheckInList.firstWhere(
+        (checkIn) => checkIn.id == currentCheckInDate,
+        orElse: () => DailyCheckInModel(
+          id: currentCheckInDate,
+          date: currentDate,
+          energyScore: 5,
+          moodScore: 5,
+          productivityScore: 5,
+          stressScore: 5,
+          notes: '',
+          tags: [],
+          taskHours: {},
+        ),
+      );
       print("Current Check In: ${currentDailyCheckIn.id}");
     } catch (e) {
       print("Error settings check-in: $e");
@@ -99,7 +129,20 @@ class CheckInViewModel extends ChangeNotifier {
   }
 
   String setCheckInText() {
-    final checkIn = dailyCheckInList.firstWhere((checkIn) => checkIn.id == currentCheckInDate, orElse: () => DailyCheckInModel(id: "", date: currentDate, energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {}));
+    final checkIn = dailyCheckInList.firstWhere(
+      (checkIn) => checkIn.id == currentCheckInDate,
+      orElse: () => DailyCheckInModel(
+        id: "",
+        date: currentDate,
+        energyScore: 5,
+        moodScore: 5,
+        productivityScore: 5,
+        stressScore: 5,
+        notes: '',
+        tags: [],
+        taskHours: {},
+      ),
+    );
     if (checkIn.id.isEmpty) {
       editingCheckIn = false;
       return "Add Check-in";
@@ -130,18 +173,23 @@ class CheckInViewModel extends ChangeNotifier {
   // Overtime calculation by day
   double getOvertimeHours(DailyCheckInModel checkIn) {
     // Fetches user preference data and compares the two to get their planned working hours
-    final standardHours = locator<UserViewModel>().user.endTime!.difference(locator<UserViewModel>().user.startTime!).inHours;
+    final standardHours = locator<UserViewModel>().user.endTime!
+        .difference(locator<UserViewModel>().user.startTime!)
+        .inHours;
     final total = getTotalWorkHours(checkIn);
     // We return 0 if the user has no overtime
     return total > standardHours ? total - standardHours : 0;
   }
 
   Map<String, double> getDailyScores(DailyCheckInModel checkIn) {
- 
     // We fetch the tags that are selected by the user that are mapped to a category
-    final productivityTags = checkIn.tags.where((t) => t.category == "productivity");
+    final productivityTags = checkIn.tags.where(
+      (t) => t.category == "productivity",
+    );
     final energyTags = checkIn.tags.where((t) => t.category == "energy");
-    final balanceTags = checkIn.tags.where((t) => t.category == "work_life_balance");
+    final balanceTags = checkIn.tags.where(
+      (t) => t.category == "work_life_balance",
+    );
     final isolationTags = checkIn.tags.where((t) => t.category == "isolation");
 
     // Here we calcuate the contribution tags make on our insight percentage scores
@@ -153,8 +201,12 @@ class CheckInViewModel extends ChangeNotifier {
     }
 
     // We calcuate the daily scores by combining our check-in data with the user rated scores and the tags they select
-    final productivity = scoreFromTags(productivityTags) * 25 / 100 + checkIn.productivityScore * 10 * 75 / 100;
-    final energy = scoreFromTags(energyTags) * 25 / 100 + checkIn.energyScore * 10 * 75 / 100;
+    final productivity =
+        scoreFromTags(productivityTags) * 25 / 100 +
+        checkIn.productivityScore * 10 * 75 / 100;
+    final energy =
+        scoreFromTags(energyTags) * 25 / 100 +
+        checkIn.energyScore * 10 * 75 / 100;
 
     final overtime = getOvertimeHours(checkIn);
 
@@ -164,7 +216,10 @@ class CheckInViewModel extends ChangeNotifier {
     double workLifeBalance = (100 - overtimePercent).clamp(0, 100).toDouble();
 
     final balanceTagScore = scoreFromTags(balanceTags);
-    workLifeBalance = (workLifeBalance * 0.8 + balanceTagScore * 0.2).clamp(0, 100);
+    workLifeBalance = (workLifeBalance * 0.8 + balanceTagScore * 0.2).clamp(
+      0,
+      100,
+    );
 
     final isolationTagScore = scoreFromTags(isolationTags);
     final isolationScore = isolationTagScore;
@@ -177,11 +232,17 @@ class CheckInViewModel extends ChangeNotifier {
     };
   }
 
-
   WeeklySummary getWeeklyAverages(List<DailyCheckInModel> checkIns) {
     // Making sure we have enough data to provide relevant insights
     if (checkIns.isEmpty || checkIns.length < 7) {
-      return  WeeklySummary(avgEnergy: 0, avgIsolation: 0, avgProductivity: 0, avgTotalHours: 0, avgWorkLifeBalance: 0, totalOvertimeHours: 0);
+      return WeeklySummary(
+        avgEnergy: 0,
+        avgIsolation: 0,
+        avgProductivity: 0,
+        avgTotalHours: 0,
+        avgWorkLifeBalance: 0,
+        totalOvertimeHours: 0,
+      );
     }
 
     // Sortd dates in descending order
@@ -190,12 +251,17 @@ class CheckInViewModel extends ChangeNotifier {
     // We only use the last 7 days when measuring insights
     final recent = checkIns.take(7).toList();
 
-    double sumProd = 0, sumEnergy = 0, sumWLB = 0, sumIso = 0, sumHours = 0, sumOvertime = 0;
+    double sumProd = 0,
+        sumEnergy = 0,
+        sumWLB = 0,
+        sumIso = 0,
+        sumHours = 0,
+        sumOvertime = 0;
 
     // Calulating and fetching data for each check in for the week.
     for (var checkin in recent) {
       final scores = getDailyScores(checkin);
-      
+
       sumProd += scores["productivity"]!;
       sumEnergy += scores["energy"]!;
       sumWLB += scores["workLifeBalance"]!;
@@ -213,22 +279,46 @@ class CheckInViewModel extends ChangeNotifier {
       avgWorkLifeBalance: sumWLB / count / 100,
       avgIsolation: sumIso / count / 100,
       avgTotalHours: sumHours,
-      totalOvertimeHours: sumOvertime);
+      totalOvertimeHours: sumOvertime,
+    );
   }
 
   void resetCheckins() {
     dailyCheckInList = [];
-    currentDailyCheckIn = DailyCheckInModel(id: '', date: DateTime.now(), energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {});
+    currentDailyCheckIn = DailyCheckInModel(
+      id: '',
+      date: DateTime.now(),
+      energyScore: 5,
+      moodScore: 5,
+      productivityScore: 5,
+      stressScore: 5,
+      notes: '',
+      tags: [],
+      taskHours: {},
+    );
     currentCheckInDate = "";
     currentDate = DateTime.now();
     trackData = [];
-    weeklyInsights; 
+    weeklyInsights;
     editingCheckIn = false;
     notifyListeners();
   }
 
   bool todaysCheckInComplete() {
-    DailyCheckInModel checkIn = dailyCheckInList.firstWhere((checkIn) => checkIn.id == todayStringDate, orElse: () => DailyCheckInModel(id: currentCheckInDate, date: currentDate, energyScore: 5, moodScore: 5, productivityScore: 5, stressScore: 5, notes: '', tags: [], taskHours: {}));
+    DailyCheckInModel checkIn = dailyCheckInList.firstWhere(
+      (checkIn) => checkIn.id == todayStringDate,
+      orElse: () => DailyCheckInModel(
+        id: currentCheckInDate,
+        date: currentDate,
+        energyScore: 5,
+        moodScore: 5,
+        productivityScore: 5,
+        stressScore: 5,
+        notes: '',
+        tags: [],
+        taskHours: {},
+      ),
+    );
     if (checkIn.taskHours.isNotEmpty) {
       return true;
     } else {

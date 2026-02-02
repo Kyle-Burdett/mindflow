@@ -58,13 +58,18 @@ class _DayPill extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(labelTop, style: const TextStyle(fontSize: 12, color: _AppColors.textMid)),
+          Text(
+            labelTop,
+            style: const TextStyle(fontSize: 12, color: _AppColors.textMid),
+          ),
           const SizedBox(height: 4),
-          Text(labelBottom,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: selected ? _AppColors.textDark : _AppColors.textDark,
-              )),
+          Text(
+            labelBottom,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: selected ? _AppColors.textDark : _AppColors.textDark,
+            ),
+          ),
         ],
       ),
     );
@@ -87,7 +92,10 @@ class _Metric extends StatelessWidget {
         const SizedBox(height: 6),
         Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
         const SizedBox(height: 2),
-        Text(label, style: const TextStyle(fontSize: 12, color: _AppColors.textMid)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, color: _AppColors.textMid),
+        ),
       ],
     );
   }
@@ -136,10 +144,7 @@ class _DashboardCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: const TextStyle(
-                fontSize: 11,
-                color: _AppColors.textMid,
-              ),
+              style: const TextStyle(fontSize: 11, color: _AppColors.textMid),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -184,15 +189,31 @@ class _HomepageState extends State<Homepage> {
 
   String _monthName(int month) {
     const months = [
-      'January','February','March','April','May','June',
-      'July','August','September','October','November','December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return months[month - 1];
   }
 
   String _weekdayLong(int weekday) {
     const names = [
-      'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
     ];
     return names[weekday - 1];
   }
@@ -317,233 +338,296 @@ class _HomepageState extends State<Homepage> {
     final weekDays = List.generate(7, (i) => start.add(Duration(days: i)));
 
     return ChangeNotifierProvider<CheckInViewModel>.value(
-        value: locator<CheckInViewModel>(),
-        child: Consumer<CheckInViewModel>(
-            builder: (context, model, child) => Scaffold(
-              body: SafeArea(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      value: locator<CheckInViewModel>(),
+      child: Consumer<CheckInViewModel>(
+        builder: (context, model, child) => Scaffold(
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              children: [
+                // Greeting
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-// Greeting
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 4),
-                        Text(
-                          'Welcome back, ${locator<UserViewModel>().user.name}!',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: _AppColors.textDark,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          '${_weekdayLong(today.weekday)}, ${_monthName(today.month)} ${today.day}, ${today.year}',
-                          style: const TextStyle(color: _AppColors.textMid),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-// Week strip
-                    Container(
-                      decoration: BoxDecoration(
-                        color: _AppColors.card,
-                        borderRadius: BorderRadius.circular(16),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Welcome back, ${locator<UserViewModel>().user.name}!',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: _AppColors.textDark,
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                      child: Column(
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${_weekdayLong(today.weekday)}, ${_monthName(today.month)} ${today.day}, ${today.year}',
+                      style: const TextStyle(color: _AppColors.textMid),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Week strip
+                Container(
+                  decoration: BoxDecoration(
+                    color: _AppColors.card,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 12,
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-                                onPressed: () => setState(() => weekOffset--),
-                              ),
-                              const Spacer(),
-                              const Text('Today',
-                                  style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.w600)),
-                              const Spacer(),
-                              IconButton(
-                                icon: const Icon(Icons.arrow_forward_ios, size: 18),
-                                onPressed: () => setState(() => weekOffset++),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              spacing: 6,
-                              children: weekDays.map((d) {
-                                final isSelected = _isSameDay(d, selected);
-                                return _DayPill(
-                                  labelTop: _weekdayNameShort(d.weekday),
-                                  labelBottom: '${d.day}',
-                                  selected: isSelected,
-                                  onTap: () => setState(() {
-                                    selected = d;
-                                    locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(d);
-                                    locator<CheckInViewModel>().currentDate = d;
-                                  }),
-                                );
-                              }).toList(),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new,
+                              size: 18,
                             ),
+                            onPressed: () => setState(() => weekOffset--),
+                          ),
+                          const Spacer(),
+                          const Text(
+                            'Today',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                            onPressed: () => setState(() => weekOffset++),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 18),
-// Analytics for date
-                    _Card(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Analytics for ${_two(selected.day)}/${_two(selected.month)}/${selected.year}',
-                            style: const TextStyle(
+                      const SizedBox(height: 6),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          spacing: 6,
+                          children: weekDays.map((d) {
+                            final isSelected = _isSameDay(d, selected);
+                            return _DayPill(
+                              labelTop: _weekdayNameShort(d.weekday),
+                              labelBottom: '${d.day}',
+                              selected: isSelected,
+                              onTap: () => setState(() {
+                                selected = d;
+                                locator<CheckInViewModel>().currentCheckInDate =
+                                    locator<CheckInViewModel>().formatDate(d);
+                                locator<CheckInViewModel>().currentDate = d;
+                              }),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                // Analytics for date
+                _Card(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Analytics for ${_two(selected.day)}/${_two(selected.month)}/${selected.year}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: _AppColors.textDark,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      if (_isDateBeforeOrToday(selected))
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
+                            onPressed: () {
+                              context.push('/check-in');
+                            },
+                            style: FilledButton.styleFrom(
+                              backgroundColor: _AppColors.accent,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Text(
+                              locator<CheckInViewModel>().setCheckInText(),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                // This Week's Analytics
+                _Card(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            "This Week's Analytics",
+                            style: TextStyle(
                               fontWeight: FontWeight.w700,
                               color: _AppColors.textDark,
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          if (_isDateBeforeOrToday(selected))
-                            SizedBox(
-                              width: double.infinity,
-                              child: FilledButton(
-                                onPressed: () {
-                                  context.push('/check-in');
-                                },
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: _AppColors.accent,
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: Text(locator<CheckInViewModel>().setCheckInText()),
-                              ),
-                            ),
-                        ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 18),
-// This Week's Analytics
-                    _Card(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.only(bottom: 8),
-                              child: Text(
-                                "This Week's Analytics",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: _AppColors.textDark),
-                              ),
-                            ),
+                      const SizedBox(height: 6),
+                      if (locator<CheckInViewModel>()
+                                  .weeklyInsights
+                                  ?.avgProductivity ==
+                              0 ||
+                          locator<CheckInViewModel>().weeklyInsights == null)
+                        const Center(
+                          child: Text(
+                            "More data needed before we can provide insights",
+                            style: TextStyle(fontWeight: FontWeight.w700),
                           ),
-                          const SizedBox(height: 6),
-                          if (locator<CheckInViewModel>().weeklyInsights?.avgProductivity == 0 || locator<CheckInViewModel>().weeklyInsights == null)
-                            const Center(child: Text("More data needed before we can provide insights", style: TextStyle(fontWeight: FontWeight.w700)),),
-                          if (locator<CheckInViewModel>().weeklyInsights != null && locator<CheckInViewModel>().weeklyInsights?.avgProductivity != 0)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                _Metric(icon: Icons.favorite_border, value: (locator<CheckInViewModel>().weeklyInsights!.avgEnergy * 10).toStringAsFixed(0), label: 'Avg Energy'),
-                                _Metric(icon: Icons.adjust, value: (locator<CheckInViewModel>().weeklyInsights!.avgProductivity * 10).toStringAsFixed(0), label: 'Avg Productivity'),
-                                _Metric(icon: Icons.access_time, value: locator<CheckInViewModel>().weeklyInsights!.avgTotalHours.toStringAsFixed(0), label: 'Total Hours'),
-                              ],
+                        ),
+                      if (locator<CheckInViewModel>().weeklyInsights != null &&
+                          locator<CheckInViewModel>()
+                                  .weeklyInsights
+                                  ?.avgProductivity !=
+                              0)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _Metric(
+                              icon: Icons.favorite_border,
+                              value:
+                                  (locator<CheckInViewModel>()
+                                              .weeklyInsights!
+                                              .avgEnergy *
+                                          10)
+                                      .toStringAsFixed(0),
+                              label: 'Avg Energy',
                             ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    _Card(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.only(bottom: 12),
-                              child: Text(
-                                "Wellness Dashboard",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                    color: _AppColors.textDark),
-                              ),
+                            _Metric(
+                              icon: Icons.adjust,
+                              value:
+                                  (locator<CheckInViewModel>()
+                                              .weeklyInsights!
+                                              .avgProductivity *
+                                          10)
+                                      .toStringAsFixed(0),
+                              label: 'Avg Productivity',
                             ),
-                          ),
-                          GridView.count(
-                            crossAxisCount: 2,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
-                            childAspectRatio: 1.1,
-                            children: [
-                              // Track Card - Daily Check-In Status
-                              _DashboardCard(
-                                icon: Icons.track_changes,
-                                title: 'Daily Check-In',
-                                subtitle: locator<CheckInViewModel>().todaysCheckInComplete()
-                                    ? 'Completed Today'
-                                    : 'Pending',
-                                iconColor: locator<CheckInViewModel>().todaysCheckInComplete()
-                                    ? Colors.green
-                                    : Colors.orange,
-                                onTap: () {
-                                  setState(() {
-                                    selected = DateTime.now();
-                                    weekOffset = 0;
-                                  });
-                                  locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(selected);
-                                  locator<CheckInViewModel>().currentDate = selected;
-                                  context.push('/check-in');
-                                },
-                              ),
-                              // Insights Card - Top Focus Area
-                              _DashboardCard(
-                                icon: Icons.insights,
-                                title: _getTopFocusArea(),
-                                subtitle: _getTopFocusScore(),
-                                iconColor: _getTopFocusColor(),
-                                onTap: () {
-                                  context.go('/home');
-                                  // User will manually navigate to insights tab
-                                },
-                              ),
-                              // Resources Card
-                              _DashboardCard(
-                                icon: Icons.library_books,
-                                title: 'Resources',
-                                subtitle: 'Expert wellness tips',
-                                iconColor: Colors.blue,
-                                onTap: () {
-                                  context.go('/home-second');
-                                },
-                              ),
-                              // Working Hours Card
-                              _DashboardCard(
-                                icon: Icons.schedule,
-                                title: 'Working Hours',
-                                subtitle: _getWorkingHoursStatus(),
-                                iconColor: _getWorkingHoursColor(),
-                                onTap: () {
-                                  context.push('/check-in-hours');
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                            _Metric(
+                              icon: Icons.access_time,
+                              value: locator<CheckInViewModel>()
+                                  .weeklyInsights!
+                                  .avgTotalHours
+                                  .toStringAsFixed(0),
+                              label: 'Total Hours',
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            )));
+                const SizedBox(height: 20),
+                _Card(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            "Wellness Dashboard",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              color: _AppColors.textDark,
+                            ),
+                          ),
+                        ),
+                      ),
+                      GridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        childAspectRatio: 1.1,
+                        children: [
+                          // Track Card - Daily Check-In Status
+                          _DashboardCard(
+                            icon: Icons.track_changes,
+                            title: 'Daily Check-In',
+                            subtitle:
+                                locator<CheckInViewModel>()
+                                    .todaysCheckInComplete()
+                                ? 'Completed Today'
+                                : 'Pending',
+                            iconColor:
+                                locator<CheckInViewModel>()
+                                    .todaysCheckInComplete()
+                                ? Colors.green
+                                : Colors.orange,
+                            onTap: () {
+                              setState(() {
+                                selected = DateTime.now();
+                                weekOffset = 0;
+                              });
+                              locator<CheckInViewModel>().currentCheckInDate =
+                                  locator<CheckInViewModel>().formatDate(
+                                    selected,
+                                  );
+                              locator<CheckInViewModel>().currentDate =
+                                  selected;
+                              context.push('/check-in');
+                            },
+                          ),
+                          // Insights Card - Top Focus Area
+                          _DashboardCard(
+                            icon: Icons.insights,
+                            title: _getTopFocusArea(),
+                            subtitle: _getTopFocusScore(),
+                            iconColor: _getTopFocusColor(),
+                            onTap: () {
+                              context.go('/home');
+                              // User will manually navigate to insights tab
+                            },
+                          ),
+                          // Resources Card
+                          _DashboardCard(
+                            icon: Icons.library_books,
+                            title: 'Resources',
+                            subtitle: 'Expert wellness tips',
+                            iconColor: Colors.blue,
+                            onTap: () {
+                              context.go('/home-second');
+                            },
+                          ),
+                          // Working Hours Card
+                          _DashboardCard(
+                            icon: Icons.schedule,
+                            title: 'Working Hours',
+                            subtitle: _getWorkingHoursStatus(),
+                            iconColor: _getWorkingHoursColor(),
+                            onTap: () {
+                              context.push('/check-in-hours');
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -10,12 +10,19 @@ class TrackData {
   final double moodScore;
   final int taskSwitches;
   double? overtime;
-  TrackData(this.date, this.taskHours, this.tags, this.productivityScore, this.moodScore, this.taskSwitches, this.overtime);
+  TrackData(
+    this.date,
+    this.taskHours,
+    this.tags,
+    this.productivityScore,
+    this.moodScore,
+    this.taskSwitches,
+    this.overtime,
+  );
 }
 
 // We map the daily check-in data fetched from firestore to be usable in our check-in
 TrackData mapDailyCheckInToTrackData(DailyCheckInModel dailyCheckIn) {
-
   // This retrieves the hours worked by task to be used on the first chart
   final taskHours = <String, double>{};
   dailyCheckIn.taskHours.forEach((task, ranges) {
@@ -42,6 +49,6 @@ TrackData mapDailyCheckInToTrackData(DailyCheckInModel dailyCheckIn) {
     dailyCheckIn.productivityScore,
     dailyCheckIn.moodScore,
     taskSwitches,
-    overtime
+    overtime,
   );
 }

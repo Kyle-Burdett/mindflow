@@ -18,10 +18,10 @@ class MainHomeScreen extends StatefulWidget {
 }
 
 class _MainHomeScreenState extends State<MainHomeScreen> {
-
   @override
   void initState() {
-    locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(DateTime.now());
+    locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>()
+        .formatDate(DateTime.now());
     locator<HomeNavViewModel>().currentIndex = widget.initialIndex ?? 0;
     super.initState();
   }
@@ -46,7 +46,10 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     ),
     BottomNavigationBarItem(
       icon: Image.asset('assets/icons/resources.png', height: 28),
-      activeIcon: Image.asset('assets/icons/resources-selected.png', height: 28),
+      activeIcon: Image.asset(
+        'assets/icons/resources-selected.png',
+        height: 28,
+      ),
       label: "Resources",
     ),
     BottomNavigationBarItem(
@@ -70,32 +73,34 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     return ChangeNotifierProvider<HomeNavViewModel>.value(
       value: locator<HomeNavViewModel>(),
       child: Consumer<HomeNavViewModel>(
-      builder: (context, model, child) => Scaffold(
-      body: screens[model.currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: bottomNavItems,
-        currentIndex: model.currentIndex,
-        onTap: (value) {
-          setState(() {
-            model.currentIndex = value;
-          });
-        },
-        // Bottom nav bar Styling
-        showUnselectedLabels: true,
-        selectedItemColor: Color(0xFFEF9C53),
-        unselectedItemColor: Colors.black,
-        unselectedLabelStyle: TextStyle(
-          fontFamily: "merriweather",
-          fontWeight: FontWeight.w700,
-          fontSize: 12,
+        builder: (context, model, child) => Scaffold(
+          body: screens[model.currentIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            items: bottomNavItems,
+            currentIndex: model.currentIndex,
+            onTap: (value) {
+              setState(() {
+                model.currentIndex = value;
+              });
+            },
+            // Bottom nav bar Styling
+            showUnselectedLabels: true,
+            selectedItemColor: Color(0xFFEF9C53),
+            unselectedItemColor: Colors.black,
+            unselectedLabelStyle: TextStyle(
+              fontFamily: "merriweather",
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+            ),
+            selectedLabelStyle: TextStyle(
+              fontFamily: "merriweather",
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+            ),
+            type: BottomNavigationBarType.fixed,
+          ),
         ),
-        selectedLabelStyle: TextStyle(
-          fontFamily: "merriweather",
-          fontWeight: FontWeight.w700,
-          fontSize: 12,
-        ),
-        type: BottomNavigationBarType.fixed,
       ),
-    )));
+    );
   }
 }

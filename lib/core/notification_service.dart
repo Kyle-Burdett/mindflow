@@ -4,53 +4,57 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
-  DarwinInitializationSettings initializationSettingsDarwin = DarwinInitializationSettings(
-    notificationCategories: [
-      DarwinNotificationCategory(
-        'demoCategory',
-        actions: <DarwinNotificationAction>[
-            DarwinNotificationAction.plain('id_1', 'Action 1'),
-            DarwinNotificationAction.plain(
-            'id_2',
-            'Action 2',
-            options: <DarwinNotificationActionOption>{
-                DarwinNotificationActionOption.destructive,
+  DarwinInitializationSettings initializationSettingsDarwin =
+      DarwinInitializationSettings(
+        notificationCategories: [
+          DarwinNotificationCategory(
+            'demoCategory',
+            actions: <DarwinNotificationAction>[
+              DarwinNotificationAction.plain('id_1', 'Action 1'),
+              DarwinNotificationAction.plain(
+                'id_2',
+                'Action 2',
+                options: <DarwinNotificationActionOption>{
+                  DarwinNotificationActionOption.destructive,
+                },
+              ),
+              DarwinNotificationAction.plain(
+                'id_3',
+                'Action 3',
+                options: <DarwinNotificationActionOption>{
+                  DarwinNotificationActionOption.foreground,
+                },
+              ),
+            ],
+            options: <DarwinNotificationCategoryOption>{
+              DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
             },
-            ),
-            DarwinNotificationAction.plain(
-            'id_3',
-            'Action 3',
-            options: <DarwinNotificationActionOption>{
-                DarwinNotificationActionOption.foreground,
-            },
-            ),
+          ),
         ],
-        options: <DarwinNotificationCategoryOption>{
-            DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
-        },
-      )
-    ],
-  );
+      );
 
   Future<void> initNotifications() async {
     await initializeLocalTime();
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final DarwinInitializationSettings iosSettings = initializationSettingsDarwin;
+    final DarwinInitializationSettings iosSettings =
+        initializationSettingsDarwin;
 
     InitializationSettings settings = InitializationSettings(
       android: androidSettings,
-      iOS: iosSettings
+      iOS: iosSettings,
     );
 
     await flutterLocalNotificationsPlugin.initialize(settings);
 
-    final android =
-      flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
+    final android = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
 
     await android?.createNotificationChannel(
       const AndroidNotificationChannel(
@@ -114,7 +118,7 @@ class NotificationService {
       ),
       payload: "",
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time
+      matchDateTimeComponents: DateTimeComponents.time,
     );
     print('Scheduling notification for: $scheduledDate');
   }
@@ -124,25 +128,26 @@ class NotificationService {
   }
 
   Future<bool?> checkExactAlarmsPermission() async {
-  final canScheduleExactAlarms =
-      await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.requestExactAlarmsPermission();
-  return canScheduleExactAlarms;
-}
+    final canScheduleExactAlarms = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.requestExactAlarmsPermission();
+    return canScheduleExactAlarms;
+  }
 
-Future<void> printScheduledNotifications() async {
-  final List<PendingNotificationRequest> pending =
-      await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+  Future<void> printScheduledNotifications() async {
+    final List<PendingNotificationRequest> pending =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
 
-  if (pending.isEmpty) {
-    print("No notifications scheduled.");
-  } else {
-    for (var notification in pending) {
-      print(
-          'ID: ${notification.id}, Title: ${notification.title}, Body: ${notification.body}, Payload: ${notification.payload}');
+    if (pending.isEmpty) {
+      print("No notifications scheduled.");
+    } else {
+      for (var notification in pending) {
+        print(
+          'ID: ${notification.id}, Title: ${notification.title}, Body: ${notification.body}, Payload: ${notification.payload}',
+        );
+      }
     }
   }
-}
 }

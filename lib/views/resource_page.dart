@@ -19,7 +19,6 @@ class Resource {
     required this.url,
   });
 
-
   factory Resource.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Resource(
@@ -59,7 +58,6 @@ class _ResourcesPageState extends State<ResourcesPage> {
     "Work Habits",
   ];
 
-
   final Stream<QuerySnapshot> _resourcesStream = FirebaseFirestore.instance
       .collection('resources')
       .snapshots();
@@ -67,7 +65,6 @@ class _ResourcesPageState extends State<ResourcesPage> {
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-
       throw Exception('Could not launch $url');
     }
   }
@@ -99,17 +96,13 @@ class _ResourcesPageState extends State<ResourcesPage> {
                       SizedBox(height: 4),
                       Text(
                         "Expert advice for better wellbeing",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-
 
             SizedBox(
               height: 50,
@@ -128,7 +121,9 @@ class _ResourcesPageState extends State<ResourcesPage> {
                         backgroundColor: isActive ? primaryColor : Colors.white,
                         foregroundColor: isActive ? Colors.white : Colors.black,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -149,27 +144,29 @@ class _ResourcesPageState extends State<ResourcesPage> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: _resourcesStream,
                 builder: (context, snapshot) {
-
                   if (snapshot.hasError) {
-
                     print('❌ FIRESTORE ERROR: ${snapshot.error}');
-                    return Center(child: Text('Error loading data: ${snapshot.error}'));
+                    return Center(
+                      child: Text('Error loading data: ${snapshot.error}'),
+                    );
                   }
-
 
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                    
-                  final allResources = snapshot.data!.docs.map((doc) {
 
-                    print('✅ FIRESTORE CONNECTED: Fetched document ID: ${doc.id}');
+                  final allResources = snapshot.data!.docs.map((doc) {
+                    print(
+                      '✅ FIRESTORE CONNECTED: Fetched document ID: ${doc.id}',
+                    );
 
                     return Resource.fromFirestore(doc);
                   }).toList();
 
                   if (allResources.isEmpty) {
-                    return const Center(child: Text('No resources found in Firestore.'));
+                    return const Center(
+                      child: Text('No resources found in Firestore.'),
+                    );
                   }
 
                   // Filtering fetched resources by category selected.
@@ -177,15 +174,17 @@ class _ResourcesPageState extends State<ResourcesPage> {
                       .where((r) => r.category.contains(activeTab))
                       .toList();
 
-
                   if (filteredResources.isEmpty && activeTab != 'All') {
-                    return Center(child: Text('No ${activeTab} resources found.'));
+                    return Center(
+                      child: Text('No ${activeTab} resources found.'),
+                    );
                   }
 
-
                   return ListView.builder(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
                     itemCount: filteredResources.length + 1,
                     itemBuilder: (context, index) {
                       if (index < filteredResources.length) {
@@ -196,7 +195,8 @@ class _ResourcesPageState extends State<ResourcesPage> {
                           color: Colors.white,
                           margin: const EdgeInsets.only(bottom: 12),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: Row(
@@ -220,7 +220,8 @@ class _ResourcesPageState extends State<ResourcesPage> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         resource.title,
@@ -269,23 +270,19 @@ class _ResourcesPageState extends State<ResourcesPage> {
                           ),
                         );
                       } else {
-
                         return Card(
                           elevation: 2,
                           color: Colors.white,
                           margin: const EdgeInsets.only(bottom: 80, top: 20),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(24),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  Icons.star,
-                                  color: primaryColor,
-                                  size: 48,
-                                ),
+                                Icon(Icons.star, color: primaryColor, size: 48),
                                 const SizedBox(height: 12),
                                 const Text(
                                   "Tip of the day",
@@ -321,4 +318,3 @@ class _ResourcesPageState extends State<ResourcesPage> {
     );
   }
 }
-

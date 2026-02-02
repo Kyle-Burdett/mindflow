@@ -3,11 +3,7 @@ class Tag {
   final String name;
   final int value;
 
-  Tag({
-    required this.category,
-    required this.name,
-    required this.value,
-  });
+  Tag({required this.category, required this.name, required this.value});
 
   factory Tag.fromMap(Map<String, dynamic> map) {
     return Tag(
@@ -18,19 +14,14 @@ class Tag {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'category': category,
-      'name': name,
-      'value': value,
-    };
+    return {'category': category, 'name': name, 'value': value};
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Tag &&
-        other.name == name;
+    return other is Tag && other.name == name;
   }
 
   @override

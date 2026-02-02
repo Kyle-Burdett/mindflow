@@ -5,7 +5,10 @@ class UserRepository {
   // Set user both creates and updates users by id obtained from Firebase Auth
   Future<bool> setUser(UserModel user) async {
     try {
-      await FirebaseFirestore.instance.collection('users').doc(user.id).set(user.toMap());
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.id)
+          .set(user.toMap());
     } catch (e) {
       print("Cannot add user: $e");
       return false;
@@ -15,9 +18,12 @@ class UserRepository {
 
   // Fetch user details from Firestore
   Future<UserModel?> fetchUserDetails(String userId) async {
-      final document = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-      // Convert data to usable format
-      final userDetails = UserModel.fromDoc(document);
-      return userDetails;
+    final document = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .get();
+    // Convert data to usable format
+    final userDetails = UserModel.fromDoc(document);
+    return userDetails;
   }
 }

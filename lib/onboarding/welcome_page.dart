@@ -13,7 +13,6 @@ class WelcomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Center(
                   child: Text(
                     "Welcome to ClarityDesk",
@@ -45,29 +44,32 @@ class WelcomeScreen extends StatelessWidget {
 
                 SizedBox(height: 30),
 
-
                 Center(
-                  child: Icon(Icons.favorite_border, color: Color(0xFFB66623), size: 80),
+                  child: Icon(
+                    Icons.favorite_border,
+                    color: Color(0xFFB66623),
+                    size: 80,
+                  ),
                 ),
 
                 SizedBox(height: 30),
 
                 Center(
                   child: Text(
-                      "Track your mental wellness",
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black)
+                    "Track your mental wellness",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
 
-
                 Center(
-                child: Text(
-                  "ClarityDesk helps remote workers to monitor their mental health cycles, energy levels, and productivity to prevent burnout and maintain sustainable work practices.",
-                  style: TextStyle(fontSize: 16, color: Colors.black),
-                ),
+                  child: Text(
+                    "ClarityDesk helps remote workers to monitor their mental health cycles, energy levels, and productivity to prevent burnout and maintain sustainable work practices.",
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
                 ),
 
                 SizedBox(height: 40),
@@ -79,13 +81,18 @@ class WelcomeScreen extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFEF9C53),
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 15,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    child: Text("Continue",
-                        style: TextStyle(
-                            fontSize: 16,
-                        color: Colors.white)),
+                    child: Text(
+                      "Continue",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
                   ),
                 ),
               ],

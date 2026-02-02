@@ -7,10 +7,10 @@ import 'package:provider/provider.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
 
 const double spacing = 4.0;
-const Color primaryColor = Color(0xFFB66623); // Existing color constant
-const Color backgroundColor = Color(0xFFFFF1E6); // Existing color constant
+const Color primaryColor = Color(0xFFB66623); // Main Color constant
+const Color backgroundColor = Color(0xFFFFF1E6); // Background color constant
 
-// ---------------- GET STARTED PAGE ----------------
+// Get Started Page
 class GetStartedPage extends StatelessWidget {
   const GetStartedPage({super.key});
 
@@ -27,8 +27,10 @@ class GetStartedPage extends StatelessWidget {
             children: [
               const Icon(Icons.favorite_border, color: primaryColor, size: 80),
               const SizedBox(height: spacing * 3),
-              const Text('ClarityDesk',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              const Text(
+                'ClarityDesk',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: spacing * 2),
               const Text(
                 'Your personal wellness companion for remote work',
@@ -43,7 +45,10 @@ class GetStartedPage extends StatelessWidget {
                     padding: const EdgeInsets.all(spacing * 3),
                   ),
                   onPressed: () => context.push('/sign-in'),
-                  child: const Text('Sign In', style: TextStyle(color: Colors.white),),
+                  child: const Text(
+                    'Sign In',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
               const SizedBox(height: spacing * 3),
@@ -70,7 +75,7 @@ class GetStartedPage extends StatelessWidget {
   }
 }
 
-// ---------------- SIGN IN PAGE ----------------
+// Sign In Page
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
 
@@ -93,7 +98,7 @@ class _SignInContent extends StatefulWidget {
 }
 
 class _SignInContentState extends State<_SignInContent> {
-  // form validation
+  // Form validation
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final emailController = TextEditingController();
@@ -107,7 +112,9 @@ class _SignInContentState extends State<_SignInContent> {
     }
     // Basic email format check for email field
     if (fieldName == 'Email') {
-      final RegExp emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$');
+      final RegExp emailRegex = RegExp(
+        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$',
+      );
       if (!emailRegex.hasMatch(value)) {
         return 'Please enter a valid email address.';
       }
@@ -123,7 +130,7 @@ class _SignInContentState extends State<_SignInContent> {
         padding: const EdgeInsets.all(spacing * 8),
         child: Center(
           child: SingleChildScrollView(
-            // WRAPPED: Column in Form
+            // Wrapped Column in form element for submission
             child: Form(
               key: _formKey,
               child: Column(
@@ -139,32 +146,40 @@ class _SignInContentState extends State<_SignInContent> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: spacing * 6),
-                  // --- Email Field ---
-                  // CONVERTED to TextFormField & ADDED validator
+                  // Email Field
+                  // Used TextFormField to match form element above and add validation
                   TextFormField(
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) => _requiredValidator(value, 'Email'),
                     decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
+                      prefixIcon: Icon(
+                        Icons.email_outlined,
+                        color: primaryColor,
+                      ),
                       labelText: 'Email',
                       hintText: 'Enter your email',
                     ),
                   ),
                   const SizedBox(height: spacing * 3),
-                  // --- Password Field (with eye icon) ---
-                  // CONVERTED to TextFormField & ADDED validator
+                  // Password Field
+                  // Used TextFormField to match form element above and add validation
                   TextFormField(
                     controller: passwordController,
                     obscureText: !_isPasswordVisible, // Use the state variable
                     validator: (value) => _requiredValidator(value, 'Password'),
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: primaryColor,
+                      ),
                       labelText: 'Password',
                       hintText: 'Enter your password',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: primaryColor,
                         ),
                         onPressed: () {
@@ -177,7 +192,7 @@ class _SignInContentState extends State<_SignInContent> {
                     ),
                   ),
                   const SizedBox(height: spacing * 1),
-                  // --- FORGOT PASSWORD BUTTON ---
+                  // Forgot Password Button
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -189,12 +204,15 @@ class _SignInContentState extends State<_SignInContent> {
                       ),
                       child: const Text(
                         'Forgot Password?',
-                        style: TextStyle(color: primaryColor, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: spacing * 4),
-                  // --- Sign In Button ---
+                  // Sign In Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -202,19 +220,33 @@ class _SignInContentState extends State<_SignInContent> {
                         backgroundColor: primaryColor,
                         padding: const EdgeInsets.all(spacing * 3),
                       ),
-                      onPressed: widget.model.isLoading ? null : () {
-                        // ADDED: Validation check before calling the sign-in method
-                        if (_formKey.currentState!.validate()) {
-                          // Only attempt sign-in if validation passes
-                          widget.model.signIn(context, emailController.text, passwordController.text);
-                        }
-                      },
+                      onPressed: widget.model.isLoading
+                          ? null
+                          : () {
+                              // Used validation check before sign in
+                              if (_formKey.currentState!.validate()) {
+                                widget.model.signIn(
+                                  context,
+                                  emailController.text,
+                                  passwordController.text,
+                                );
+                              }
+                            },
                       child: widget.model.isLoading
-                          ? const Center(child: SizedBox(
-                        height: 24, width: 24,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
-                      ))
-                          : const Text('Sign In', style: TextStyle(color: Colors.white)),
+                          ? const Center(
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              ),
+                            )
+                          : const Text(
+                              'Sign In',
+                              style: TextStyle(color: Colors.white),
+                            ),
                     ),
                   ),
                   const SizedBox(height: spacing * 3),
@@ -226,7 +258,10 @@ class _SignInContentState extends State<_SignInContent> {
                         onTap: () => context.replace('/sign-up'),
                         child: const Text(
                           'Sign Up',
-                          style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -245,7 +280,8 @@ class _SignInContentState extends State<_SignInContent> {
     );
   }
 }
-// ---------------- SIGN UP PAGE ----------------
+
+// Sign Up Page
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
 
@@ -268,7 +304,7 @@ class _SignUpContent extends StatefulWidget {
 }
 
 class _SignUpContentState extends State<_SignUpContent> {
-  // form state for validation
+  // Form state for validation
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final emailController = TextEditingController();
@@ -300,13 +336,13 @@ class _SignUpContentState extends State<_SignUpContent> {
       return 'Password is required.';
     }
 
-    // if (value.length < 8) {
-    //   return 'Password must be at least 8 characters.';
-    // }
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters.';
+    }
     return null;
   }
 
-  // Validator function for Confirm Password (checks required and match)
+  // Validator function for Confirm Password
   String? _confirmPasswordValidator(String? value) {
     if (value == null || value.isEmpty) {
       return 'Confirm Password is required.';
@@ -317,7 +353,6 @@ class _SignUpContentState extends State<_SignUpContent> {
     return null;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -326,44 +361,60 @@ class _SignUpContentState extends State<_SignUpContent> {
         padding: const EdgeInsets.all(spacing * 8),
         child: Center(
           child: SingleChildScrollView(
-            //  WRAPPED: Column in Form
+            //  Used Form for input submission on sign up
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.favorite_border, color: primaryColor, size: 80),
+                  const Icon(
+                    Icons.favorite_border,
+                    color: primaryColor,
+                    size: 80,
+                  ),
                   const SizedBox(height: spacing * 3),
-                  const Text('ClarityDesk',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'ClarityDesk',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: spacing * 2),
-                  const Text('Start your wellness journey today',
-                      textAlign: TextAlign.center),
+                  const Text(
+                    'Start your wellness journey today',
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: spacing * 6),
-                  // --- Email Field ---
+                  // Email Field
                   TextFormField(
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
                     validator: _emailValidator,
                     decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
+                      prefixIcon: Icon(
+                        Icons.email_outlined,
+                        color: primaryColor,
+                      ),
                       labelText: 'Email',
                       hintText: 'Enter your email',
                     ),
                   ),
                   const SizedBox(height: spacing * 3),
-                  // --- Password Field (with eye icon) ---
+                  // Password Field
                   TextFormField(
                     controller: passwordController,
                     obscureText: !_isPasswordVisible,
                     validator: _passwordValidator,
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: primaryColor,
+                      ),
                       labelText: 'Password',
                       hintText: 'Enter your password (min 8 characters)',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: primaryColor,
                         ),
                         onPressed: () {
@@ -375,30 +426,36 @@ class _SignUpContentState extends State<_SignUpContent> {
                     ),
                   ),
                   const SizedBox(height: spacing * 3),
-                  // --- Confirm Password Field (with eye icon) ---
+                  // Confirm Password Field
                   TextFormField(
                     controller: confirmPasswordController,
                     obscureText: !_isConfirmPasswordVisible,
                     validator: _confirmPasswordValidator,
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.lock_outline, color: primaryColor),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: primaryColor,
+                      ),
                       labelText: 'Confirm Password',
                       hintText: 'Re-enter your password',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isConfirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: primaryColor,
                         ),
                         onPressed: () {
                           setState(() {
-                            _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                            _isConfirmPasswordVisible =
+                                !_isConfirmPasswordVisible;
                           });
                         },
                       ),
                     ),
                   ),
                   const SizedBox(height: spacing * 6),
-                  // --- Create Account Button ---
+                  // Create Account Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -406,20 +463,34 @@ class _SignUpContentState extends State<_SignUpContent> {
                         backgroundColor: primaryColor,
                         padding: const EdgeInsets.all(spacing * 3),
                       ),
-                      onPressed: widget.model.isLoading ? null : () {
-                        // Checks full form validation first
-                        if (_formKey.currentState!.validate()) {
-                          // The password match is now handled by the _confirmPasswordValidator
-                          widget.model.signUp(context, emailController.text, passwordController.text);
-                        }
-                        // Note: If validation fails, the TextFormField shows the inline error and blocks the execution here.
-                      },
+                      onPressed: widget.model.isLoading
+                          ? null
+                          : () {
+                              // Form validation before continuing with signup
+                              if (_formKey.currentState!.validate()) {
+                                widget.model.signUp(
+                                  context,
+                                  emailController.text,
+                                  passwordController.text,
+                                );
+                              }
+                              // If validation fails, we show an inline error using the textFormField
+                            },
                       child: widget.model.isLoading
-                          ? const Center(child: SizedBox(
-                        height: 24, width: 24,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
-                      ))
-                          : const Text('Create Account', style: TextStyle(color: Colors.white)),
+                          ? const Center(
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              ),
+                            )
+                          : const Text(
+                              'Create Account',
+                              style: TextStyle(color: Colors.white),
+                            ),
                     ),
                   ),
                   const SizedBox(height: spacing * 3),
@@ -431,7 +502,10 @@ class _SignUpContentState extends State<_SignUpContent> {
                         onTap: () => context.replace('/sign-in'),
                         child: const Text(
                           'Sign In',
-                          style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],

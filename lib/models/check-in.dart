@@ -15,10 +15,7 @@ class TimeRange {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'start': Timestamp.fromDate(start),
-      'end': Timestamp.fromDate(end),
-    };
+    return {'start': Timestamp.fromDate(start), 'end': Timestamp.fromDate(end)};
   }
 }
 
@@ -46,7 +43,9 @@ class DailyCheckInModel {
   });
 
   // Conversion to a usable form when reading data from the backend
-  factory DailyCheckInModel.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory DailyCheckInModel.fromDoc(
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
     final data = doc.data()!;
     return DailyCheckInModel(
       id: doc.id,
@@ -63,7 +62,9 @@ class DailyCheckInModel {
         (taskName, list) => MapEntry(
           taskName,
           (list as List<dynamic>)
-              .map((range) => TimeRange.fromMap(Map<String, dynamic>.from(range)))
+              .map(
+                (range) => TimeRange.fromMap(Map<String, dynamic>.from(range)),
+              )
               .toList(),
         ),
       ),
@@ -80,8 +81,10 @@ class DailyCheckInModel {
       'stressScore': productivityScore,
       'notes': notes,
       'tags': tags.map((t) => t.toMap()).toList(),
-      'taskHours': taskHours.map((taskName, ranges) => MapEntry(
-        taskName, ranges.map((r) => r.toMap()).toList())),
+      'taskHours': taskHours.map(
+        (taskName, ranges) =>
+            MapEntry(taskName, ranges.map((r) => r.toMap()).toList()),
+      ),
     };
   }
 }
