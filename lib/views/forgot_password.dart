@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:mindflow/view-models/user_view_model.dart'; // Ensure this path is correct
+import 'package:mindflow/view-models/user_view_model.dart';
 
-// --- Constants (adjust to match your design in signIN-signUP.dart) ---
+// Constants to easily reference the colours and the spacing.
 const double spacing = 4.0;
-const Color primaryColor = Color(0xFFB66623); // Orange/Brown color
-const Color backgroundColor = Color(0xFFFFF1E6); // Light Beige background
+const Color primaryColor = Color(0xFFB66623);
+const Color backgroundColor = Color(0xFFFFF1E6);
 
-// ---------------- FORGOT PASSWORD PAGE ----------------
+//Forgot password Page
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
 
@@ -28,7 +28,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       builder: (context, model, child) {
         return Scaffold(
           backgroundColor: backgroundColor,
-          // Use an AppBar if you want the back button, otherwise, custom leading
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
@@ -56,7 +55,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                     const SizedBox(height: spacing * 8),
 
-                    // --- Email Input ---
+                   //Email Input
                     const Text('Email', style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: spacing * 2),
                     TextField(
@@ -75,10 +74,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                     const SizedBox(height: spacing * 4),
 
-                    // --- Send Code Button (Only visible before code is sent) ---
+                    // Send Code Button
                     if (!_isCodeSent)
                       SizedBox(
-                        width: 150, // Fixed width to match the image
+                        width: 150,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: primaryColor.withOpacity(0.8),
@@ -88,7 +87,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             ),
                           ),
                           onPressed: model.isLoading ? null : () async {
-                            // --- CALL VIEW MODEL TO SEND RESET EMAIL ---
+
                             bool success = await model.sendPasswordResetEmail(context, _emailController.text);
                             if (success) {
                               setState(() {
@@ -112,7 +111,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                     const SizedBox(height: spacing * 8),
 
-                    // --- Sign In / Reset Password Button ---
+                    // Sign In / Reset Password Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -125,19 +124,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           elevation: 3,
                         ),
                         onPressed: model.isLoading ? null : () {
-                          // NOTE: Firebase Auth typically handles the 'code' (link click) directly.
-                          // This button would usually be for the NEW password input after the link is clicked.
-                          // Based on your UI (with a visible "Send Code" button), I'll make this
-                          // button navigate back to sign in, assuming the actual password
-                          // change happens via the email link.
+
                           if (_isCodeSent) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Password reset email sent. Please check your inbox!')),
                             );
                             context.go('/sign-in');
                           } else {
-                            // If code hasn't been sent, this button doesn't do anything useful in a standard flow.
-                            // However, since the image says "Sign In," we can assume a simplified flow.
                             context.go('/sign-in');
                           }
                         },
@@ -150,7 +143,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                     const SizedBox(height: spacing * 6),
 
-                    // --- Back to Sign In ---
+                    // Back to Sign In
                     Center(
                       child: GestureDetector(
                         onTap: () => context.go('/sign-in'),

@@ -70,23 +70,20 @@ class MyApp extends StatelessWidget {
 
       // Paths that do NOT require authentication
       const List<String> unauthenticatedPaths = [
-        '/', // Splash screen
+        '/',
         '/get-started',
         '/sign-in',
         '/sign-up',
-        '/forgot-password', // ADDED forgot password path here
+        '/forgot-password',
       ];
 
       final isGoingToProtectedPath =
           !unauthenticatedPaths.contains(state.matchedLocation) && !isOnboardingPath;
-
-      // 1. If user is NOT authenticated and tries to access a protected path, redirect to sign-in
       if (!isAuthenticated && isGoingToProtectedPath) {
         return '/get-started';
       }
 
-      // 2. If user IS authenticated and tries to access an unauthenticated path (like sign-in), redirect to home
-      // We only redirect to home if they are not already in the middle of onboarding.
+
       if (isAuthenticated && unauthenticatedPaths.contains(state.matchedLocation) && state.matchedLocation != '/') {
         await locator<UserViewModel>().fetchUserDetails(auth.currentUser!.uid);
         await locator<CheckInViewModel>().fetchAllCheckIns(locator<UserViewModel>().user.id!);
@@ -94,7 +91,6 @@ class MyApp extends StatelessWidget {
         return '/home';
       }
 
-      // No redirect needed
       return null;
     },
     // We use the auth state stream to automatically trigger a router refresh
@@ -137,7 +133,6 @@ class MyApp extends StatelessWidget {
         path: '/check-in-hours',
         builder: (context, state) => const WorkingHoursPage(),
       ),
-      // --- ONBOARDING ROUTES ---
       GoRoute(
         path: '/onboarding/welcome',
         builder: (context, state) => WelcomeScreen(),
@@ -164,7 +159,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFDB863B)),
-        // Add other theme customizations here if needed
       ),
       routerConfig: _router,
     );

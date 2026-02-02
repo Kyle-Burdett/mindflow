@@ -13,7 +13,7 @@ class WelcomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 🟡 Title
+
                 Center(
                   child: Text(
                     "Welcome to ClarityDesk",
@@ -27,7 +27,6 @@ class WelcomeScreen extends StatelessWidget {
 
                 SizedBox(height: 10),
 
-                // 🟡 Subtitle
                 Center(
                   child: Text(
                     "Your personal companion for remote work",
@@ -38,7 +37,6 @@ class WelcomeScreen extends StatelessWidget {
 
                 SizedBox(height: 20),
 
-                // 🟡 Progress bar
                 LinearProgressIndicator(
                   value: 0.2,
                   color: Color(0xFFEF9C53),
@@ -47,9 +45,9 @@ class WelcomeScreen extends StatelessWidget {
 
                 SizedBox(height: 30),
 
-                // 🟢 Heart icon
+
                 Center(
-                  child: Icon(Icons.favorite, color: Color(0xFFEF9C53), size: 80),
+                  child: Icon(Icons.favorite_border, color: Color(0xFFB66623), size: 80),
                 ),
 
                 SizedBox(height: 30),
@@ -65,8 +63,6 @@ class WelcomeScreen extends StatelessWidget {
                 ),
 
 
-
-                // 🟢 Description text
                 Center(
                 child: Text(
                   "ClarityDesk helps remote workers to monitor their mental health cycles, energy levels, and productivity to prevent burnout and maintain sustainable work practices.",
@@ -76,7 +72,6 @@ class WelcomeScreen extends StatelessWidget {
 
                 SizedBox(height: 40),
 
-                // 🟢 Continue button
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
