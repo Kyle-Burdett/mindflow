@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
               Image.asset('assets/icons/heart.png', width: 64),
               SizedBox(height: 16),
               const Text(
-                "MindFlow",
+                "ClarityDesk",
                 style: TextStyle(
                   fontFamily: "merriweather",
                   fontSize: 32,

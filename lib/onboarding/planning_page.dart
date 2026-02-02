@@ -45,8 +45,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
       return endMinutes > startMinutes;
     }
 
-    return ChangeNotifierProvider<UserViewModel>(
-      create: (_) => locator<UserViewModel>(),
+    return ChangeNotifierProvider<UserViewModel>.value(
+      value: locator<UserViewModel>(),
       child: Consumer<UserViewModel>(
       builder: (context, model, child) => Scaffold(
       backgroundColor: Color(0xFFFFF0E1),

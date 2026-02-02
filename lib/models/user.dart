@@ -8,6 +8,8 @@ class UserModel {
   String? password;
   bool? productivity;
   bool? balance;
+  bool? isolation;
+  bool? energy;
   bool? reminder;
   DateTime? reminderTime;
   
@@ -20,6 +22,8 @@ class UserModel {
       this.name,
       this.password,
       this.productivity,
+      this.energy,
+      this.isolation,
       this.reminder,
       this.reminderTime,
       this.startTime,
@@ -31,9 +35,11 @@ class UserModel {
       id: doc.id,
       name: data['name'] ?? '',
       startTime: (data['startTime'] as Timestamp).toDate(),
-      endTime: (data['startTime'] as Timestamp).toDate(),
+      endTime: (data['endTime'] as Timestamp).toDate(),
       productivity: data['productivity'] as bool?,
       balance: data['balance'] as bool?,
+      energy: data['energy'] as bool?,
+      isolation: data['isolation'] as bool?,
       reminder: data['reminder'] as bool?,
       reminderTime: (data['reminderTime'] as Timestamp).toDate(),
     );
@@ -46,6 +52,8 @@ class UserModel {
       'endTime': Timestamp.fromDate(endTime!),
       'productivity': productivity,
       'balance': balance,
+      'energy': energy,
+      'isolation': isolation,
       'reminder': reminder,
       'reminderTime': reminderTime != null ? Timestamp.fromDate(reminderTime!) : FieldValue.serverTimestamp(),
     };

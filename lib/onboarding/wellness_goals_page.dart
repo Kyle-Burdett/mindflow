@@ -14,13 +14,13 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
   bool improveBalance = false;
   bool monitorProductivity = false;
   bool trackEnergyLevels = false;
-  bool reduceStress = false;
+  bool isolation = false;
   bool buildWorkHabits = false;
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<UserViewModel>(
-      create: (_) => locator<UserViewModel>(),
+    return ChangeNotifierProvider<UserViewModel>.value(
+      value: locator<UserViewModel>(),
       child: Consumer<UserViewModel>(
       builder: (context, model, child) => Scaffold(
       backgroundColor: Color(0xFFFFF0E1),
@@ -66,11 +66,6 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
             ),
 
         SizedBox(height: 30),
-
-
-            buildToggle("Reduce Burnout", reduceBurnout, (val) {
-              setState(() => reduceBurnout = val);
-            }),
             buildToggle("Improve work-life balance", improveBalance, (val) {
               setState(() => improveBalance = val);
             }),
@@ -80,8 +75,8 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
             buildToggle("Track energy levels", trackEnergyLevels, (val) {
               setState(() => trackEnergyLevels = val);
             }),
-            buildToggle("Reduce stress and anxiety", reduceStress, (val) {
-              setState(() => reduceStress = val);
+            buildToggle("Reduce Isolation", isolation, (val) {
+              setState(() => isolation = val);
             }),
             SizedBox(height: 40),
             Row(
@@ -101,12 +96,18 @@ class _WellnessGoalsScreenState extends State<WellnessGoalsScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    model.user.productivity = monitorProductivity;
-                    model.user.balance = improveBalance;
-                    context.push('/onboarding/planning');
+                    if (monitorProductivity || improveBalance || trackEnergyLevels || isolation) {
+                      model.user.productivity = monitorProductivity;
+                      model.user.balance = improveBalance;
+                      model.user.energy = trackEnergyLevels;
+                      model.user.isolation = isolation;
+                      context.push('/onboarding/planning');
+                    }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFEF9C53),
+                    backgroundColor: monitorProductivity || improveBalance || trackEnergyLevels || isolation
+                        ? Color(0xFFEF9C53)
+                    :Color(0xFFEF9C53).withOpacity(0.5),
                     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),

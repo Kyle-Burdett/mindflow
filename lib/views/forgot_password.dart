@@ -18,7 +18,6 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _codeController = TextEditingController();
 
   // State to manage the flow (Email input -> Code input)
   bool _isCodeSent = false;

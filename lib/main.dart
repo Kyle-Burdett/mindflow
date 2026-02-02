@@ -1,21 +1,28 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mindflow/core/locator.dart';
-import 'package:mindflow/daily_check_in.dart';
+import 'package:mindflow/core/notification_service.dart';
+import 'package:mindflow/views/daily_check_in.dart';
 import 'package:mindflow/firebase_options.dart';
-import 'package:mindflow/forgot_password.dart';
-import 'package:mindflow/home-nav.dart';
+import 'package:mindflow/views/forgot_password.dart';
+import 'package:mindflow/views/home_nav.dart';
 import 'package:mindflow/onboarding/about_you_page.dart';
 import 'package:mindflow/onboarding/planning_page.dart';
 import 'package:mindflow/onboarding/welcome_page.dart';
 import 'package:mindflow/onboarding/wellness_goals_page.dart';
-import 'package:mindflow/signIN-signUP.dart';
-import 'package:mindflow/splash.dart';
-import 'package:mindflow/working_hours_page.dart';
+import 'package:mindflow/views/signIn_signUp.dart';
+import 'package:mindflow/views/splash.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:mindflow/views/working_hours_page.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mindflow/view-models/user_view_model.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +30,24 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Handling firebase messages obtained when app is in a background state
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // Initializing firebase messaging and requesting permission to use send notifications from the user
+  final messaging = FirebaseMessaging.instance;
+
+  print("FCM Token: ${await messaging.getToken()}");
+  await messaging.requestPermission();
+
+
   setupLocator();
+
+  // Local notifications for dynamic notifications
+  await NotificationService().initNotifications();
+
+  await NotificationService().printScheduledNotifications();
+  NotificationService().checkExactAlarmsPermission();
+
   runApp(
     ChangeNotifierProvider<UserViewModel>(
       create: (_) => locator<UserViewModel>(),
@@ -36,7 +60,8 @@ class MyApp extends StatelessWidget {
   MyApp({super.key});
 
   final GoRouter _router = GoRouter(
-    redirect: (BuildContext context, GoRouterState state) {
+    // Initial redirect logic to check auth status immediately
+    redirect: (BuildContext context, GoRouterState state) async {
       final auth = FirebaseAuth.instance;
       final isAuthenticated = auth.currentUser != null;
 
@@ -60,12 +85,15 @@ class MyApp extends StatelessWidget {
 
 
       if (isAuthenticated && unauthenticatedPaths.contains(state.matchedLocation) && state.matchedLocation != '/') {
-
+        await locator<UserViewModel>().fetchUserDetails(auth.currentUser!.uid);
+        await locator<CheckInViewModel>().fetchAllCheckIns(locator<UserViewModel>().user.id!);
+        // When opening the app while authenticated, we route them to the home screen
         return '/home';
       }
 
       return null;
     },
+    // We use the auth state stream to automatically trigger a router refresh
     refreshListenable: ValueNotifier<User?>(FirebaseAuth.instance.currentUser),
 
     routes: [
@@ -91,7 +119,11 @@ class MyApp extends StatelessWidget {
       ),
       GoRoute(
         path: '/home',
-        builder: (context, state) => const MainHomeScreen(),
+        builder: (context, state) => MainHomeScreen(),
+      ),
+      GoRoute(
+        path: '/home-second',
+        builder: (context, state) => MainHomeScreen(initialIndex: 3),
       ),
       GoRoute(
         path: '/check-in',
@@ -123,7 +155,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Mindflow',
+      title: 'ClarityDesk',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFDB863B)),

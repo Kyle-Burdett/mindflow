@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mindflow/homepage.dart';
-import 'package:mindflow/resource_page.dart';
-import 'package:mindflow/settings_page.dart';
-import 'package:mindflow/track.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/views/homepage.dart';
+import 'package:mindflow/views/insights.dart';
+import 'package:mindflow/views/resource_page.dart';
+import 'package:mindflow/views/settings_page.dart';
+import 'package:mindflow/views/track.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:mindflow/view-models/home_nav_view_model.dart';
+import 'package:provider/provider.dart';
 
 class MainHomeScreen extends StatefulWidget {
-  const MainHomeScreen({super.key});
+  final int? initialIndex;
+  const MainHomeScreen({super.key, this.initialIndex});
 
   @override
   State<MainHomeScreen> createState() => _MainHomeScreenState();
@@ -13,8 +19,12 @@ class MainHomeScreen extends StatefulWidget {
 
 class _MainHomeScreenState extends State<MainHomeScreen> {
 
-  // Index defines what tab we're on from the bottom navigation bar.
-  int _currentIndex = 0;
+  @override
+  void initState() {
+    locator<CheckInViewModel>().currentCheckInDate = locator<CheckInViewModel>().formatDate(DateTime.now());
+    locator<HomeNavViewModel>().currentIndex = widget.initialIndex ?? 0;
+    super.initState();
+  }
 
   // Bottom navigation bar icons/items. Defines the icons they use in selected/unselected states.
   final List<BottomNavigationBarItem> bottomNavItems = [
@@ -42,7 +52,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     BottomNavigationBarItem(
       icon: Image.asset('assets/icons/settings.png', height: 28),
       activeIcon: Image.asset('assets/icons/settings-selected.png', height: 28),
-      label: "Resources",
+      label: "Settings",
     ),
   ];
 
@@ -50,29 +60,24 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   List<Widget> screens = [
     Homepage(),
     TrackScreen(),
-    Center(
-      child: Text(
-        'Insights Placeholder',
-        style: TextStyle(
-          fontSize: 24,
-        ),
-      ),
-    ),
+    InsightsPage(),
     ResourcesPage(),
     SettingsPage(),
   ];
-  
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: screens[_currentIndex],
+    return ChangeNotifierProvider<HomeNavViewModel>.value(
+      value: locator<HomeNavViewModel>(),
+      child: Consumer<HomeNavViewModel>(
+      builder: (context, model, child) => Scaffold(
+      body: screens[model.currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: bottomNavItems,
-        currentIndex: _currentIndex,
+        currentIndex: model.currentIndex,
         onTap: (value) {
           setState(() {
-            _currentIndex = value;
+            model.currentIndex = value;
           });
         },
         // Bottom nav bar Styling
@@ -91,6 +96,6 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         ),
         type: BottomNavigationBarType.fixed,
       ),
-    );
+    )));
   }
 }

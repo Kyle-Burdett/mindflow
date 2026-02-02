@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/core/notification_service.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
 
 const Color _kPrimaryColor = Color(0xFFDB863B);
-const Color _kBackgroundColor = Color(0xFFFFDBBB);
+const Color _kBackgroundColor = Color(0xFFFFF3E9);
 
 
 class UserData {
@@ -100,6 +103,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   late AppSettings _settings;
   UserData user = UserData(name: "Kyle", email: "BE.2023.F1Y5D3");
+  NotificationService notificationService = NotificationService();
 
   final List<Map<String, String>> _focusAreaOptions = const [
     {"id": "productivity", "label": "Improving Productivity"},
@@ -118,18 +122,22 @@ class _SettingsPageState extends State<SettingsPage> {
     _settings = AppSettings(
       name: user.name ?? "",
       email: user.email ?? "",
-      plannedStartTime: const TimeOfDay(hour: 8, minute: 0),
-      plannedEndTime: const TimeOfDay(hour: 13, minute: 0),
-      dailyCheckInReminder: true,
+      plannedStartTime: TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!),
+      plannedEndTime: TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!),
+      dailyCheckInReminder: locator<UserViewModel>().user.reminder ?? true,
       weeklyProgressReport: true,
       achievementNotifications: true,
-      reminderTime: const TimeOfDay(hour: 9, minute: 0),
+      reminderTime: locator<UserViewModel>().user.reminderTime != null ? TimeOfDay.fromDateTime(locator<UserViewModel>().user.reminderTime!) : TimeOfDay(hour: 17, minute: 0),
       targetMoodScore: 7.0,
       targetProductivityScore: 8.0,
       maxStressLevel: 4.0,
       targetWorkHours: 8.0,
       focusAreas: ["productivity", "work-life-balance", "stress-management"],
     );
+  }
+
+  void logout(BuildContext context) {
+    locator<UserViewModel>().logout(context);
   }
 
   void _handleFocusAreaToggle(String areaId) {
@@ -144,14 +152,26 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  void _handleSave() {
-    print("Settings saved: ${_settings.name}, ${_settings.email}");
-
-  }
-
-  void _handleBack() {
-    print('Back button pressed');
-
+  void _handleUpdatePlannedHours() {
+    DateTime now = DateTime.now();
+    locator<UserViewModel>().user.reminder = _settings.dailyCheckInReminder;
+    locator<UserViewModel>().user.reminderTime =  DateTime(now.year, now.month, now.day, _settings.reminderTime.hour, _settings.reminderTime.minute);
+    locator<UserViewModel>().user.startTime = DateTime(2000, 1, 1, _settings.plannedStartTime.hour, _settings.plannedStartTime.minute);
+    locator<UserViewModel>().user.endTime = DateTime(2000, 1, 1, _settings.plannedEndTime.hour, _settings.plannedEndTime.minute);
+    if (_settings.dailyCheckInReminder) {
+      notificationService.scheduleReminder(locator<UserViewModel>().user.reminderTime!);
+    } else {
+      notificationService.cancelReminder();
+    }
+    locator<UserViewModel>().setUser(locator<UserViewModel>().user);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('User updated successfully!'),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+    print('Update button pressed. Planned Start: ${_settings.plannedStartTime.format(context)}, Planned End: ${_settings.plannedEndTime.format(context)}');
   }
 
   @override
@@ -194,10 +214,53 @@ class _SettingsPageState extends State<SettingsPage> {
 
 
                           _buildPlannedWorkingHoursSection(context),
+
+                          const SizedBox(height: 16),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: _handleUpdatePlannedHours,
+                              style: ElevatedButton.styleFrom(
+
+                                backgroundColor: _kPrimaryColor,
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size(double.infinity, 48),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text(
+                                'Update',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 16),
 
-                          // About Section
                           _buildAboutSection(context),
+                          const SizedBox(height: 16),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () => _showLogoutConfirmation(context),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 156, 29, 20),
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size(double.infinity, 48),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text(
+                                'Logout',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 30),
                         ],
                       ),
@@ -237,7 +300,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         color: Colors.black),
                   ),
                   Text(
-                    'Customize your MindFlow wellness experience',
+                    'Customize your ClarityDesk wellness experience',
                     style: TextStyle(color: Colors.grey, fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
@@ -246,15 +309,6 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
 
-          // ElevatedButton(
-          //   onPressed: _handleSave,
-          //   style: ElevatedButton.styleFrom(
-          //     backgroundColor: _kPrimaryColor,
-          //     foregroundColor: Colors.white,
-          //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          //   ),
-          //   child: const Text('Save Changes'),
-          // ),
         ],
       ),
     );
@@ -297,9 +351,9 @@ class _SettingsPageState extends State<SettingsPage> {
             value: _settings.dailyCheckInReminder,
             onChanged: (bool newValue) {
               setState(() {
-                _settings =
-                    _settings.copyWith(dailyCheckInReminder: newValue);
+                _settings.dailyCheckInReminder = newValue;
               });
+              
             },
           ),
 
@@ -334,14 +388,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     );
                     if (picked != null) {
                       setState(
-                              () => _settings = _settings.copyWith(reminderTime: picked));
+                              () => _settings.reminderTime = picked);
                     }
                   },
                   child: Container(
                     padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: _kPrimaryColor,
+                      color: Color(0xFFDB863B),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -353,34 +407,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
-          ),
-
-          _buildReminderRow(
-            context,
-            title: 'Weekly Progress Reports',
-            description: 'Receive weekly summaries of your wellness trends',
-            showDivider: true,
-            value: _settings.weeklyProgressReport,
-            onChanged: (bool newValue) {
-              setState(() {
-                _settings =
-                    _settings.copyWith(weeklyProgressReport: newValue);
-              });
-            },
-          ),
-
-          _buildReminderRow(
-            context,
-            title: 'Achievement Notification',
-            description: 'Get notified when you reach wellness milestones',
-            showDivider: false,
-            value: _settings.achievementNotifications,
-            onChanged: (bool newValue) {
-              setState(() {
-                _settings =
-                    _settings.copyWith(achievementNotifications: newValue);
-              });
-            },
           ),
         ],
       ),
@@ -460,7 +486,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   'Start Time',
                   _settings.plannedStartTime,
                       (time) => setState(
-                          () => _settings = _settings.copyWith(plannedStartTime: time)),
+                          () {
+                            _settings.plannedStartTime = time;
+                            if (_settings.plannedEndTime.isBefore(time)) {
+                              _settings.plannedEndTime = time;
+                            }
+                          }),
                 ),
               ),
               const SizedBox(width: 16),
@@ -470,7 +501,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   'End Time',
                   _settings.plannedEndTime,
                       (time) => setState(
-                          () => _settings = _settings.copyWith(plannedEndTime: time)),
+                          () { 
+                            _settings.plannedEndTime = time;
+                            if (_settings.plannedStartTime.isAfter(time)) {
+                              _settings.plannedStartTime = time;
+                            }
+                          }),
                 ),
               ),
             ],
@@ -566,7 +602,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const SizedBox(height: 16),
           _buildAboutInfoRow('Version', '1.0.0'),
-          _buildAboutInfoRow('Last Updated', 'September 2025'),
+          _buildAboutInfoRow('Last Updated', 'November 2025'),
           const SizedBox(height: 16),
           const Text('Contact Support',
               style: TextStyle(fontWeight: FontWeight.w500)),
@@ -596,6 +632,71 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text(
+            'Confirm Logout',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          content: const Text('Are you sure you want to log out?'),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 199, 199, 199),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  locator<UserViewModel>().logout(context);
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _kPrimaryColor,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Log out',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   TimePickerThemeData _getTimePickerThemeData() {
     return TimePickerThemeData(

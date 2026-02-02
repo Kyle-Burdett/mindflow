@@ -1,11 +1,11 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-
-
-import 'settings_page.dart';
-import 'working_hours_page.dart';
-
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/models/tag.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:provider/provider.dart';
 
 class DailyCheckIn extends StatefulWidget {
 
@@ -15,84 +15,79 @@ class DailyCheckIn extends StatefulWidget {
   State<DailyCheckIn> createState() => _DailyCheckInState();
 }
 
-
 class _DailyCheckInState extends State<DailyCheckIn> {
-  int _selectedIndex = 0;
 
+  final TextEditingController notesController = TextEditingController();
 
-  static const int _settingsIndex = 4;
-
-
-  final UserData _mockUser = UserData(
-    name: 'Jane Doe',
-    email: 'jane.doe@example.com',
-  );
-
-  final Map<String, dynamic> _checkInData = {
-    'moodScore': 7.0,
-    'energyScore': 7.0,
-    'stressScore': 3.0,
-    'productivityScore': 7.0,
-    'notes': '',
-    'selectedTags': <String>[],
-
-    'workTasks': <Map<String, String>>[],
-  };
-
-
-  final List<String> availableTags = [
-    "Focused", "Distracted", "Motivated", "Tired", "Productive", "Overwhelmed",
-    "Calm", "Anxious", "Creative", "Blocked", "Collaborative", "Isolated",
-    "Energetic", "Drained", "Satisfied", "Frustrated",
+  final List<Tag> availableTags = [
+    Tag(name: "Focused", category: "productivity", value: 1),
+    Tag(name: "Distracted", category: "productivity", value: -1),
+    Tag(name: "Productive", category: "productivity", value: 1),
+    Tag(name: "Blocked", category: "productivity", value: -1),
+    Tag(name: "Creative", category: "productivity", value: 1),
+    Tag(name: "Collaborative", category: "productivity", value: 1),
+    Tag(name: "Energetic", category: "energy", value: 1),
+    Tag(name: "Tired", category: "energy", value: -1),
+    Tag(name: "Rested", category: "energy", value: 1),
+    Tag(name: "Lethargic", category: "energy", value: -1),
+    Tag(name: "Motivated", category: "work_life_balance", value: 1),
+    Tag(name: "Overwhelmed", category: "work_life_balance", value: -1),
+    Tag(name: "Calm", category: "work_life_balance", value: 1),
+    Tag(name: "Anxious", category: "work_life_balance", value: -1),
+    Tag(name: "Satisfied", category: "work_life_balance", value: 1),
+    Tag(name: "Burnt Out", category: "work_life_balance", value: -1),
+    Tag(name: "Connected", category: "isolation", value: 1),
+    Tag(name: "Lonely", category: "isolation", value: -1),
+    Tag(name: "Supported", category: "isolation", value: 1),
+    Tag(name: "Detached", category: "isolation", value: -1),
   ];
-
 
   final Color customAccentColor = const Color(0xFFEF9C53);
 
-  void _handleTagToggle(String tag) {
+  void _handleTagToggle(Tag tag) {
     setState(() {
-      if (_checkInData['selectedTags'].contains(tag)) {
-        _checkInData['selectedTags'].remove(tag);
+      if (locator<CheckInViewModel>().currentDailyCheckIn.tags.contains(tag)) {
+        locator<CheckInViewModel>().currentDailyCheckIn.tags.remove(tag);
       } else {
-        _checkInData['selectedTags'].add(tag);
+        locator<CheckInViewModel>().currentDailyCheckIn.tags.add(tag);
       }
     });
   }
 
-
-  void _handleSubmit() {
-
-    debugPrint("Check-in data: $_checkInData");
-  }
-
-
-  void _onItemTapped(int index) {
-    if (index == _settingsIndex) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-
-          builder: (context) => SettingsPage(),
-        ),
-      );
+  // Function to process saving daily check-in data
+  void _handleSubmit() async {
+    // Check to ensure necessary field is not empty
+    if (locator<CheckInViewModel>().currentDailyCheckIn.taskHours.isNotEmpty) {
+      await locator<CheckInViewModel>().setCheckIn(context, locator<CheckInViewModel>().currentDailyCheckIn);
     } else {
-
-      setState(() {
-        _selectedIndex = index;
-      });
+      // Error message
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Add working hours to save the check-in."),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
     }
   }
 
-
+  @override
+  void initState() {
+    locator<CheckInViewModel>().setCurrentCheckIn();
+    notesController.text = locator<CheckInViewModel>().currentDailyCheckIn.notes;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-
-      backgroundColor: const Color(0xFFFFDBBB),
+    return ChangeNotifierProvider<CheckInViewModel>.value(
+      value: locator<CheckInViewModel>(),
+      child: Consumer<CheckInViewModel>(
+      builder: (context, model, child) => Scaffold(
+      backgroundColor: Color(0xFFFFF3E9),
       appBar: AppBar(
-
-        backgroundColor: const Color(0xFFFFDBBB),
+        backgroundColor: const Color(0xFFFFF3E9),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -100,22 +95,20 @@ class _DailyCheckInState extends State<DailyCheckIn> {
         title: const Text('Daily Check-in'),
         elevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: model.loading ? Center(child: CircularProgressIndicator()) : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-
-
               _buildScoreCard(
                 title: 'How are you feeling?',
                 description: 'Rate your current state on a scale of 1-10',
                 children: [
                   _buildSlider(
                     label: 'Mood',
-                    value: _checkInData['moodScore'],
-                    onChanged: (value) => setState(() => _checkInData['moodScore'] = value),
+                    value: locator<CheckInViewModel>().currentDailyCheckIn.moodScore,
+                    onChanged: (value) => setState(() => locator<CheckInViewModel>().currentDailyCheckIn.moodScore = value),
                     min: 1,
                     max: 10,
                     startLabel: 'Very Low',
@@ -123,8 +116,8 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                   ),
                   _buildSlider(
                     label: 'Energy Level',
-                    value: _checkInData['energyScore'],
-                    onChanged: (value) => setState(() => _checkInData['energyScore'] = value),
+                    value: locator<CheckInViewModel>().currentDailyCheckIn.energyScore,
+                    onChanged: (value) => setState(() => locator<CheckInViewModel>().currentDailyCheckIn.energyScore = value),
                     min: 1,
                     max: 10,
                     startLabel: 'Exhausted',
@@ -132,8 +125,8 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                   ),
                   _buildSlider(
                     label: 'Stress Level',
-                    value: _checkInData['stressScore'],
-                    onChanged: (value) => setState(() => _checkInData['stressScore'] = value),
+                    value: locator<CheckInViewModel>().currentDailyCheckIn.stressScore,
+                    onChanged: (value) => setState(() => locator<CheckInViewModel>().currentDailyCheckIn.stressScore = value),
                     min: 1,
                     max: 10,
                     startLabel: 'Very Calm',
@@ -141,8 +134,8 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                   ),
                   _buildSlider(
                     label: 'Productivity',
-                    value: _checkInData['productivityScore'],
-                    onChanged: (value) => setState(() => _checkInData['productivityScore'] = value),
+                    value: locator<CheckInViewModel>().currentDailyCheckIn.productivityScore,
+                    onChanged: (value) => setState(() => locator<CheckInViewModel>().currentDailyCheckIn.productivityScore = value),
                     min: 1,
                     max: 10,
                     startLabel: 'Unproductive',
@@ -162,25 +155,13 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: () async {
-                        final List<Map<String, String>>? updatedTasks = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const WorkingHoursPage(),
-                          ),
-                        );
-
-
-                        if (updatedTasks != null) {
-                          setState(() {
-                            _checkInData['workTasks'] = updatedTasks;
-                          });
-                        }
+                        context.push('/check-in-hours');
                       },
 
                       icon: const Icon(Icons.add, size: 16, color: Colors.white),
                       label: Text(
-                        _checkInData['workTasks'].isNotEmpty
-                            ? 'Edit Work Hours (${_checkInData['workTasks'].length} slots tracked)'
+                        locator<CheckInViewModel>().currentDailyCheckIn.taskHours.isNotEmpty
+                            ? 'Edit Work Hours (${locator<CheckInViewModel>().currentDailyCheckIn.taskHours.length} slots tracked)'
                             : 'Add Work Hours',
                         style: const TextStyle(color: Colors.white),
                       ),
@@ -189,10 +170,10 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                         backgroundColor: customAccentColor,
                       ),
                     ),
-                    if (_checkInData['workTasks'].isNotEmpty) ...[
+                    if (locator<CheckInViewModel>().currentDailyCheckIn.taskHours.isNotEmpty) ...[
                       const SizedBox(height: 16),
                       Column(
-                        children: _checkInData['workTasks'].map<Widget>((task) {
+                        children: locator<CheckInViewModel>().currentDailyCheckIn.taskHours.entries.map((task) {
                           return Container(
                             margin: const EdgeInsets.symmetric(vertical: 4),
                             padding: const EdgeInsets.all(12),
@@ -203,10 +184,13 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-
-                                Text(task['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
-
-                                Text('${task['startTime']} - ${task['endTime']}'),
+                                Text(task.key, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                // Column(
+                                //   children: task.value.map((task) {
+                                //       return Text('${task.value}');
+                                //     }
+                                //   ).toList(),
+                                // ),
                               ],
                             ),
                           );
@@ -226,9 +210,9 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                   spacing: 8.0, // horizontal spacing
                   runSpacing: 8.0, // vertical spacing
                   children: availableTags.map((tag) {
-                    final isSelected = _checkInData['selectedTags'].contains(tag);
+                    final isSelected = locator<CheckInViewModel>().currentDailyCheckIn.tags.contains(tag);
                     return ActionChip(
-                      label: Text(tag),
+                      label: Text(tag.name),
                       onPressed: () => _handleTagToggle(tag),
                       backgroundColor: isSelected ? customAccentColor : null,
                       labelStyle: TextStyle(
@@ -245,19 +229,24 @@ class _DailyCheckInState extends State<DailyCheckIn> {
                 title: 'Additional Notes',
                 description: 'Any thoughts or observations about your day?',
                 content: TextField(
+                  controller: notesController,
                   maxLines: 4,
-
                   cursorColor: customAccentColor,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r"[a-zA-Z0-9\s.,!?'\-:;()\/@#\$%&*+=_]+"),
+                      )
+                  ],
+                  maxLength: 500,
                   decoration: InputDecoration(
                     hintText: 'How did your day go? Any challenges or wins?',
                     border: const OutlineInputBorder(),
-
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: customAccentColor, width: 2.0),
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onChanged: (value) => _checkInData['notes'] = value,
+                  onChanged: (value) => locator<CheckInViewModel>().currentDailyCheckIn.notes = value,
                 ),
               ),
               const SizedBox(height: 16),
@@ -321,7 +310,7 @@ class _DailyCheckInState extends State<DailyCheckIn> {
           ),
         ),
       ),
-    );
+    )));
   }
 
 

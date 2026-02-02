@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mindflow/core/locator.dart';
+import 'package:mindflow/models/check-in.dart';
+import 'package:mindflow/view-models/check_in_view_model.dart';
+import 'package:mindflow/view-models/user_view_model.dart';
+import 'package:provider/provider.dart';
 
 class TimeSlot {
   TimeOfDay start;
@@ -34,12 +40,60 @@ class WorkingHoursPage extends StatefulWidget {
 }
 
 class _WorkingHoursPageState extends State<WorkingHoursPage> {
+  // Colors to differentiate between tasks
+  final colors = [
+    Colors.red.shade400,
+    Colors.blue.shade400,
+      Colors.green.shade400,
+      Colors.deepPurple.shade400,
+      Colors.pink.shade400,
+      Colors.indigo.shade400,
+      Colors.orange.shade400,
+      Colors.amber.shade400,
+      Colors.cyan.shade400,
+      Colors.brown.shade400,
+      Colors.teal.shade400,
+      Colors.yellow.shade400,
+      Colors.lime.shade400,
+      Colors.blueAccent.shade400,
+      Colors.greenAccent.shade400,
+      Colors.redAccent.shade400,
+      Colors.deepPurpleAccent.shade400,
+      Colors.tealAccent.shade400,
+      Colors.pinkAccent.shade400,
+      Colors.orangeAccent.shade400,
+  ];
+
+  final bgColors = [
+    Colors.red.shade200,
+    Colors.blue.shade200,
+      Colors.green.shade200,
+      Colors.deepPurple.shade200,
+      Colors.pink.shade200,
+      Colors.indigo.shade200,
+      Colors.orange.shade200,
+      Colors.amber.shade200,
+      Colors.cyan.shade200,
+      Colors.brown.shade200,
+      Colors.teal.shade200,
+      Colors.yellow.shade200,
+      Colors.lime.shade200,
+      Colors.blueAccent.shade200,
+      Colors.greenAccent.shade200,
+      Colors.redAccent.shade200,
+      Colors.deepPurpleAccent.shade200,
+      Colors.tealAccent.shade200,
+      Colors.pinkAccent.shade200,
+      Colors.orangeAccent.shade200,
+  ];
+
+  // Default tasks when no activities have been added yet.
   List<Activity> activities = [
     Activity(
       id: "1",
       name: "Project 1",
       color: Colors.red.shade400,
-      bgColor: Colors.orange.shade200,
+      bgColor: Colors.red.shade200,
       timeSlots: [
         TimeSlot(start: const TimeOfDay(hour: 10, minute: 0), end: const TimeOfDay(hour: 13, minute: 0))
       ],
@@ -70,8 +124,14 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
       final activity = activities.firstWhere((a) => a.id == activityId);
       if (field == 'start') {
         activity.timeSlots[slotIndex].start = value;
+        if (activity.timeSlots[slotIndex].end.isBefore(value)) {
+          activity.timeSlots[slotIndex].end = value;
+        }
       } else {
         activity.timeSlots[slotIndex].end = value;
+        if (activity.timeSlots[slotIndex].start.isAfter(value)) {
+          activity.timeSlots[slotIndex].start = value;
+        }
       }
     });
   }
@@ -87,8 +147,8 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
     setState(() {
       final activity = activities.firstWhere((a) => a.id == activityId);
       activity.timeSlots.add(TimeSlot(
-        start: const TimeOfDay(hour: 9, minute: 0),
-        end: const TimeOfDay(hour: 10, minute: 0),
+        start: const TimeOfDay(hour: 6, minute: 0),
+        end: const TimeOfDay(hour: 7, minute: 0),
       ));
     });
   }
@@ -99,8 +159,8 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
         Activity(
           id: DateTime.now().toString(),
           name: "New Task",
-          color: Colors.purple.shade400,
-          bgColor: Colors.purple.shade200,
+          color: activities.length >= 20 ? colors[0] : colors[activities.length],
+          bgColor: activities.length >= 20 ? bgColors[0] : bgColors[activities.length],
           timeSlots: [TimeSlot(start: const TimeOfDay(hour: 9, minute: 0), end: const TimeOfDay(hour: 10, minute: 0))],
         ),
       );
@@ -120,46 +180,150 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
     });
   }
 
-
-
-  void _saveAndExit() {
-
-    final List<Map<String, String>> resultTasks = activities.expand((activity) {
-      return activity.timeSlots.map((slot) {
-
-        if (slot.start.hour == slot.end.hour && slot.start.minute == slot.end.minute) {
-          return null;
-        }
-        return {
-          'name': activity.name,
-          'startTime': slot.start.format(context),
-          'endTime': slot.end.format(context),
-        };
-      }).whereType<Map<String, String>>().toList(); // Filter out nulls
-    }).toList();
-
-
-    Navigator.of(context).pop(resultTasks);
+  DateTime getStandardTime(TimeOfDay time) {
+    return DateTime(2000, 1, 1, time.hour, time.minute);
   }
 
+  Map<String, List<TimeRange>> mapActivitiesToTaskHours(
+    List<Activity> activities) {
+  Map<String, List<TimeRange>> taskHours = {};
 
+  for (var activity in activities) {
+    taskHours[activity.name] = activity.timeSlots.map((slot) {
+      DateTime start = getStandardTime(slot.start);
+      DateTime end = getStandardTime(slot.end);
+      return TimeRange(start: start, end: end);
+    }).toList();
+  }
+
+  return taskHours;
+}
+
+List<Activity> mapTaskHoursToActivities(Map<String, List<TimeRange>> taskHours, List<Color> colors) {
+  List<Activity> activities = [];
+  int counter = 1;
+
+  taskHours.forEach((taskName, ranges) {
+    List<TimeSlot> timeSlots = ranges.map((range) {
+      return TimeSlot(
+        start: TimeOfDay(hour: range.start.hour, minute: range.start.minute),
+        end: TimeOfDay(hour: range.end.hour, minute: range.end.minute),
+      );
+    }).toList();
+
+    final color = colors[(counter - 1) % colors.length];
+    final bgColor = color.withValues(alpha: 0.2);
+
+    activities.add(
+      Activity(
+        id: counter.toString(),
+        name: taskName,
+        color: color,
+        bgColor: bgColor,
+        timeSlots: timeSlots,
+      ),
+    );
+
+    counter++;
+  });
+
+  return activities;
+}
+
+  bool hasOverlappingTimeSlots(List<Activity> activities) {
+    List<TimeSlot> allSlots = [];
+    for (var activity in activities) {
+      allSlots.addAll(activity.timeSlots);
+    }
+
+    allSlots.sort((a, b) {
+      if (a.start.hour != b.start.hour) {
+        return a.start.hour.compareTo(b.start.hour);
+      }
+      return a.start.minute.compareTo(b.start.minute);
+    });
+
+    for (int i = 0; i < allSlots.length - 1; i++) {
+      TimeSlot current = allSlots[i];
+      TimeSlot next = allSlots[i + 1];
+
+      if (_timeOfDayToMinutes(next.start) < _timeOfDayToMinutes(current.end)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  int _timeOfDayToMinutes(TimeOfDay time) {
+    return time.hour * 60 + time.minute;
+  }
+
+  void _saveAndExit() {
+    if (hasOverlappingTimeSlots(activities)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Task hours cannot be overlapped. Please adjust the times to be continuous."),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+    locator<CheckInViewModel>().setCheckInHours(mapActivitiesToTaskHours(activities));
+    context.pop();
+  }
 
   double _getTimelineHeight() {
     const double hourHeight = 60.0;
-    final startHour = const TimeOfDay(hour: 9, minute: 0);
-    final endHour = const TimeOfDay(hour: 18, minute: 0);
-    final totalHoursToDisplay = (endHour.hour - startHour.hour);
+    final startHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!);
+    final endHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!);
+
+    TimeOfDay earliestTime = startHour;
+    TimeOfDay latestTime = endHour;
+
+    final allRanges = activities.expand((a) => a.timeSlots).toList();
+
+    if (allRanges.isNotEmpty) {
+      final earliest = allRanges.map((r) => r.start).reduce((a, b) => a.isBefore(b) ? a : b);
+      final latest = allRanges.map((r) => r.end).reduce((a, b) => a.isAfter(b) ? a : b);
+
+      final mockEarliestTime = earliest;
+      final mockLatestTime = latest;
+
+      if (startHour.isAfter(mockEarliestTime)) {
+        earliestTime = mockEarliestTime;
+      }
+
+      if (endHour.isBefore(mockLatestTime)) {
+        latestTime = mockLatestTime;
+      }
+    }
+    
+    final totalHoursToDisplay = (latestTime.hour - earliestTime.hour);
 
     return (totalHoursToDisplay + 1) * hourHeight + 32;
+  }
+
+  @override
+  void initState() {
+    if (locator<CheckInViewModel>().currentDailyCheckIn.taskHours.isNotEmpty) {
+      activities = mapTaskHoursToActivities(locator<CheckInViewModel>().currentDailyCheckIn.taskHours, colors);
+    }
+    super.initState();
   }
 
 
   @override
   Widget build(BuildContext context) {
 
-    const Color pageBackgroundColor = Color(0xFFFFDBBB);
+    const Color pageBackgroundColor = Color(0xFFFFF3E9);
 
-    return Scaffold(
+    return ChangeNotifierProvider<CheckInViewModel>.value(
+      value: locator<CheckInViewModel>(),
+      child: Consumer<CheckInViewModel>(
+      builder: (context, model, child) => Scaffold(
       backgroundColor: pageBackgroundColor,
       appBar: AppBar(
         backgroundColor: pageBackgroundColor,
@@ -189,9 +353,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
 
 
                   SizedBox(
-
                     height: _getTimelineHeight(),
-
                     child: TimelineView(activities: activities),
                   ),
                   Padding(
@@ -230,7 +392,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
           ),
         ],
       ),
-    );
+    )));
   }
 }
 
@@ -252,12 +414,34 @@ class TimelineView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const double hourHeight = 60.0;
-    final startHour = const TimeOfDay(hour: 9, minute: 0);
-    final endHour = const TimeOfDay(hour: 18, minute: 0);
-    final totalHoursToDisplay = (endHour.hour - startHour.hour);
+    final startHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.startTime!);
+    final endHour = TimeOfDay.fromDateTime(locator<UserViewModel>().user.endTime!);
+
+    TimeOfDay earliestTime = startHour;
+    TimeOfDay latestTime = endHour;
+
+    final allRanges = activities.expand((a) => a.timeSlots).toList();
+
+    if (allRanges.isNotEmpty) {
+      final earliest = allRanges.map((r) => r.start).reduce((a, b) => a.isBefore(b) ? a : b);
+      final latest = allRanges.map((r) => r.end).reduce((a, b) => a.isAfter(b) ? a : b);
+
+      final mockEarliestTime = earliest;
+      final mockLatestTime = latest;
+
+      if (startHour.isAfter(mockEarliestTime)) {
+        earliestTime = mockEarliestTime;
+      }
+
+      if (endHour.isBefore(mockLatestTime)) {
+        latestTime = mockLatestTime;
+      }
+    }
+
+    final totalHoursToDisplay = (latestTime.hour - earliestTime.hour);
 
     final hoursToDisplay = List.generate(totalHoursToDisplay + 1, (index) {
-      return TimeOfDay(hour: startHour.hour + index, minute: 0);
+      return TimeOfDay(hour: earliestTime.hour + index, minute: 0);
     });
 
     return Container(
@@ -314,8 +498,8 @@ class TimelineView extends StatelessWidget {
 
                 Positioned(
                   left: 30,
-                  top: ((_timeToMinutes(const TimeOfDay(hour: 9, minute: 0)) - _timeToMinutes(startHour)) / 60) * hourHeight,
-                  height: ((_timeToMinutes(const TimeOfDay(hour: 17, minute: 0)) - _timeToMinutes(const TimeOfDay(hour: 9, minute: 0))) / 60) * hourHeight,
+                  top: ((_timeToMinutes(startHour) - _timeToMinutes(earliestTime)) / 60) * hourHeight,
+                  height: ((_timeToMinutes(endHour) - _timeToMinutes(startHour)) / 60) * hourHeight,
                   child: Container(
                     width: 16,
                     decoration: BoxDecoration(
@@ -328,7 +512,7 @@ class TimelineView extends StatelessWidget {
 
                 Positioned(
                   left: 55,
-                  top: ((_timeToMinutes(const TimeOfDay(hour: 11, minute: 30)) - _timeToMinutes(startHour)) / 60) * hourHeight,
+                  top: ((_timeToMinutes(const TimeOfDay(hour: 11, minute: 30)) - _timeToMinutes(earliestTime)) / 60) * hourHeight,
                   child: const Text(
                     'Planned\nworking hours',
                     style: TextStyle(
@@ -344,7 +528,7 @@ class TimelineView extends StatelessWidget {
                   return activity.timeSlots.map((slot) {
                     final startMinutes = _timeToMinutes(slot.start);
                     final endMinutes = _timeToMinutes(slot.end);
-                    final baseMinutes = _timeToMinutes(startHour);
+                    final baseMinutes = _timeToMinutes(earliestTime);
 
                     final top = ((startMinutes - baseMinutes) / 60) * hourHeight;
                     final height = ((endMinutes - startMinutes) / 60) * hourHeight;
@@ -492,6 +676,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             isDense: true,
                             contentPadding: EdgeInsets.zero,
                             border: InputBorder.none,
+                            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black, width: 1))
                           ),
                           onSubmitted: (value) => handleNameEdit(),
                         ),
